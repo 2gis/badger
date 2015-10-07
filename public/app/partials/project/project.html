@@ -1,0 +1,7 @@
+<h3>{{ name }} test plans <span class="badge">{{ count }}</span></h3>
+
+<ul>
+    <li ng-repeat="testplan in testplans">
+        <a ng-href="#testplan/{{ testplan.id }}">{{ testplan.name }}</a>
+    </li>
+</ul>

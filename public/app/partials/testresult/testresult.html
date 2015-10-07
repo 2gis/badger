@@ -1,0 +1,20 @@
+<div class="page-header">
+    <h3>{{ suite }} <strong>{{ name }}</strong></h3>
+
+    <p class="text-right">
+        <small>Duration: {{ duration }}</small>
+    </p>
+
+    <a class="btn btn-primary" ng-href="#/launch/{{ launch }}">To Launch (#{{ launch }})</a>
+</div>
+
+
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span9">
+            <div class="hero-unit">
+                <pre>{{ failureReason }}</pre>
+            </div>
+        </div>
+    </div>
+</div>

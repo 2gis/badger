@@ -1,0 +1,24 @@
+<div class="row" ng-controller="Login">
+  <div class="col-md-4 col-md-offset-4">
+    <h1>Login</h1>
+
+    <div class="well">
+      <form role="form" ng-submit="login()">
+        <div class="alert alert-danger" ng-show="error" ng-bind="error"></div>
+        <div class="form-group">
+          <label for="login__username">Username</label>
+          <input type="text" class="form-control" id="login__username" ng-model="username" placeholder="ex. user" />
+        </div>
+
+        <div class="form-group">
+          <label for="login__password">Password</label>
+          <input type="password" class="form-control" id="login__password" ng-model="password" placeholder="ex. user123" />
+        </div>
+
+        <div class="form-group">
+          <button type="submit" class="btn btn-primary" id="gobutton">Submit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,69 @@
+<h3>Add new metric</h3>
+
+<form role="form" name="metricSettingsForm">
+    <div id="form-errors" ng-class="{ 'disabled': !formErrors, 'alert alert-danger': formErrors}" role="alert">{{ formErrors }}</div>
+    <label>Name</label>
+    <input ng-model="metric.name" type="text" class="form-control" required>
+    <p></p>
+    <label style="border-bottom: 1px dotted #000000;" ng-click="open('metric/jira_filter')">Jira filter
+        <span class="glyphicon glyphicon-question-sign"></span>
+    </label>
+    <textarea ng-model="metric.query" class="form-control monospaced"
+              rows="3" required></textarea>
+    <p></p>
+    <label style="border-bottom: 1px dotted #000000;" ng-click="open('metric/scheduler')">Scheduler
+        <span class="glyphicon glyphicon-question-sign"></span>
+    </label>
+    <cron-selection output="cronOutput" init="cronDefault"></cron-selection>
+    <p></p>
+    <div class="row col-md-6">
+        <label style="border-bottom: 1px dotted #000000;" ng-click="open('metric/handler')">Handler
+            <span class="glyphicon glyphicon-question-sign"></span>
+        </label>
+        <select required class="form-control" ng-model="metric.handler"
+                ng-options="option.code as option.name for option in options">
+            <option value="">Choose handler</option>
+        </select>
+    </div>
+    <div class="clearfix"></div>
+    <p></p>
+    <div class="row col-md-2">
+        <label style="border-bottom: 1px dotted #000000;" ng-click="open('metric/weight')">Weight
+            <span class="glyphicon glyphicon-question-sign"></span>
+        </label>
+        <input ng-init="metric.weight = 1" ng-model="metric.weight" type="number" min="1" class="form-control">
+    </div>
+    <div class="clearfix"></div>
+    <p></p><br>
+    <h4>
+        <a id="restore-data-link" href="" ng-click="recovery= !recovery">Restore data</a>
+        <a><span class="glyphicon glyphicon-question-sign" ng-click="open('metric/restore')"></span></a>
+    </h4>
+    <div class="form-group">
+        <div class="col-md-12" ng-show="recovery === true">
+            <label>Jira filter for period</label>
+            <textarea ng-model="metric.query_period" class="form-control monospaced"
+                      rows="3"></textarea>
+            <p></p>
+            <div class="row col-md-2" ng-hide="metric.handler === 'cycletime' || metric.handler === 'leadtime'">
+                <label>Handler field</label>
+                <select class="form-control" ng-model="metric.query_field"
+                        ng-options="field for field in sorted_fields"
+                        ng-required="metric.query_period && metric.handler==='count'">
+                    <option value="">Handler field</option>
+                </select>
+            </div>
+            <div class="clearfix"></div>
+            <p></p>
+            <div class="row col-md-2">
+                <label>Step (in days)</label>
+                <input ng-model="metric.query_step" type="number" min="1" class="form-control" ng-required="metric.query_period">
+            </div>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="form-group">
+        <button id="save-new-metric-button" type="submit" class="btn btn-primary pull-right" ng-click="save(metric)">Save</button>
+    </div>
+</form>
+<div class="clearfix"></div>

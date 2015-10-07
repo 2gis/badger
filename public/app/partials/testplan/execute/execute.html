@@ -1,0 +1,88 @@
+<h3>Execute test plan "{{ name }}"
+    <a><span class="glyphicon glyphicon-question-sign small pull-right" ng-click="open('testplan/execute')"></span></a>
+</h3>
+<br />
+<div ng-class="{ 'disabled': !formErrors, 'alert alert-danger': formErrors}" role="alert">{{ formErrors }}</div>
+<div class="row">
+    <div class="col-md-6">
+        <table ng-table="launchItemsTable" class="table table-condensed table-bordered table-hover ng-table-rowselected">
+            <tbody>
+            <tr ng-repeat="item in $data"
+                ng-click="changeSelection(item)"
+                ng-class="{ 'selected-launch-items': item.$selected }">
+                <td data-title="'Task name'">{{ item.name }}</td>
+                <td data-title="'Time limit (sec.)'">{{ item.timeout }}</td>
+            </tr>
+            </tbody>
+        </table>
+        <button ng-click="selectAllTasks(true)" type="button" class="btn btn-default">
+            <span class="glyphicon glyphicon-ok"></span> Select All</button>
+        <button ng-click="selectAllTasks(false)" type="button" class="btn btn-default">
+            <span class="glyphicon glyphicon-remove"></span> Unselect All</button>
+        <div class="clearfix"></div>
+    </div>
+    <div class="col-md-6">
+        <form role="form" name="testPlanForm">
+            <div class="clearfix"></div>
+
+            <label>Environment</label>
+            <div ng-repeat="item in environmentItems track by $index">
+                <div class="form-group col-md-4">
+                    <input ng-model="item.key" type="text" class="form-control monospaced" placeholder="Key">
+                </div>
+                <div class="form-group col-md-7">
+                    <input ng-model="item.value" type="text" class="form-control monospaced" placeholder="Value">
+                </div>
+                <div class="form-group col-md-1">
+                    <a class="btn btn-danger" ng-click="removeEnvironmentItem($index)">
+                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                    </a>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="clearfix"></div>
+            <button type="button" class="btn btn-default btn-sm" ng-click="addEnvironmentItem()">
+                Add more
+            </button>
+            <div class="clearfix"></div>
+            <br/>
+
+            <div class="form-group" ng-class="{
+            'has-error': testPlanForm.jsonFile.$invalid,
+            'has-success': testPlanForm.jsonFile.$valid && !testPlanForm.jsonFile.$pristine
+        }">
+
+        <label>Extra data (JSON)</label>
+        <textarea ng-model="testPlan.jsonFile" class="form-control monospaced"
+                  name="jsonFile"
+                  rows="5" placeholder="JSON data can be left blank"
+                  ng-pattern="/^{[\s\S]*}$/"
+                ></textarea>
+            </div>
+
+            <div ng-if="!profile" class="alert alert-danger" role="alert">You need to login before execute test plans</div>
+            <button type="submit" ng-disabled="testPlanForm.$invalid"
+                    class="btn btn-primary pull-right" ng-click="execute(testPlan)"
+                    ng-class="{'disabled': !profile}">Execute</button>
+        </form>
+        <div class="clearfix"></div>
+    </div>
+</div>
+
+<div class="modal fade" id="ConfirmationModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" ng-bind="modalTitle"></h4>
+            </div>
+            <div class="modal-body" ng-bind="modalBody"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" ng-click="modalCallBack()" data-dismiss="modal">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+

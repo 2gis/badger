@@ -1,0 +1,57 @@
+div.navbar.navbar-default.navbar-fixed-top(role='navigation', ng-controller='Menu', ng-hide='hideMenu===true')
+  div.container-fluid
+    div.navbar-header
+      button.navbar-toggle.collapsed(type='button', data-toggle='collapse', data-target='.navbar-collapse')
+        span.sr-only Toggle navigation
+        span.icon-bar
+        span.icon-bar
+        span.icon-bar
+      ul.nav.navbar-nav
+        li.dropdown
+          a.dropdown-toggle(href='javascript:;', data-toggle='dropdown').navbar-brand
+            span.glyphicon.glyphicon-tasks(title="Projects")
+            span.caret
+          ul.dropdown-menu(role='menu')
+            li(ng-repeat='project in projects')
+              a(ng-href='#/dashboard/{{ project.id }}') {{ project.name }}
+
+    div.container
+      div.collapse.navbar-collapse
+        ul.nav.navbar-nav.navbar-left(ng-show="activeProjectId!==null")
+          li
+            a.navbar-brand
+              span.label.label-default {{ activeProject.name }}
+          li.dropdown
+            a.dropdown-toggle(href='javascript:;' data-toggle='dropdown') Testplans
+              span.caret
+            ul.dropdown-menu(role='menu')
+              li(ng-repeat='testplan in activeProject.testplans')
+                a(ng-if='testplan.hidden === false || testplan.owner === profile.id', ng-href='#/testplan/{{ testplan.id }}') {{ testplan.name }}
+              li.divider
+              li
+                a(ng-href='#/testplan/{{ activeProject.id }}/add') Add new
+          li
+            a(ng-href='#/dashboard/{{ activeProject.id }}') Short statistics
+          li
+            a(ng-href='#/project/{{ activeProject.id }}/metric/charts' ng-show='jira') Metric statistics
+          li
+            a(ng-href='#/dashboard/{{ activeProject.id }}/top') Most failed tests
+        ul.nav.navbar-nav.navbar-left(ng-show="activeProjectId===null && isMainDashboard===true")
+          li
+            a.navbar-brand
+              span.label.label-default Overall statistics
+        ul.nav.navbar-nav.navbar-right(ng-if='profile === null')
+          li
+            a(href='javascript:;', ng-click="login()") Login
+        ul.nav.navbar-nav.navbar-right
+          li(ng-if='profile !== null')
+            a(id='{{ profile.username }}') {{ profile.username }}
+          li(ng-show="isMainDashboard===false || !isMainDashboard", ng-if='profile !== null && jira')
+            a(ng-href='#/project/{{ activeProject.id }}/metrics')
+              span.glyphicon.glyphicon-cog
+          li(ng-show="isMainDashboard===false || !isMainDashboard")
+            a(ng-href='#/dashboard', ng-click='selectProject()')
+              span.glyphicon.glyphicon-home
+          li(ng-if='profile !== null')
+            a(href='javascript:;', ng-click='logout()')
+              span.glyphicon.glyphicon-log-out

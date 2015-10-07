@@ -1,0 +1,61 @@
+pre {
+    white-space: pre-wrap;       /* CSS 3 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+
+body {
+    padding-top: 50px;
+    padding-bottom: 30px;
+}
+
+.monospaced {
+    font-family: monospace;
+}
+
+.cd-chart.cd-chart-line {
+    height: 300px;
+    width: 1100px;
+}
+
+.cd-chart.cd-chart-pie {
+    height: 200px;
+}
+
+.cd-chart td {
+    padding: 2px;
+}
+
+.cd-grid {
+    border: 1px solid rgb(212,212,212);
+}
+/* Hack for inner grid content height, it should inherit from parent */
+.cd-grid .ngViewport{
+    height:auto !important;
+}
+
+.loading-container {
+    position: relative;
+}
+
+.loading-container .loading:before, .loading-container .loading:after {
+    content: " ";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    min-height: 50px;
+    min-width: 50px;
+}
+
+.loading-container .loading:before {
+    background-color: white;
+    opacity: 0.5;
+}
+
+.selected-launch-items {
+    background-color: #EFEFEF;
+}

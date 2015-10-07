@@ -1,0 +1,95 @@
+<div class="row container-fluid">
+<h3>Metrics</h3>
+    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+        <div class="panel panel-default" ng-repeat="metric in metrics">
+            <div class="panel-heading">{{ metric.name }}
+                <div class="pull-right">
+                    <button id="edit-metric-button" href="" class="btn btn-info btn-xs"
+                            ng-click="metric.isEdit = !metric.isEdit; metric.$edit = true">
+                        <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                    </button>
+                    <button id="delete-metric-button" href="" class="btn btn-danger btn-xs"
+                            ng-click="metric.isEdit = false; deleteMetric(metric)">
+                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                    </button>
+                </div>
+            </div>
+            <div collapse="metric.isView">
+                <div ng-show="metric.isView" class="panel-body">
+                    view
+                    <div><cron-selection init="metric.schedule"></cron-selection></div>
+                </div>
+            </div>
+            <div collapse="metric.isEdit">
+                <div ng-show="metric.isEdit" class="panel-body">
+                    <div ng-if="metric.$edit">
+                        <label>Name</label>
+                        <input id="update-metric-name" class="form-control" type="text" ng-model="metric.name" />
+                        <p></p>
+                        <label style="border-bottom: 1px dotted #000000;" ng-click="open('metric/jira_filter')">Jira filter
+                            <span class="glyphicon glyphicon-question-sign"></span>
+                        </label>
+                        <textarea id="update-metric-filter" class="form-control" ng-model="metric.query" rows="4"></textarea>
+                        <p></p>
+                        <label style="border-bottom: 1px dotted #000000;" ng-click="open('metric/scheduler')">Scheduler
+                            <span class="glyphicon glyphicon-question-sign"></span>
+                        </label>
+                        <div><cron-selection id="update-metric-scheduler" output="metric.schedule" init="metric.schedule"></cron-selection></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <div class="row col-md-6">
+                            <label style="border-bottom: 1px dotted #000000;" ng-click="open('metric/handler')">Handler
+                                <span class="glyphicon glyphicon-question-sign"></span>
+                            </label>
+                            <select id="update-metric-handler" class="form-control" ng-model="metric.handler"
+                                    ng-options="option.code as option.name for option in options">
+                            </select>
+                        </div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <div class="row col-md-2">
+                            <label style="border-bottom: 1px dotted #000000;" ng-click="open('metric/weight')">Weight
+                                <span class="glyphicon glyphicon-question-sign"></span>
+                            </label>
+                            <input id="update-metric-order" ng-init="metric.weight" ng-model="metric.weight" type="number" min="1" class="form-control">
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="pull-right">
+                            <!--<button href="" class="btn btn-default btn-xs" ng-click="metric.$edit = true">Edit</button>-->
+                            <button id="update-metric-confirm-button" href="" class="btn btn-primary btn-xs"
+                                    ng-click="updateMetric(metric); metric.$edit = false">Save</button>
+                        </div>
+                    </div>
+                    <div ng-if="!metric.$edit && (metric.formErrors || metric.formUpdate)">
+                        <div ng-class="{ 'disabled': !metric.formErrors, 'alert alert-danger text-center': metric.formErrors}"
+                             role="alert" id="update-form-errors">{{ metric.formErrors }}</div>
+                        <div ng-class="{ 'disabled': !metric.formUpdate, 'alert alert-info text-center': metric.formUpdate}"
+                             role="alert" id="update-form-info">{{ metric.formUpdate }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="pull-right">
+        <a id="add-new-metric-button" ng-href="#/project/{{ activeProjectId }}/metric/add"
+                class="btn btn-default">Add new</a>
+    </div>
+</div>
+
+
+<div class="modal fade" id="ConfirmationModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" ng-bind="modalTitle"></h4>
+            </div>
+            <div class="modal-body" ng-bind="modalBody"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-primary" ng-click="modalCallBack()" data-dismiss="modal">Да</button>
+            </div>
+        </div>
+    </div>
+</div>

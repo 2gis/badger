@@ -1,0 +1,73 @@
+doctype html
+html
+  head
+    meta(charset='utf-8')
+    meta(http-qruiv='X-UA-Compatible', content="IE=edge")
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    title Badger
+    link(rel='icon', href='/static/favicon.ico')
+    link(rel='stylesheet', href='/static/bower_components/bootstrap/dist/css/bootstrap.min.css')
+    link(rel='stylesheet', href='/static/bower_components/ng-table/ng-table.min.css')
+    link(rel='stylesheet', href='/static/bower_components/angular-hotkeys/build/hotkeys.min.css')
+    link(rel='stylesheet', href='/static/bower_components/angular-loading-bar/build/loading-bar.min.css')
+    link(rel='stylesheet', href='/static/bower_components/angular-chart.js/dist/angular-chart.css')
+    link(rel='stylesheet', href='/static/bower_components/angular-cron-jobs/dist/angular-cron-jobs.min.css')
+    link(rel='stylesheet', href='/static/bower_components/angular-datepicker/dist/index.min.css')
+    link(rel='stylesheet', href='/static/css/theme.css')
+
+  body(ng-app="testReport")
+    include menu.jade
+    div.container
+      div(ng-view)
+      div#TipsModal.modal(ng-controller='TipsCtrl', tabindex="-1", role="dialog", aria-labelledby="TipsModalLabel", aria-hidden="true")
+        div.modal-dialog.modal-lg
+          div.modal-content
+            tips(type='{{ tipsType || "weight" }}')
+      hr
+      footer
+        p!= "&copy; " + year + " 2GIS"
+
+    script(type='text/javascript') var BACKEND_URL = '!{backendUrl}';
+    script(type='text/javascript') var JIRA_INTEGRATION = !{jiraIntegration};
+    script(type='text/javascript') var JIRA_ISSUE_STATUS = '!{jiraIssueStatus}';
+    script(type='text/javascript') var LANG = '!{lang}';
+    script(type='text/javascript') var COLORS = '!{colors}';
+    script(src='/static/bower_components/jquery/dist/jquery.min.js')
+    script(src='/static/bower_components/bootstrap/dist/js/bootstrap.min.js')
+    script(src='/static/bower_components/angular/angular.min.js')
+    script(src='/static/bower_components/angular-route/angular-route.min.js')
+    script(src='/static/bower_components/angular-cookies/angular-cookies.min.js')
+    script(src='/static/bower_components/angular-resource/angular-resource.min.js')
+    script(src='/static/bower_components/angular-hotkeys/build/hotkeys.min.js')
+    script(src='/static/bower_components/angular-sanitize/angular-sanitize.min.js')
+    script(src='/static/bower_components/angular-cookies/angular-cookies.min.js')
+    script(src='/static/bower_components/ng-table/ng-table.min.js')
+    script(src='/static/bower_components/angular-loading-bar/build/loading-bar.min.js')
+    script(src='/static/bower_components/underscore/underscore-min.js')
+    script(src='/static/bower_components/angular-cron-jobs/dist/angular-cron-jobs.min.js')
+    script(src='/static/bower_components/angular-datepicker/dist/index.min.js')
+    script(src='/static/bower_components/highcharts-ng/src/highcharts-ng.js')
+    script(src='//code.highcharts.com/highcharts.js')
+    script(src='//code.highcharts.com/highcharts-more.js')
+    script(src='/static/bower_components/bowser/bowser.min.js')
+    if env==='development'
+        script(src='/static/bower_components/angular-mocks/angular-mocks.js')
+
+    script(src='/static/app/app.js')
+    script(src='/static/app/services.js')
+    script(src='/static/app/filters.js')
+    script(src='/static/app/partials/menu/menu.js')
+    script(src='/static/app/partials/auth/login/login.js')
+    script(src='/static/app/partials/dashboard/dashboard.js')
+    script(src='/static/app/partials/dashboard/top/top.js')
+    script(src='/static/app/partials/project/project.js')
+    script(src='/static/app/partials/testplan/testplan.js')
+    script(src='/static/app/partials/testplan/execute/execute.js')
+    script(src='/static/app/partials/testplan/add/add.js')
+    script(src='/static/app/partials/launch/launch.js')
+    script(src='/static/app/partials/testresult/testresult.js')
+    script(src='/static/app/partials/launch_item/form/form.js')
+    script(src='/static/app/partials/metric/add/add_metric.js')
+    script(src='/static/app/partials/metric/charts/chart.js')
+    script(src='/static/app/partials/metric/zoom/zoom.js')
+    script(src='/static/app/partials/metric/metric.js')

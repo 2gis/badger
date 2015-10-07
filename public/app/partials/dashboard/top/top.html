@@ -1,0 +1,38 @@
+<div ng-repeat="project in projects">
+    <h3>Most failed tests
+        <a><span class="glyphicon glyphicon-question-sign small pull-right" ng-click="open('dashboard/most_failed')"></span></a>
+    </h3>
+    <div ng-repeat="chart_testplan in project.statistics">
+        <div class="panel panel-default">
+            <div class="panel-heading">{{ chart_testplan.name }}
+                <div class="btn-group btn-group-xs pull-right" role="group">
+                  <button ng-repeat="days in [3, 7, 14, 28]" type="button" class="btn btn-default"
+                          ng-click="prepareResults(chart_testplan, days)">{{days}} days
+                  </button>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div ng-if="chart_testplan.top.length === 0" ng-show="chart_testplan.loading">
+                    <div class="alert alert-success text-center" role="alert">
+                        For chosen period in this testplan there are no failed tests (or failed more than 2 times).
+                    </div>
+                </div>
+                <div ng-if="chart_testplan.top.length === 0" ng-show="!chart_testplan.loading">
+                    <div class="alert alert-warning text-center" role="alert">
+                        <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+                        Loading ...
+                    </div>
+                </div>
+                <div ng-if="chart_testplan.top.length !== 0">
+                    <ul class="list-group">
+                      <li class="list-group-item" ng-repeat="res in chart_testplan.top">
+                        <span class="badge">{{ res.count }}</span>
+                        {{ res.name }}
+                      </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

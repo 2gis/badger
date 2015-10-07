@@ -1,0 +1,189 @@
+<h3 id="statistic_header">"{{ name }}" statistics</h3>
+<div ng-if="dataFailed || dataSkipped">
+    <highchart config="failedConfig" ng-if="chartPercentType === 'failed'"></highchart>
+    <highchart config="skippedConfig" ng-if="chartPercentType === 'skipped'"></highchart>
+    <div class="text-center">
+        <div class="btn-group btn-group-xs" role="group">
+          <button type="button" class="btn btn-default" ng-click="chartPercentType = 'failed'">failed</button>
+          <button type="button" class="btn btn-default" ng-click="chartPercentType = 'skipped'">skipped</button>
+        </div>
+    </div>
+</div>
+<div class="clearfix"></div>
+<hr/>
+
+<div class="tabpanel">
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" ng-class="{'active': activeTab === 'history'}">
+            <a ng-click="activeTab = 'history'" style="cursor: pointer;">Launch history
+            </a>
+        </li>
+        <li role="presentation" ng-class="{'active': activeTab === 'launchItems'}">
+            <a id="launch_items_list" ng-click="activeTab = 'launchItems'" style="cursor: pointer;">Launch items
+            </a>
+        </li>
+        <li role="presentation" ng-class="{'active': activeTab === 'actions'}">
+            <a id="actions_list" ng-click="activeTab = 'actions'" style="cursor: pointer;">Actions</a>
+        </li>
+        <li role="presentation" class="pull-right">
+            <a><span class="glyphicon glyphicon-question-sign" ng-click="open('launch/tabs')"></span></a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane" ng-class="{'active': activeTab === 'history'}">
+            <a ng-href="#testplan/{{ testPlanId }}/execute" style="margin-top: 10px; margin-bottom: 10px;" class="pull-right">
+                <span class="glyphicon glyphicon-repeat"></span>
+                Launch
+            </a>
+            <br/>
+
+            <table ng-table="tableParams" show-filter="true" class="table table-condensed table-bordered table-hover">
+                <tbody>
+                    <tr ng-repeat="launch in $data"
+                        ng-class="{ 'danger': launch.percent_of_failed > 1 && launch.state === 2 }"
+                        ng-click="location.path('/launch/' + launch.id )"
+                        style="cursor:pointer">
+                        <td data-title="'By'" filter="{'started_by': 'text'}">
+                            <span class="info">{{ launch.started_by }}</span>
+                        </td>
+                        <td data-title="'Branch'">
+                            <div ng-if="launch.parameters.env.BRANCH.length <= 8
+                                            || launch.parameters.env.branch.length <= 8
+                                            || launch.parameters.env.CORE_APP.length <=8" class="text-center">
+                                {{ launch.parameters.env.BRANCH || launch.parameters.env.branch || launch.parameters.env.CORE_APP }}
+                            </div>
+                            <div ng-if="launch.parameters.env.BRANCH.length > 8 || launch.parameters.env.branch.length > 8" class="text-center">
+                                <span class="glyphicon glyphicon-info-sign" title="{{ launch.parameters.env.BRANCH || launch.parameters.env.branch }}"></span>
+                            </div>
+                        </td>
+                        <td data-title="'Date'">
+                            {{ launch.created | date:"dd/MM/yyyy" }}
+                        </td>
+                        <td data-title="'Passed'" class="text-center success">
+                            {{ launch.counts.passed }}
+                        </td>
+                        <td data-title="'Skipped'" class="text-center warning">
+                            {{ launch.counts.skipped }}
+                        </td>
+                        <td data-title="'Failed'" class="text-center danger">
+                            {{ launch.counts.failed }}
+                        </td>
+                        <td data-title="'Blocked'" class="text-center danger">
+                            {{ launch.counts.blocked }}
+                        </td>
+                        <td data-title="'State'" class="text-center"
+                            ng-class="{ 'danger': launch.percent_of_failed > 1,
+                                        'warning': launch.percent_of_failed > 0,
+                                        'success': launch.percent_of_failed == 0 }">
+                            <span class="{{ launch.state | statesClass }}">{{ launch.state | states }}</span>
+                        </td>
+                        <td data-title="'% of Failed'" class="text-center"
+                            ng-class="{ 'danger': launch.percent_of_failed > 1,
+                                        'warning': launch.percent_of_failed > 0,
+                                        'success': launch.percent_of_failed == 0 }">
+                            {{ launch.percent_of_failed | number }}
+                        </td>
+                        <td data-title="'C'">
+                            <span class="badge" ng-if="launch.comments.count > 0">{{ launch.comments.count }}</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div role="tabpanel" class="tab-pane" ng-class="{'active': activeTab === 'launchItems'}" loading-container="launchItems.settings().$loading">
+            <a id="add_new_launch_item" ng-href="#testplan/{{ testPlanId }}/launch-item/add" style="margin-top: 10px;" class="pull-right">
+                <span class="glyphicon glyphicon-plus"></span>
+                Add new launch item
+            </a>
+            <br/>
+            <div class="alert alert-danger" role="alert" ng-bind="launchItemsErrors" ng-if="launchItemsErrors"></div>
+            <table  ng-table="launchItems" class="table table-striped">
+                <tr ng-repeat="launchItem in $data" ng-class="{ 'info': launchItem.type === 1, 'warning': launchItem.type === 2 }">
+                    <td data-title="'Name'">
+                        <span ng-if="!launchItem.$edit">{{ launchItem.name }}</span>
+                        <div ng-if="launchItem.$edit"><input class="form-control" type="text" ng-model="launchItem.name" /></div>
+                    </td>
+                    <td data-title="'Command'">
+                        <span ng-if="!launchItem.$edit"><pre>{{ launchItem.command }}</pre></span>
+                        <div ng-if="launchItem.$edit"><textarea class="form-control" ng-model="launchItem.command" rows="10"></textarea></div>
+                    </td>
+                    <td data-title="'Timeout'">
+                        <span ng-if="!launchItem.$edit">{{ launchItem.timeout }}</span>
+                        <div ng-if="launchItem.$edit"><input class="form-control" type="text" ng-model="launchItem.timeout" /></div>
+                    </td>
+                    <td data-title="'Actions'" nowrap>
+                        <button id="launch-item-edit-button" ng-if="!launchItem.$edit" href="" class="btn btn-default btn-xs" ng-click="launchItem.$edit = true" ng-disabled="profile === null">Edit</button>
+                        <button id="launch-item-save-button" ng-if="launchItem.$edit" href="" class="btn btn-primary btn-xs" ng-click="launchItem.$edit = false; saveLaunchItem(launchItem)">Save</button>
+                        <button id="launch-item-delete-button" ng-if="!launchItem.$edit" href="" class="btn btn-danger btn-xs" ng-click="deleteLaunchItem(launchItem)" ng-disabled="profile === null" ng-hide="launchItem.type === 1">
+                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                        </button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div role="tabpanel" class="tab-pane" ng-class="{'active': activeTab === 'actions'}">
+            <br />
+            <div ng-class="{'disabled': !formErrors, 'alert alert-danger': formErrors}" role="alert">{{ formErrors }}</div>
+            <div ng-class="{'disabled': !formUpdate, 'alert alert-info': formUpdate}" role="alert">{{ formUpdate }}</div>
+            <form class="form-inline">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label>Project name</label>
+                        <input name="name" ng-model="testplan.name" type="text"
+                               class="form-control" placeholder="Name" required>
+                    </div>
+                </div>
+            </form>
+            <p></p>
+            <label>Settings</label>
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" ng-model="testplan.hidden"> Hidden
+                </label>
+            </div>
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" ng-model="testplan.main"> Show in statistics
+                    <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" title="If you choose this option, you will see this testplan on 'Short Statictics' page"></span>
+                </label>
+            </div>
+            <form class="form-inline" ng-show="testplan.main===true">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label>StartedBy filter for statistics</label>
+                        <input name="name" ng-model="testplan.filter" type="text"
+                               class="form-control" placeholder="ex. job/WebAPI_regression_full">
+                    </div>
+                </div>
+            </form>
+            <p></p>
+            <form class="form-inline">
+                <button type="submit" ng-disabled="testplan.$invalid || profile === null"
+                        class="btn btn-primary" ng-click="updateTestPlan(testplan)">Update</button>
+                <button type="submit" ng-disabled="profile === null"
+                        class="btn btn-danger" ng-click="deleteTestPlan(testplan)">Delete</button>
+                <div class="clearfix"></div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ConfirmationModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" ng-bind="modalTitle"></h4>
+            </div>
+            <div class="modal-body" ng-bind="modalBody"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" ng-click="modalCallBack()" data-dismiss="modal">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+

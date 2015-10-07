@@ -1,0 +1,61 @@
+<h3>Add new launch item
+    <a><span class="glyphicon glyphicon-question-sign small pull-right" ng-click="open('launch/addnew')"></span></a>
+</h3>
+
+<form role="form" name="launchItemForm">
+    <div id="add-new-launch-login-fail" ng-class="{ 'disabled': !formErrors, 'alert alert-danger': formErrors}" role="alert">{{ formErrors }}</div>
+    <div class="form-group" ng-class="{
+            'has-warning': launchItemForm.name.$invalid,
+            'has-success': launchItemForm.name.$valid
+        }">
+        <input name="name" ng-model="launchItem.name" type="text"
+               class="form-control" placeholder="Name" required>
+    </div>
+
+    <div class="form-group" ng-class="{
+            'has-warning': launchItemForm.command.$invalid,
+            'has-success': launchItemForm.command.$valid
+        }">
+        <textarea name="command" ng-model="launchItem.command" class="form-control monospaced"
+                  rows="5" placeholder="Command" required></textarea>
+    </div>
+
+    <div class="form-group" ng-class="{
+            'has-error': launchItemForm.timeout.$invalid && launchItemForm.timeout.$dirty,
+            'has-warning': launchItemForm.timeout.$invalid,
+            'has-success': launchItemForm.timeout.$valid
+        }">
+        <input ng-model="launchItem.timeout" name="timeout" type="number" min="0" max="3600"
+               class="form-control" placeholder="Timeout, sec." required>
+        <span class="help-block" ng-show="launchItemForm.timeout.$error.number">
+            Not valid number! Should be 0 - 3600 sec.
+        </span>
+    </div>
+
+    <div class="radio">
+        <label>
+            <input ng-model="launchItem.type" type="radio" name="typeRegular"
+                   id="typeRegular" value="0" checked required>
+            Regular script
+        </label>
+    </div>
+    <div class="radio">
+        <label>
+            <input ng-model="launchItem.type" type="radio" name="typeDeploy"
+                   ng-disabled="isDeployScriptExists"
+                   id="typeDeploy" value="1" required>
+            Deploy script
+        </label>
+    </div>
+    <div class="radio">
+        <label>
+            <input ng-model="launchItem.type" type="radio" name="typeConclusive"
+                   id="typeConclusive" value="2" required>
+            Conclusive script
+        </label>
+    </div>
+
+    <button id="add-launch-submit-button" type="submit" ng-disabled="launchItemForm.$invalid || isUnchanged(launchItem)"
+            class="btn btn-primary pull-right" ng-click="save(launchItem)">Save</button>
+</form>
+<div class="clearfix"></div>

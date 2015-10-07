@@ -1,0 +1,25 @@
+{
+  "name": "Badger",
+  "private": true,
+  "version": "1.0",
+  "description": "An open-source tool for monitoring product quality",
+  "repository": "https://github.com/2gis/badger",
+  "license": "The MIT License",
+  "dependencies": {
+    "bower": "1.4.1",
+    "express": "3.1.x",
+    "jade": "1.9.2",
+    "request": "^2.55.0"
+  },
+  "devDependencies": {
+    "foreman": "^1.4.0",
+    "protractor": "2.0.0"
+  },
+  "scripts": {
+    "postinstall": "bower install",
+    "pretest": "webdriver-manager update",
+    "dev": "nf start",
+    "test": "protractor public/tests/conf.js",
+    "test-single-run": "karma start karma.conf.js  --single-run"
+  }
+}

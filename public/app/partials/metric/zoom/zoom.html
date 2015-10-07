@@ -1,0 +1,68 @@
+<div class="page-header">
+    <h4>{{ metric.name }}</h4>
+</div>
+<div>
+    <div class="col-sm-2">
+        <div class="form-group has-feedback has-feedback-left">
+          <input date-time type="text" ng-model="range.from" class="form-control"
+               format="dd.MM.yyyy" auto-close="true" view="date" min-view="date">
+          <i class="form-control-feedback glyphicon glyphicon-calendar"></i>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group has-feedback has-feedback-left">
+          <input date-time type="text" ng-model="range.to" class="form-control"
+               format="dd.MM.yyyy" auto-close="true" view="date" min-view="date">
+          <i class="form-control-feedback glyphicon glyphicon-calendar"></i>
+        </div>
+    </div>
+    <div class="col-sm-1">
+        <button type="submit" class="btn btn-primary"
+                ng-click="prepareDataForChart(metric, range.from, range.to)">Get</button>
+    </div>
+    <div class="col-sm-7">
+        <div class="text-center" ng-if="metric.chart">
+            <div class="btn-group btn-group" role="group">
+                <button type="button" class="btn btn-default"
+                        style="border-color: white; background-color: white;">
+                    <b>{{ metric.stat.min }}</b> min
+                </button>
+                <button type="button" class="btn btn-default"
+                        style="border-color: white; background-color: white;">
+                    <b>{{ metric.stat.max }}</b> max
+                </button>
+                <button type="button" class="btn btn-default"
+                        style="border-color: white; background-color: white;">
+                    <b>{{ metric.stat.average }}</b> average
+                </button>
+                <button type="button" class="btn btn-default"
+                        style="border-color: white; background-color: white;">
+                    <b>{{ metric.stat.median }}</b> median
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-12 text-center">
+    <p>
+        <div class="span9" ng-if="metric.chart.length === 0 || !metric.chart">
+            <div class="alert alert-warning text-center" role="alert"
+                    style="margin-bottom: 60px; margin-top: 60px;">
+                No results for this period
+            </div>
+        </div>
+    </p>
+</div>
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span9" ng-if="metric.chart.length !== 0">
+            <highchart config="metric.chart"></highchart>
+        </div>
+    </div>
+</div>
+<div class="page-header">
+</div>
+<a class="btn btn-primary btn-sm" ng-href="#/project/{{ activeProjectId }}/metric/charts">
+    <small><span class="glyphicon glyphicon-chevron-left"></span></small>
+    back to charts
+</a>

@@ -1,0 +1,29 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <h4 class="modal-title" id="HelpModalLabel">
+        <strong> "Jira filter"</strong> - JQL query to search for JIRA issues
+    </h4>
+</div>
+
+<div class="modal-body">
+    <p><strong>Example 1:</strong> find all created issues in the "CD" project in the last week</p>
+    <pre>project = CD and created >= "-1w"</pre>
+    <p><strong>Example 2:</strong> find all closed issues in the "CD" project in the last week</p>
+    <pre>project = CD and status changed to Closed after "-1w"</pre>
+    <div class="alert alert-warning" role="alert">
+        <p><span class="glyphicon glyphicon-warning-sign">
+            </span>
+            Please call your attention to date format.</p>
+        <p>Better to use values as "-1d", "-1w", "startOfMonth()" (depends on cron-template).</p>
+        <p>I.e. for metrics, collected once a week, you should use "-1w".</p>
+    </div>
+    <p><strong>Example 3:</strong> find all backlog issues in the "CD" project</p>
+    <pre>project = CD and status="Backlog"</pre>
+    <div class="alert alert-warning" role="alert">
+        <p><span class="glyphicon glyphicon-warning-sign">
+        </span>
+        Date is not needed.</p>
+    </div>
+</div>

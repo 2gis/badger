@@ -1,0 +1,87 @@
+<div class="row" ng-show="project.metrics.length === 0">
+    <div class="alert alert-warning text-center" role="alert" style="margin-top: 40px">
+        Project <b>'{{ project.name }}'</b> doesn't have any metrics.
+    </div>
+</div>
+<div ng-show="project.metrics.length !== 0">
+    <div class="row">
+        <div class="container-fluid">
+            <h4>Current values</h4>
+            <div class="panel panel-default">
+                <table class="table table-bordered table-striped">
+                    <tr>
+                        <td ng-repeat="metric in project.metrics"><b>{{ metric.name }}</b></td>
+                    </tr>
+                    <tr>
+                        <td ng-repeat="metric in project.metrics">
+                            <div ng-show="!metric.error">
+                                <span class="label label-default">{{ metric.lastValue }}</span>
+                                <span ng-hide="metric.lastValue || metric.lastValue === 0" class="label label-warning">no result</span>
+                                <span class="text-muted"><small>{{ metric.lastDate|date:"dd/MM/yy" }}</small></span>
+                            </div>
+                            <div ng-show="metric.error">
+                                <span class="label label-danger" title="{{ metric.error }}">failed to get value</span>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <h4>Charts</h4>
+    <div class="row">
+        <div ng-repeat="metric in project.metrics" class="container-fluid col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">{{ metric.name }}
+                    <a ng-href="#/project/{{ project.id }}/metric/{{ metric.id }}/chart/" class="pull-right">
+                        <span class="glyphicon glyphicon-zoom-in"
+                              ng-hide="!metric.chart || metric.chart.length === 0"></span>
+                    </a>
+                </div>
+                <div class="panel-body" style="height:365px">
+                    <div ng-if="metric.chart.length === 0 || !metric.chart" style="height:298px;">
+                        <div class="alert alert-warning text-center" role="alert">
+                            No results
+                        </div>
+                    </div>
+                    <div>
+                        <highchart ng-if="metric.chart.length !== 0" config="metric.chart"></highchart>
+                        <p></p>
+                        <div class="text-center" ng-hide="!metric.chart || metric.chart.length === 0">
+                            <div class="btn-group btn-group-xs" role="group">
+                                <button type="button" class="btn btn-default"
+                                        style="border-color: white; background-color: white;">
+                                    <b>{{ metric.stat.min }}</b> min
+                                </button>
+                                <button type="button" class="btn btn-default"
+                                        style="border-color: white; background-color: white;">
+                                    <b>{{ metric.stat.max }}</b> max
+                                </button>
+                                <button type="button" class="btn btn-default"
+                                        style="border-color: white; background-color: white;">
+                                    <b>{{ metric.stat.average }}</b> average
+                                </button>
+                                <button type="button" class="btn btn-default"
+                                        style="border-color: white; background-color: white;">
+                                    <b>{{ metric.stat.median }}</b> median
+                                </button>
+                            </div>
+                        </div>
+                        <p></p>
+                        <div class="text-center">
+                        <div class="btn-group btn-group-xs" role="group">
+                          <button ng-repeat="date in dates" type="button" class="btn btn-default"
+                                  ng-click="prepareDataForChart(metric, date)"
+                                  ng-class="{active: date === '1 month'}">{{date}}
+                          </button>
+                        </div>
+                    </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

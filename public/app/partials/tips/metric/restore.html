@@ -1,0 +1,27 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <h4 class="modal-title" id="HelpModalLabel">
+        <strong> "Restore data"</strong> - search JIRA issues for period
+    </h4>
+</div>
+
+<div class="modal-body">
+    <p><strong>Example:</strong> find all issues for metric since 2015/06/01 with step = 1 week</p>
+    <p><i>Metric using in example: total count of created issues in the "CD" project</i></p>
+    <hr>
+    <p>1. In the field <b>"Jira filter for period"</b> type jql query for search issues (paying attention on dates)</p>
+    <pre>project = CD and created >= "2015/06/01"</pre>
+    <p>2. In <b>"Handler field"</b> select field to group issues by</p>
+    <pre>created   // cause we group created issues</pre>
+    <p>3. In <b>"Step (in days)"</b> type the step to group issues</p>
+    <pre>7         // cause we group with step = 1 week</pre>
+    <p>4. Grouped issues are handled by function <b>"Total count"</b></p>
+    <hr>
+    <div class="alert alert-warning" role="alert">
+        <p><span class="glyphicon glyphicon-warning-sign">
+        </span>
+            If you don't want to find issues for period, leave all fields empty.</p>
+    </div>
+</div>

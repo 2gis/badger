@@ -1,0 +1,10 @@
+language: node_js
+env:
+ - DISPLAY=:99
+before_install:
+ - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- $DISPLAY -ac -screen 0 1280x1024x16"
+install:
+ - npm install
+script:
+ - npm run dev & npm run test; export NODE_TEST_EXIT_CODE=$?
+ - exit $NODE_TEST_EXIT_CODE

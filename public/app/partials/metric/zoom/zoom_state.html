@@ -1,0 +1,32 @@
+<div class="page-header">
+    <h4>{{ metric.name }}</h4>
+</div>
+<div class="col-sm-7">
+    <div class="text-center" ng-if="metric.chart">
+        <div class="btn-group btn-group" role="group">
+            <button type="button" class="btn btn-default"
+                    style="border-color: white; background-color: white;">
+                <b>{{ metric.stat.min }}</b> min
+            </button>
+            <button type="button" class="btn btn-default"
+                    style="border-color: white; background-color: white;">
+                <b>{{ metric.stat.max }}</b> max
+            </button>
+            <button type="button" class="btn btn-default"
+                    style="border-color: white; background-color: white;">
+                <b>{{ metric.stat.average }}</b> average
+            </button>
+            <button type="button" class="btn btn-default"
+                    style="border-color: white; background-color: white;">
+                <b>{{ metric.stat.median }}</b> median
+            </button>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span9">
+            <highchart config="metric.chart"></highchart>
+        </div>
+    </div>
+</div>
