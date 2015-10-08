@@ -1,7 +1,7 @@
 {
   "name": "Badger",
   "private": true,
-  "version": "1.0",
+  "version": "1.0.0",
   "description": "An open-source tool for monitoring product quality",
   "repository": "https://github.com/2gis/badger",
   "license": "The MIT License",

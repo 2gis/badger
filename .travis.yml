@@ -1,10 +1,10 @@
 language: node_js
 node_js:
-  - "0.10.40"
+  - "0.10"
 env:
  - DISPLAY=:99
 before_install:
- - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- $DISPLAY -ac -screen 0 1280x1024x16"
+ - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb --$DISPLAY -ac -screen 0 1280x1024x16"
 install:
  - npm install
 script:

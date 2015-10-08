@@ -19,7 +19,7 @@ Clone repository:
    cd badger
 ```
 
-Install [npm] (https://www.npmjs.com/) packages:
+Install [npm] (https://www.npmjs.com/) packages (also you need nodejs-legacy package):
 ```bash
    npm install
 ```
