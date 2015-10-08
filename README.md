@@ -1,4 +1,4 @@
-# Badger
+# Badger [![Build Status](https://travis-ci.org/2gis/badger.svg?branch=master)](https://travis-ci.org/2gis/badger)
 
 Badger - an open-source tool for monitoring product quality.
 
