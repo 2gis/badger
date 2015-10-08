@@ -1,4 +1,4 @@
-# Badger
+# Badger [![Build Status](https://travis-ci.org/2gis/badger.svg?branch=master)](https://travis-ci.org/2gis/badger)
 
 Badger - an open-source tool for monitoring product quality.
 
@@ -19,7 +19,7 @@ Clone repository:
    cd badger
 ```
 
-Install [npm] (https://www.npmjs.com/) packages:
+Install [npm] (https://www.npmjs.com/) packages (also you need nodejs-legacy package):
 ```bash
    npm install
 ```
