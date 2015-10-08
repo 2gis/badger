@@ -7,5 +7,4 @@ install:
   - npm install
 script:
   - export DISPLAY=:99
-  - npm run dev & npm run test; export NODE_TEST_EXIT_CODE=$?
-  - exit $NODE_TEST_EXIT_CODE
+  - npm run dev & npm run test
