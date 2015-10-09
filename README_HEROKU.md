@@ -11,7 +11,7 @@ Features:
 
 # Installation
 
-### Development version | <a href="README_HEROKU.md">Deploy to Heroku</a>
+### <a href="README.md">Development version</a> | Deploy to Heroku
 
 Clone repository:
 ```bash
@@ -19,26 +19,23 @@ Clone repository:
    cd badger
 ```
 
-Install [npm] (https://www.npmjs.com/) packages (also you need nodejs-legacy package):
+Create an app on Heroku:
 ```bash
-   npm install
+heroku create appname
 ```
 
-Run application:
+Configure you app:
 ```bash
-   npm run dev
+heroku config:set FRONTEND_URL=appname.herokuapp.com
+heroku config:set BACKEND_URL=your-api-instance.herokuapp.com/api/
 ```
 
-Now your web interface is available at http://localhost:5000/
-
-### Testing
-*backend is not required*
-
-Dependencies:
-- Firefox browser
-- Java runtime
-
-Run tests:
+Deploy app:
 ```bash
-   npm run dev & npm run test
+git push heroku master
+```
+
+Start processes:
+```bash
+heroku ps:scale web=1
 ```
