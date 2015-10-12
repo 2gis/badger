@@ -12,7 +12,12 @@
     "request": "^2.55.0"
   },
   "devDependencies": {
+    "coveralls": "^2.11.4",
     "foreman": "^1.4.0",
+    "grunt": "^0.4.5",
+    "grunt-cli": "^0.1.13",
+    "grunt-contrib-connect": "^0.11.2",
+    "grunt-protractor-coverage": "^0.2.15",
     "protractor": "2.0.0"
   },
   "scripts": {
