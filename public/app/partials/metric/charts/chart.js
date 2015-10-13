@@ -118,11 +118,5 @@ app.controller('MetricChartCtrl', ['$scope', '$rootScope', '$filter', '$routePar
                 }
             });
         };
-
-        //for button in active state
-        $('body').on('click', '.btn-group button', function (e) {
-            $(this).addClass('active');
-            $(this).siblings().removeClass('active');
-        });
     }
 ]);
