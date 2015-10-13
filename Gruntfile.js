@@ -37,7 +37,8 @@ module.exports = function(grunt) {
                 noColor: false,
                 coverageDir: 'public/tests/coverage',
                 args: {
-                    baseUrl: 'http://localhost:5000'
+                    baseUrl: 'http://localhost:5000',
+                    browser: 'chrome'
                 }
             },
             local: {

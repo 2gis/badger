@@ -1,6 +1,6 @@
 exports.config = {
 
-    specs: ['e2e/auth/*_spec.js'],
+    specs: ['e2e/*/*_spec.js'],
     directConnect: true,
     baseUrl: 'http://localhost:5000',
     capabilities: {
@@ -10,9 +10,9 @@ exports.config = {
 
     suites: {
         auth: 'e2e/auth/*_spec.js',
-        //execute: 'e2e/execute/execute_spec.js',
-        //launch: 'e2e/launch/*_spec.js',
-        //testplan: 'e2e/testplan/*_spec.js'
+        execute: 'e2e/execute/execute_spec.js',
+        launch: 'e2e/launch/*_spec.js',
+        testplan: 'e2e/testplan/*_spec.js'
     },
 
     jasmineNodeOpts: {
