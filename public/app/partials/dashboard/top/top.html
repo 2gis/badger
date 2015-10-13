@@ -7,7 +7,8 @@
             <div class="panel-heading">{{ chart_testplan.name }}
                 <div class="btn-group btn-group-xs pull-right" role="group">
                   <button ng-repeat="days in [3, 7, 14, 28]" type="button" class="btn btn-default"
-                          ng-click="prepareResults(chart_testplan, days)">{{days}} days
+                          ng-click="prepareResults(chart_testplan, days)"
+                          ng-class="{active: days === 7}">{{days}} days
                   </button>
                 </div>
             </div>

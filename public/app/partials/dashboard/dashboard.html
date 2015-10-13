@@ -54,8 +54,10 @@
                         <highchart config="chart_testplan.charts.skipped" ng-if="chartPercentType === 'skipped'"></highchart>
                         <div class="text-center">
                             <div class="btn-group btn-group-xs" role="group">
-                              <button type="button" class="btn btn-default" ng-click="chartPercentType = 'failed'">failed</button>
-                              <button type="button" class="btn btn-default" ng-click="chartPercentType = 'skipped'">skipped</button>
+                              <button type="button" class="btn btn-default active"
+                                      ng-click="chartPercentType = 'failed'">failed</button>
+                              <button type="button" class="btn btn-default"
+                                      ng-click="chartPercentType = 'skipped'">skipped</button>
                             </div>
                         </div>
                     </div>
@@ -66,7 +68,8 @@
                 <div class="text-center" ng-if="isMainDashboard === false">
                         <div class="btn-group btn-group-xs" role="group">
                           <button ng-repeat="days in [3, 7, 14, 28]" type="button" class="btn btn-default"
-                                  ng-click="prepareDataForChart(chart_testplan, days)">{{days}} days
+                                  ng-click="prepareDataForChart(chart_testplan, days)"
+                                  ng-class="{active: days === 7}">{{days}} days
                           </button>
                         </div>
                     </div>

@@ -102,3 +102,9 @@ app.controller('TipsCtrl', ['$rootScope',
 }]);
 
 app.value('isSafari', bowser.safari);
+
+//for button in active state
+$('body').on('click', '.btn-group button', function (e) {
+    $(this).addClass('active');
+    $(this).siblings().removeClass('active');
+});
