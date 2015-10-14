@@ -20,6 +20,12 @@ describe('Add new testplan test', function () {
         expect(addPage.saveButton.isEnabled()).toBe(false);
     });
 
+    it('save-button should be able with empty description', function () {
+        expect(addPage.saveButton.isEnabled()).toBe(false);
+        addPage.testPlanNameInput.sendKeys(testPlanName);
+        expect(addPage.saveButton.isEnabled()).toBe(true);
+    });
+
     it('save-button should sent post request and redirect to new testplan page', function () {
         addPage.testPlanNameInput.sendKeys(testPlanName);
         expect(addPage.saveButton.isEnabled()).toBe(true);
