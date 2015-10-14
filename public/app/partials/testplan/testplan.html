@@ -127,38 +127,36 @@
             <br />
             <div ng-class="{'disabled': !formErrors, 'alert alert-danger': formErrors}" role="alert">{{ formErrors }}</div>
             <div ng-class="{'disabled': !formUpdate, 'alert alert-info': formUpdate}" role="alert">{{ formUpdate }}</div>
-            <form class="form-inline">
-                <div class="form-group">
-                    <div class="input-group">
-                        <label>Project name</label>
-                        <input name="name" ng-model="testplan.name" type="text"
-                               class="form-control" placeholder="Name" required>
-                    </div>
+            <div  class="form-group">
+                <label>Testplan name</label>
+                <input name="name" ng-model="testplan.name" type="text" class="form-control" placeholder="Name" required \>
+            </div>
+            <div class="form-group">
+                <label>Testplan description</label>
+                <textarea ng-model="testplan.description" class="form-control" rows="5"
+                          placeholder="Testplan description (can be empty)"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Settings</label>
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" ng-model="testplan.hidden"> Hidden
+                    </label>
                 </div>
-            </form>
-            <p></p>
-            <label>Settings</label>
-            <div class="checkbox">
-                <label>
-                    <input type="checkbox" ng-model="testplan.hidden"> Hidden
-                </label>
-            </div>
-            <div class="checkbox">
-                <label>
-                    <input type="checkbox" ng-model="testplan.main"> Show in statistics
-                    <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" title="If you choose this option, you will see this testplan on 'Short Statictics' page"></span>
-                </label>
-            </div>
-            <form class="form-inline" ng-show="testplan.main===true">
-                <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" ng-model="testplan.main"> Show in statistics
+                        <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" title="If you choose this option, you will see this testplan on 'Short Statictics' page"></span>
+                    </label>
+                </div>
+                <div class="form-group" ng-show="testplan.main===true">
                     <div class="input-group">
                         <label>StartedBy filter for statistics</label>
-                        <input name="name" ng-model="testplan.filter" type="text"
+                        <input ng-model="testplan.filter" type="text"
                                class="form-control" placeholder="ex. job/WebAPI_regression_full">
                     </div>
                 </div>
-            </form>
-            <p></p>
+            </div>
             <form class="form-inline">
                 <button type="submit" ng-disabled="testplan.$invalid || profile === null"
                         class="btn btn-primary" ng-click="updateTestPlan(testplan)">Update</button>

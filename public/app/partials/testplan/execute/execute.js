@@ -30,6 +30,7 @@ app.controller('TestPlanExecuteCtrl', ['$rootScope', '$scope', '$routeParams', '
         TestPlan.get({ 'testPlanId': $routeParams.testPlanId }, function (result) {
             $rootScope.selectProject(result.project);
             $scope.name = result.name;
+            $scope.description = result.description;
         });
         $scope.formErrors = null;
 
