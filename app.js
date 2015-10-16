@@ -10,7 +10,7 @@ var frontendUrl = process.env.FRONTEND_URL || 'localhost';
 var jiraIntegration = process.env.JIRA_INTEGRATION || false;
 var jiraIssueStatus = process.env.JIRA_ISSUE_STATUS;
 var lang = process.env.LANG || 'en';
-var colors = process.env.COLORS || 'blue=#7cb5ec;red=#f7464a;yellow=#e4d354;grey=#f0f0f0';
+var colors = process.env.COLORS || 'blue=#7cb5ec;red=#f7464a;yellow=#e4d354;grey=#f0f0f0;green=#90ed7d';
 
 app.set('port', process.env.PORT || 5000);
 app.set('views', __dirname + '/views');

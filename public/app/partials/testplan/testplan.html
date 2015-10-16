@@ -2,10 +2,12 @@
 <div ng-if="dataFailed || dataSkipped">
     <highchart config="failedConfig" ng-if="chartPercentType === 'failed'"></highchart>
     <highchart config="skippedConfig" ng-if="chartPercentType === 'skipped'"></highchart>
+    <highchart config="durationConfig" ng-if="chartPercentType === 'duration'"></highchart>
     <div class="text-center">
         <div class="btn-group btn-group-xs" role="group">
-          <button type="button" class="btn btn-default active" ng-click="chartPercentType = 'failed'">failed</button>
-          <button type="button" class="btn btn-default" ng-click="chartPercentType = 'skipped'">skipped</button>
+            <button type="button" class="btn btn-default active" ng-click="chartPercentType = 'failed'">failed</button>
+            <button type="button" class="btn btn-default" ng-click="chartPercentType = 'skipped'">skipped</button>
+            <button ng-show="launchItemsCount > 1" type="button" class="btn btn-default" ng-click="chartPercentType = 'duration'">duration</button>
         </div>
     </div>
 </div>

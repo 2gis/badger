@@ -57,6 +57,7 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$location', '$routePara
         $scope.location = $location;
 
         $scope.activeTab = 'history';
+        $scope.launchItemsCount = 0;
 
         $scope.launchItems = new ngTableParams({
                 page: 1,
@@ -79,6 +80,7 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$location', '$routePara
                         testPlanId: $routeParams.testPlanId,
                         ordering: '-type'
                     }, function (result) {
+                        $scope.launchItemsCount = result.count;
                         params.total(result.count);
                         $defer.resolve(SortLaunchItems.byType(result.results));
                     });
@@ -160,13 +162,19 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$location', '$routePara
                     $scope.labels = [];
                     $scope.skipped = [];
                     $scope.failed = [];
+                    $scope.duration = [];
 
                     tableData.forEach(function(item){
+                        var duration = parseInt((Date.parse(item.finished) - Date.parse(item.created)) / (1000 * 60));
+                        if (!duration) {
+                            duration = 0;
+                        }
                         var d = new Date(item.created);
                         var options = { month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric'};
                         $scope.labels.unshift(d.toLocaleString(LANG, options));
                         $scope.failed.unshift({ y: item.percent_of_failed, id: item.id });
                         $scope.skipped.unshift({ y: item.percent_of_skipped, id: item.id });
+                        $scope.duration.unshift({ y: duration, id: item.id });
 
                         $scope.failedConfig = ChartConfig.column();
                         $scope.failedConfig.xAxis.categories = $scope.labels;
@@ -183,6 +191,19 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$location', '$routePara
                             data: $scope.skipped,
                             color: appConfig.CHART_COLORS.yellow
                         });
+
+                        $scope.durationConfig = ChartConfig.column();
+                        $scope.durationConfig.xAxis.categories = $scope.labels;
+                        $scope.durationConfig.series.push({
+                            name: 'launch duration',
+                            data: $scope.duration,
+                            color: appConfig.CHART_COLORS.green
+                        });
+                        $scope.durationConfig.options.tooltip = {
+                        formatter: function() {
+                            return this.y + ' min';
+                        }
+                    };
                     });
 
                     if ($scope.failed.length !== 0 && $scope.skipped.length !== 0) {
