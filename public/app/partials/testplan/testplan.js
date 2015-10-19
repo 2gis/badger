@@ -57,7 +57,6 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$location', '$routePara
         $scope.location = $location;
 
         $scope.activeTab = 'history';
-        $scope.launchItemsCount = 0;
 
         $scope.launchItems = new ngTableParams({
                 page: 1,
@@ -80,7 +79,6 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$location', '$routePara
                         testPlanId: $routeParams.testPlanId,
                         ordering: '-type'
                     }, function (result) {
-                        $scope.launchItemsCount = result.count;
                         params.total(result.count);
                         $defer.resolve(SortLaunchItems.byType(result.results));
                     });
@@ -165,10 +163,8 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$location', '$routePara
                     $scope.duration = [];
 
                     tableData.forEach(function(item){
-                        var duration = parseInt((Date.parse(item.finished) - Date.parse(item.created)) / (1000 * 60));
-                        if (!duration) {
-                            duration = 0;
-                        }
+                        var duration = item.duration ? parseInt(item.duration / 60) :
+                            parseInt((Date.parse(item.finished) - Date.parse(item.created)) / (1000 * 60));
                         var d = new Date(item.created);
                         var options = { month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric'};
                         $scope.labels.unshift(d.toLocaleString(LANG, options));
@@ -178,6 +174,7 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$location', '$routePara
 
                         $scope.failedConfig = ChartConfig.column();
                         $scope.failedConfig.xAxis.categories = $scope.labels;
+                        $scope.failedConfig.yAxis.title.text = '%';
                         $scope.failedConfig.series.push({
                             name: '% of failed tests',
                             data: $scope.failed,
@@ -186,6 +183,7 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$location', '$routePara
 
                         $scope.skippedConfig = ChartConfig.column();
                         $scope.skippedConfig.xAxis.categories = $scope.labels;
+                        $scope.skippedConfig.yAxis.title.text = '%';
                         $scope.skippedConfig.series.push({
                             name: '% of skipped tests',
                             data: $scope.skipped,
@@ -194,6 +192,7 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$location', '$routePara
 
                         $scope.durationConfig = ChartConfig.column();
                         $scope.durationConfig.xAxis.categories = $scope.labels;
+                        $scope.durationConfig.yAxis.title.text = 'min';
                         $scope.durationConfig.series.push({
                             name: 'launch duration',
                             data: $scope.duration,
