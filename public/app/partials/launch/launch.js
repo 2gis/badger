@@ -46,7 +46,11 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
                 });
             }
             $scope.launch = launch;
-            $scope.launch.duration = parseInt((Date.parse(launch.finished) - Date.parse(launch.created)) / (1000 * 60));
+            if (!$scope.launch.duration) {
+                $scope.launch.duration = parseInt((Date.parse(launch.finished) - Date.parse(launch.created)) / (1000 * 60));
+            } else {
+                $scope.launch.duration = parseInt($scope.launch.duration / 60);
+            }
             $scope.getTasksDetails($scope.launch.tasks);
         });
 
