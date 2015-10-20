@@ -13,7 +13,7 @@
     <div class="row-fluid">
         <div class="span9">
             <div class="hero-unit">
-                <pre>{{ failureReason }}</pre>
+                <pre ng-bind-html="failureReason | linky:'_blank'"></pre>
             </div>
         </div>
     </div>
