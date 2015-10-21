@@ -18,8 +18,8 @@ app.config(['$routeProvider', function ($routeProvider) {
     });
 }]);
 
-app.controller('MetricZoomCtrl', ['$scope', '$rootScope', '$routeParams', 'appConfig', 'Metric', 'MetricValue', 'Calculate', 'ChartConfig',
-    function ($scope, $rootScope, $routeParams, appConfig, Metric, MetricValue, Calculate, ChartConfig) {
+app.controller('MetricZoomCtrl', ['$scope', '$rootScope', '$routeParams', 'appConfig', 'Metric', 'MetricValue', 'Calculate', 'ChartConfig', 'Periods',
+    function ($scope, $rootScope, $routeParams, appConfig, Metric, MetricValue, Calculate, ChartConfig, Periods) {
         if(!$rootScope.getActiveProject()) {
             $rootScope.selectProject($routeParams.projectId);
         }
@@ -34,6 +34,7 @@ app.controller('MetricZoomCtrl', ['$scope', '$rootScope', '$routeParams', 'appCo
         $scope.range = {};
         $scope.range.from = $scope.getDateMonthBack();
         $scope.range.to = new Date();
+        $scope.dateList = Periods.period_list();
 
         if ($routeParams.metricId) {
             $scope.dates = _.map($scope.dateList, function (num, key) {
@@ -86,12 +87,19 @@ app.controller('MetricZoomCtrl', ['$scope', '$rootScope', '$routeParams', 'appCo
             return date.toISOString().substring(0, 10);
         }
 
-        $scope.prepareDataForChart = function(metric, from, to) {
+        $scope.prepareDataForChart = function(metric, from, to, days) {
             if (from > to) {
                 $scope.range.to = new Date();
                 to = new Date();
             }
-            MetricValue.custom_list({'metric_id': metric.id, from: dateFormat(from), to: dateFormat(to), page_size: 9999}, function (response) {
+
+
+            var fields = {'metric_id': metric.id, from: dateFormat(from), to: dateFormat(to), page_size: 9999};
+            if (typeof days !== 'undefined') {
+                fields = {'metric_id': metric.id, days: $scope.dateList[days], page_size: 9999};
+            }
+
+            MetricValue.custom_list(fields, function (response) {
                 var dates = [];
                 var values= [];
 
@@ -145,11 +153,8 @@ app.controller('MetricZoomCtrl', ['$scope', '$rootScope', '$routeParams', 'appCo
                 }
             });
         };
-
-        //for button in active state
         $('body').on('click', '.btn-group button', function (e) {
-            $(this).addClass('active');
-            $(this).siblings().removeClass('active');
+            $(this).removeClass('active');
         });
     }
 ]);
