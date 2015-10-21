@@ -276,7 +276,7 @@ services.factory('Project', ['$resource',
                     enabled: false
                 },
                 size: {
-                    height: 600,
+                    height: 450,
                 },
                 xAxis: {
                     tickmarkPlacement: 'on',

@@ -2,24 +2,26 @@
     <h4>{{ metric.name }}</h4>
 </div>
 <div>
-    <div class="col-sm-2">
-        <div class="form-group has-feedback has-feedback-left">
-          <input date-time type="text" ng-model="range.from" class="form-control"
-               format="dd.MM.yyyy" auto-close="true" view="date" min-view="date">
-          <i class="form-control-feedback glyphicon glyphicon-calendar"></i>
+    <form>
+        <div class="col-sm-2">
+            <div class="form-group has-feedback has-feedback-left form-group-sm">
+              <input date-time type="text" ng-model="range.from" class="form-control"
+                   format="dd.MM.yyyy" auto-close="true" view="date" min-view="date">
+              <i class="form-control-feedback glyphicon glyphicon-calendar"></i>
+            </div>
         </div>
-    </div>
-    <div class="col-sm-2">
-        <div class="form-group has-feedback has-feedback-left">
-          <input date-time type="text" ng-model="range.to" class="form-control"
-               format="dd.MM.yyyy" auto-close="true" view="date" min-view="date">
-          <i class="form-control-feedback glyphicon glyphicon-calendar"></i>
+        <div class="col-sm-2">
+            <div class="form-group has-feedback has-feedback-left form-group-sm">
+              <input date-time type="text" ng-model="range.to" class="form-control"
+                   format="dd.MM.yyyy" auto-close="true" view="date" min-view="date">
+              <i class="form-control-feedback glyphicon glyphicon-calendar"></i>
+            </div>
         </div>
-    </div>
-    <div class="col-sm-1">
-        <button type="submit" class="btn btn-primary"
-                ng-click="prepareDataForChart(metric, range.from, range.to)">Get</button>
-    </div>
+        <div class="col-sm-1">
+            <input type="submit" class="btn btn-primary btn-sm"
+                    ng-click="prepareDataForChart(metric, range.from, range.to)" value="Get">
+        </div>
+    </form>
     <div class="col-sm-7">
         <div class="text-center" ng-if="metric.chart">
             <div class="btn-group btn-group" role="group">
@@ -58,6 +60,13 @@
         <div class="span9" ng-if="metric.chart.length !== 0">
             <highchart config="metric.chart"></highchart>
         </div>
+    </div>
+</div>
+<div class="text-center">
+    <div class="btn-group btn-group btn-group-xs" role="group">
+        <button ng-repeat="date in dates" type="button" class="btn btn-default"
+            ng-click="prepareDataForChart(metric, range.from, range.to, date)">{{date}}
+        </button>
     </div>
 </div>
 <div class="page-header">
