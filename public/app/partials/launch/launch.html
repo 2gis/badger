@@ -225,7 +225,7 @@
 
                 <div class="modal-body">
                     <pre ng-if="modalBody===''">Test is passed. Failure reason is empty.</pre>
-                    <pre ng-if="modalBody!==''" ng-bind="modalBody"></pre>
+                    <pre ng-if="modalBody!==''" ng-bind-html="modalBody | linky:'_blank'"></pre>
                     <a class="btn" ng-href="#testresult/{{ modalId }}/" ng-if="!modalHideTestControls">Open detailed view <i class="glyphicon glyphicon-share"></i></a>
                 </div>
             </div>
