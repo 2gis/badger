@@ -227,7 +227,7 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
 
         $scope.closeTask = function () {
             $scope.currentTask = null;
-        }
+        };
 
         $scope.openAddCommentModal = function() {
             var modal = $('#AddCommentModal');
@@ -277,43 +277,56 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
         hotkeys.add({ combo: 'k', callback: $scope.prevItem });
         hotkeys.add({ combo: 'left', callback: $scope.prevItem });
 
-        $scope.tableParams = new ngTableParams({
-            page: 1,
-            count: 25,
-            sorting: {
-                duration: 'desc'
-            }
-        }, {
-            total: 0,
-            getData: function ($defer, params) {
-                var ordering;
+        var create_table_attempt = 0;
 
-                for (var prop in params.sorting()) {
-                    ordering = prop;
-                    if (params.sorting()[prop] !== 'asc') {
-                        ordering = '-' + prop;
-                    }
-                    break;
+        $rootScope.getProfile().then(function(profile) {
+            $scope.tableParams = new ngTableParams({
+                page: 1,
+                count: 25,
+                sorting: {
+                    duration: 'desc'
                 }
-                TestResult.get({
-                    launchId: $routeParams.launchId,
-                    page: params.page(),
-                    pageSize: params.count(),
-                    ordering: ordering,
-                    state: $scope.state,
-                    search: params.$params.filter.failure_reason
-                }, function (result) {
-                    params.total(result.count);
-                    $scope.data = _.groupBy(result.results, function (item) { return item.launch_item_id });
+            }, {
+                total: 0,
+                getData: function ($defer, params) {
+                    create_table_attempt += 1;
+                    if (profile && create_table_attempt === 1) {
+                        $scope.tableParams.$params.count =
+                            $rootScope.profile.settings ? $rootScope.profile.settings.testresults_on_page : 25;
+                    }
+                    var ordering;
 
-                    var arrays = $.map($scope.data, function(value) { return [value]; });
-                    var data = [];
-                    $scope.dataGroup = data.concat.apply(data, arrays);
+                    for (var prop in params.sorting()) {
+                        ordering = prop;
+                        if (params.sorting()[prop] !== 'asc') {
+                            ordering = '-' + prop;
+                        }
+                        break;
+                    }
+                    TestResult.get({
+                        launchId: $routeParams.launchId,
+                        page: params.page(),
+                        pageSize: params.count(),
+                        ordering: ordering,
+                        state: $scope.state,
+                        search: params.$params.filter.failure_reason
+                    }, function (result) {
+                        params.total(result.count);
+                        $scope.data = _.groupBy(result.results, function (item) {
+                            return item.launch_item_id
+                        });
 
-                    $defer.resolve($scope.data);
-                    $scope.tableParams.settings({ counts: $scope.dataGroup.length >= 10 ? [10, 25, 50, 100] : []});
-                });
-            }
+                        var arrays = $.map($scope.data, function (value) {
+                            return [value];
+                        });
+                        var data = [];
+                        $scope.dataGroup = data.concat.apply(data, arrays);
+
+                        $defer.resolve($scope.data);
+                        $scope.tableParams.settings({counts: $scope.dataGroup.length >= 10 ? [10, 25, 50, 100] : []});
+                    });
+                }
+            })
         });
 
         $scope.comments = new ngTableParams({

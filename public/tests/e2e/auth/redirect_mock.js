@@ -7,7 +7,7 @@ module.exports.authMock = function () {
         is_active: true,
         is_staff: true,
         settings: {
-            default_project: null,
+            default_project: 1,
             launches_on_page: 10,
             testresults_on_page: 25
         }
@@ -21,29 +21,12 @@ module.exports.authMock = function () {
         }]
     };
 
-    var logout = {
-        "status": "Success",
-        "message": "Logout done."
-    };
-
     var requestNumber = 0;
 
-    angular.module('authMock', ['testReportServices', 'ngMockE2E'])
+    angular.module('redirectMock', ['testReportServices', 'ngMockE2E'])
         .run(function ($httpBackend) {
             $httpBackend.whenPOST(/.*/, {"username":"test_user","password":"test_user"})
                 .respond(function () { return [201, profile, {}];
-            });
-            $httpBackend.whenPOST(/.*/, {"username":"user","password":"user"})
-                .respond(function () { return [401, {
-                    "message": "Authentication failed",
-                    "status": "Unauthorized"
-                }, {}];
-            });
-            $httpBackend.whenPOST(/.*/, {"username":"","password":""})
-                .respond(function () { return [401, {
-                    "message": "Authentication failed",
-                    "status": "Unauthorized"
-                }, {}];
             });
             $httpBackend.whenGET(/.*api\/auth\/get\//)
                 .respond( function() {
@@ -56,7 +39,6 @@ module.exports.authMock = function () {
                      }
              });
             $httpBackend.whenGET(/.*api\/projects\//).respond(project);
-            $httpBackend.whenGET(/.*api\/auth\/logout\//).respond(logout);
             $httpBackend.whenGET(/.*/).passThrough();
         });
 }

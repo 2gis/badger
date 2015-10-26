@@ -1,7 +1,7 @@
 'use strict';
 
-app.controller('Menu', ['$rootScope', '$routeParams','$scope', '$location', 'Project', 'TestPlan', 'Auth', 'isSafari',
-    function ($rootScope, $routeParams, $scope, $location, Project, TestPlan, Auth, isSafari) {
+app.controller('Menu', ['$rootScope', '$routeParams','$scope', '$location', 'Project', 'TestPlan', 'Auth', 'isSafari','$q',
+    function ($rootScope, $routeParams, $scope, $location, Project, TestPlan, Auth, isSafari, $q) {
         $scope.isSafari = isSafari;
         $scope.jira = JIRA_INTEGRATION;
 
@@ -26,11 +26,28 @@ app.controller('Menu', ['$rootScope', '$routeParams','$scope', '$location', 'Pro
             });
         };
 
-        Auth.api.get_current(function (result) {
-            $rootScope.profile = result;
-        }, function () {
-            $rootScope.profile = null;
-        });
+        $rootScope.getProfile = function() {
+            var deferred = $q.defer();
+
+            if (typeof $rootScope.profile === 'undefined') {
+                Auth.api.get_current(function (result) {
+                    $rootScope.profile = result;
+                    if ($rootScope.profile.settings.default_project !== null && $location.path() === '/dashboard') {
+                        $location.path('/dashboard/' + $rootScope.profile.settings.default_project);
+                    }
+                    deferred.resolve(result);
+                }, function () {
+                    $rootScope.profile = null;
+                    deferred.resolve($rootScope.profile);
+                });
+            } else {
+                deferred.resolve($rootScope.profile);
+            }
+
+            return deferred.promise;
+        };
+
+        $rootScope.getProfile();
 
         $rootScope.reloadProjects = function () {
             Project.query(function (result) {

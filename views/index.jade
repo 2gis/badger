@@ -21,7 +21,7 @@ html
       div#TipsModal.modal(ng-controller='TipsCtrl', tabindex="-1", role="dialog", aria-labelledby="TipsModalLabel", aria-hidden="true")
         div.modal-dialog.modal-lg
           div.modal-content
-            tips(type='{{ tipsType || "weight" }}')
+            tips(type='{{ tipsType || "dashboard/short_statistics" }}')
       hr
       footer
         p!= "&copy; " + year + " 2GIS"
@@ -57,6 +57,7 @@ html
     script(src='/static/app/filters.js')
     script(src='/static/app/partials/menu/menu.js')
     script(src='/static/app/partials/auth/login/login.js')
+    script(src='/static/app/partials/auth/settings/settings.js')
     script(src='/static/app/partials/dashboard/dashboard.js')
     script(src='/static/app/partials/dashboard/top/top.js')
     script(src='/static/app/partials/project/project.js')
