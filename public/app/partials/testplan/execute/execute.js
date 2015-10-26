@@ -74,31 +74,9 @@ app.controller('TestPlanExecuteCtrl', ['$rootScope', '$scope', '$routeParams', '
             });
         };
 
-        $scope.launchItemsTable = new ngTableParams({
-            page: 1,
-            count: 10000,
-            sorting: {
-                created: 'desc'
-            }
-        }, {
-            counts: [],
-            total: 1,
-            getData: function($defer) {
-                LaunchItem.get({
-                    'testPlanId': $routeParams.testPlanId,
-                    'ordering': '-type' // deploy script always first
-                }, function (result) {
-                    $defer.resolve(SortLaunchItems.byType(_.each(result.results, function (item) {
-                        if (item.type === appConfig.TASK_TYPE_DEPLOY) {
-                            item.$selected = true;
-                        }
-                    })));
-                });
-            }
-        });
-
         // Form handler
         $scope.environmentItems = [];
+        $scope.relaunchItems = [];
         $scope.addEnvironmentItem = function () {
             $scope.environmentItems.push({ key: '', value: '' });
         };
@@ -106,16 +84,46 @@ app.controller('TestPlanExecuteCtrl', ['$rootScope', '$scope', '$routeParams', '
             $scope.environmentItems.splice(index, 1);
         };
 
-        $scope.relaunch_data = null;
         if (typeof $routeParams.launchId !== 'undefined') {
             $scope.launchId = $routeParams.launchId;
             Launch.get({launchId: $scope.launchId}, function (result) {
                 _.each(result.parameters.env, function (value, key) {
                     $scope.environmentItems.push({ key: key, value: value });
                 });
-                $scope.testPlan.jsonFile = JSON.stringify(result.parameters.json_file);
-                if (result.parameters.json_file === null) {
-                    $scope.testPlan.jsonFile = '{}';
+                _.each(result.tasks, function (task) {
+                    $scope.relaunchItems.push(task.id);
+                });
+                drawTable();
+            });
+        } else {
+            drawTable();
+        }
+
+        function drawTable() {
+            $scope.launchItemsTable = new ngTableParams({
+                page: 1,
+                count: 10000,
+                sorting: {
+                    created: 'desc'
+                }
+            }, {
+                counts: [],
+                total: 1,
+                getData: function ($defer) {
+                    console.log('table');
+                    LaunchItem.get({
+                        'testPlanId': $routeParams.testPlanId,
+                        'ordering': '-type' // deploy script always first
+                    }, function (result) {
+                        $defer.resolve(SortLaunchItems.byType(_.each(result.results, function (item) {
+                            if (item.type === appConfig.TASK_TYPE_DEPLOY) {
+                                item.$selected = true;
+                            }
+                            if ($scope.relaunchItems.indexOf(item.id) > -1) {
+                                item.$selected = true;
+                            }
+                        })));
+                    });
                 }
             });
         }
@@ -128,9 +136,6 @@ app.controller('TestPlanExecuteCtrl', ['$rootScope', '$scope', '$routeParams', '
                 $location.port() + '/user/' +
                 $rootScope.profile.username
             };
-            if (formData) {
-                testPlan.json_file = angular.fromJson(formData.jsonFile);
-            }
 
             testPlan.env = {};
             _.each($scope.environmentItems, function (item) {
