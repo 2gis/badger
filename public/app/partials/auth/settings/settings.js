@@ -23,11 +23,7 @@ app.controller('ProfileSettingsCtrl', ['$rootScope', '$scope', '$routeParams', '
 
         });
 
-        Auth.api.get_current(function (result) {
-            $rootScope.profile = result;
-        }, function () {
-            $rootScope.profile = null;
-        });
+        $rootScope.getProfile();
 
         $scope.update = function (settings) {
             Auth.api.update(settings, function (result) {

@@ -127,7 +127,11 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$location', '$routePara
 
         var create_table_attempt = 0;
 
-        $rootScope.getProfile().then(function(profile){
+        $rootScope.getProfile().then(function(){
+            drawTable();
+        });
+
+        function drawTable() {
             $scope.tableParams = new ngTableParams({
                 page: 1,
                 count: 10,
@@ -136,7 +140,7 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$location', '$routePara
                 total: 0,
                 getData: function ($defer, params) {
                     create_table_attempt += 1;
-                    if (profile && create_table_attempt === 1) {
+                    if ($rootScope.profile && create_table_attempt === 1) {
                         $scope.tableParams.$params.count = $rootScope.profile.settings
                             ? $rootScope.profile.settings.launches_on_page : 10;
                     }
@@ -231,8 +235,7 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$location', '$routePara
                     });
                 }
             });
-        });
-
+        }
 
         $scope.updateTestPlan = function (testplan) {
             TestPlan.update({testPlanId: testplan.id}, testplan,

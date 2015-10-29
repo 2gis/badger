@@ -27,14 +27,13 @@ app.controller('Login', ['$rootScope', '$scope', '$http', 'Auth', '$location', '
                 $rootScope.profile = data;
                 Auth.api.get_current(function(result) {
                     if (typeof $rootScope.originLoginPath == 'undefined' || $rootScope.originLoginPath === '/auth/login/') {
+                        $location.path('/');
                         if ($rootScope.profile.settings.default_project !== null) {
                             $location.path('/dashboard/' + $rootScope.profile.settings.default_project);
-                        } else {
-                            $location.path('/');
                         }
                     } else {
                         $location.path($rootScope.originLoginPath);
-                        if ($rootScope.originLoginPath === '/dashboard') {
+                        if ($rootScope.originLoginPath === '/dashboard' && $rootScope.profile.settings.default_project !== null) {
                             $location.path('/dashboard/' + $rootScope.profile.settings.default_project);
                         }
                     }
