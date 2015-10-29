@@ -110,7 +110,6 @@ app.controller('TestPlanExecuteCtrl', ['$rootScope', '$scope', '$routeParams', '
                 counts: [],
                 total: 1,
                 getData: function ($defer) {
-                    console.log('table');
                     LaunchItem.get({
                         'testPlanId': $routeParams.testPlanId,
                         'ordering': '-type' // deploy script always first
