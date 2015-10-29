@@ -280,6 +280,10 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
         var create_table_attempt = 0;
 
         $rootScope.getProfile().then(function(profile) {
+            drawTable(profile);
+        });
+
+        function drawTable(profile) {
             $scope.tableParams = new ngTableParams({
                 page: 1,
                 count: 25,
@@ -292,7 +296,7 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
                     create_table_attempt += 1;
                     if (profile && create_table_attempt === 1) {
                         $scope.tableParams.$params.count =
-                            $rootScope.profile.settings ? $rootScope.profile.settings.testresults_on_page : 25;
+                            profile.settings ? profile.settings.testresults_on_page : 25;
                     }
                     var ordering;
 
@@ -326,8 +330,8 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
                         $scope.tableParams.settings({counts: $scope.dataGroup.length >= 10 ? [10, 25, 50, 100] : []});
                     });
                 }
-            })
-        });
+            });
+        }
 
         $scope.comments = new ngTableParams({
             page: 1,
