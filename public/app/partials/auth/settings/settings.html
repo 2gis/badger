@@ -1,0 +1,31 @@
+<div class="row container-fluid">
+    <h3>Profile settings
+        <a><span class="glyphicon glyphicon-question-sign small pull-right" ng-click="open('profile/settings')"></span></a>
+    </h3>
+    <div ng-if="formErrors || formUpdate">
+        <div ng-class="{ 'disabled': !formErrors, 'alert alert-danger text-center': formErrors}"
+             role="alert">{{ formErrors }}</div>
+        <div ng-class="{ 'disabled': !formUpdate, 'alert alert-info text-center': formUpdate}"
+             role="alert">{{ formUpdate }}</div>
+    </div>
+    <div class="row container col-md-6">
+        <label >Default project</label>
+        <select class="form-control" ng-model="profile.settings.default_project"
+                ng-options="projectOption.id as projectOption.name for projectOption in projectOptions">
+            <option value="">Choose default project</option>
+        </select>
+        <p></p>
+        <hr>
+        <label >Count of launches on page</label>
+        <select class="form-control" ng-model="profile.settings.launches_on_page"
+                ng-options="option for option in launchesOnPage">
+        </select>
+        <p></p>
+        <label >Count of testresults on page</label>
+        <select class="form-control" ng-model="profile.settings.testresults_on_page"
+                ng-options="option for option in resultsOnPage">
+        </select>
+        <hr>
+        <button type="submit" class="btn btn-primary pull-right" ng-click="update(profile.settings)">Update</button>
+    </div>
+</div>

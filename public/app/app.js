@@ -5,6 +5,7 @@ var app = angular.module('testReport', [
     'ngRoute',
     'testReportServices',
     'testReport.auth.login',
+    'testReport.auth.settings',
     'testReport.dashboard',
     'testReport.project',
     'testReport.testPlan',

@@ -127,6 +127,12 @@ services.factory('Project', ['$resource',
                     params: {
                         actionName: 'get'
                     }
+                },
+                update: {
+                    method: 'POST',
+                    params: {
+                        actionName: 'update'
+                    }
                 }
             })
         }

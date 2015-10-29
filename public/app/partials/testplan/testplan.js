@@ -60,14 +60,13 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$location', '$routePara
 
         $scope.launchItems = new ngTableParams({
                 page: 1,
-                count: 10000,
+                count: 10,
                 sorting: { created: 'desc' }
             },{
                 total: 0,
                 counts: [],
                 getData: function($defer, params) {
-                    $scope.tableParams.settings({ counts: [10, 25, 50] });
-                    var tableData, ordering;
+                    var ordering;
                     for (var prop in params.sorting()) {
                         ordering = prop;
                         if (params.sorting()[prop] !== 'asc') {
@@ -126,92 +125,117 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$location', '$routePara
             modal.modal('show');
         };
 
-        $scope.tableParams = new ngTableParams({
-            page: 1,
-            count: 10,
-            sorting: {
-                created: 'desc'
-            }
-        }, {
-            total: 0,
-            getData: function($defer, params) {
-                var tableData,
-                    ordering;
+        var create_table_attempt = 0;
 
-                for (var prop in params.sorting()) {
-                    ordering = prop;
-                    if (params.sorting()[prop] !== 'asc') {
-                        ordering = '-' + prop;
-                    }
-                    break;
-                }
-
-                Launch.get({
-                    testPlanId: $routeParams.testPlanId,
-                    page: params.page(),
-                    pageSize: params.count(),
-                    ordering: ordering,
-                    search: params.$params.filter.started_by
-                }, function (result) {
-                    params.total(result.count);
-                    tableData = result.results.map(updateStats);
-                    $defer.resolve(tableData);
-
-                    $scope.labels = [];
-                    $scope.skipped = [];
-                    $scope.failed = [];
-                    $scope.duration = [];
-
-                    tableData.forEach(function(item){
-                        var duration = item.duration ? parseInt(item.duration / 60) :
-                            parseInt((Date.parse(item.finished) - Date.parse(item.created)) / (1000 * 60));
-                        var d = new Date(item.created);
-                        var options = { month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric'};
-                        $scope.labels.unshift(d.toLocaleString(LANG, options));
-                        $scope.failed.unshift({ y: item.percent_of_failed, id: item.id });
-                        $scope.skipped.unshift({ y: item.percent_of_skipped, id: item.id });
-                        $scope.duration.unshift({ y: duration, id: item.id });
-
-                        $scope.failedConfig = ChartConfig.column();
-                        $scope.failedConfig.xAxis.categories = $scope.labels;
-                        $scope.failedConfig.yAxis.title.text = '%';
-                        $scope.failedConfig.series.push({
-                            name: '% of failed tests',
-                            data: $scope.failed,
-                            color: appConfig.CHART_COLORS.red
-                        });
-
-                        $scope.skippedConfig = ChartConfig.column();
-                        $scope.skippedConfig.xAxis.categories = $scope.labels;
-                        $scope.skippedConfig.yAxis.title.text = '%';
-                        $scope.skippedConfig.series.push({
-                            name: '% of skipped tests',
-                            data: $scope.skipped,
-                            color: appConfig.CHART_COLORS.yellow
-                        });
-
-                        $scope.durationConfig = ChartConfig.column();
-                        $scope.durationConfig.xAxis.categories = $scope.labels;
-                        $scope.durationConfig.yAxis.title.text = 'min';
-                        $scope.durationConfig.series.push({
-                            name: 'launch duration',
-                            data: $scope.duration,
-                            color: appConfig.CHART_COLORS.green
-                        });
-                        $scope.durationConfig.options.tooltip = {
-                        formatter: function() {
-                            return this.y + ' min';
-                        }
-                    };
-                    });
-
-                    if ($scope.failed.length !== 0 && $scope.skipped.length !== 0) {
-                        $scope.dataFailed = [$scope.failed];
-                        $scope.dataSkipped = [$scope.skipped];
-                    }
-                });
-            }
+        $rootScope.getProfile().then(function(profile){
+            drawTable(profile);
         });
+
+        function drawTable(profile) {
+            $scope.tableParams = new ngTableParams({
+                page: 1,
+                count: 10,
+                sorting: { created: 'desc' }
+            }, {
+                total: 0,
+                getData: function ($defer, params) {
+                    create_table_attempt += 1;
+                    if (profile && create_table_attempt === 1) {
+                        $scope.tableParams.$params.count = profile.settings
+                            ? profile.settings.launches_on_page : 10;
+                    }
+                    $scope.tableParams.settings({ counts: [10, 25, 50] });
+                    var tableData, ordering;
+
+                    for (var prop in params.sorting()) {
+                        ordering = prop;
+                        if (params.sorting()[prop] !== 'asc') {
+                            ordering = '-' + prop;
+                        }
+                        break;
+                    }
+
+                    Launch.get({
+                        testPlanId: $routeParams.testPlanId,
+                        page: params.page(),
+                        pageSize: params.count(),
+                        ordering: ordering,
+                        search: params.$params.filter.started_by
+                    }, function (result) {
+                        params.total(result.count);
+                        tableData = result.results.map(updateStats);
+                        $defer.resolve(tableData);
+
+                        $scope.labels = [];
+                        $scope.skipped = [];
+                        $scope.failed = [];
+                        $scope.duration = [];
+
+                        tableData.forEach(function (item) {
+                            var duration = item.duration ? parseInt(item.duration / 60) :
+                                parseInt((Date.parse(item.finished) - Date.parse(item.created)) / (1000 * 60));
+                            var d = new Date(item.created);
+                            var options = {
+                                month: 'numeric',
+                                day: 'numeric',
+                                hour: 'numeric',
+                                minute: 'numeric'
+                            };
+                            $scope.labels.unshift(d.toLocaleString(LANG, options));
+                            $scope.failed.unshift({
+                                y: item.percent_of_failed,
+                                id: item.id
+                            });
+                            $scope.skipped.unshift({
+                                y: item.percent_of_skipped,
+                                id: item.id
+                            });
+                            $scope.duration.unshift({
+                                y: duration,
+                                id: item.id
+                            });
+
+                            $scope.failedConfig = ChartConfig.column();
+                            $scope.failedConfig.xAxis.categories = $scope.labels;
+                            $scope.failedConfig.yAxis.title.text = '%';
+                            $scope.failedConfig.series.push({
+                                name: '% of failed tests',
+                                data: $scope.failed,
+                                color: appConfig.CHART_COLORS.red
+                            });
+
+                            $scope.skippedConfig = ChartConfig.column();
+                            $scope.skippedConfig.xAxis.categories = $scope.labels;
+                            $scope.skippedConfig.yAxis.title.text = '%';
+                            $scope.skippedConfig.series.push({
+                                name: '% of skipped tests',
+                                data: $scope.skipped,
+                                color: appConfig.CHART_COLORS.yellow
+                            });
+
+                            $scope.durationConfig = ChartConfig.column();
+                            $scope.durationConfig.xAxis.categories = $scope.labels;
+                            $scope.durationConfig.yAxis.title.text = 'min';
+                            $scope.durationConfig.series.push({
+                                name: 'launch duration',
+                                data: $scope.duration,
+                                color: appConfig.CHART_COLORS.green
+                            });
+                            $scope.durationConfig.options.tooltip = {
+                                formatter: function () {
+                                    return this.y + ' min';
+                                }
+                            };
+                        });
+
+                        if ($scope.failed.length !== 0 && $scope.skipped.length !== 0) {
+                            $scope.dataFailed = [$scope.failed];
+                            $scope.dataSkipped = [$scope.skipped];
+                        }
+                    });
+                }
+            });
+        }
 
         $scope.updateTestPlan = function (testplan) {
             TestPlan.update({testPlanId: testplan.id}, testplan,
