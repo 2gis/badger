@@ -1,5 +1,7 @@
 # Run tests in Badger
 
+In this guide you get to know more about user interface and about running tests by the example of <a href="https://github.com/2gis/badger-api">badger-api</a>.
+
 ### API tests
 
 Create testplan "Badger API":

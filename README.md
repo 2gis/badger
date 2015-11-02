@@ -44,5 +44,7 @@ Run tests:
    npm run dev & npm run test
 ```
 
-### <a href="README_GUIDE.md">User guide</a>
+### User guide
+Your Badger and <a href="https://github.com/2gis/badger-api">Badger-api</a> deployed.
+If you want to try them and run tests, follow this <a href="README_GUIDE.md">guide</a>.
 
