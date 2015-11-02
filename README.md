@@ -8,6 +8,7 @@ Features:
 - the aggregation of results
 - beautiful graphics
 
+Work with <a href="https://github.com/2gis/badger-api">badger-api</a>.
 
 # Installation
 
@@ -42,3 +43,8 @@ Run tests:
 ```bash
    npm run dev & npm run test
 ```
+
+### User guide
+Your Badger and <a href="https://github.com/2gis/badger-api">Badger-api</a> deployed.
+If you want to try them and run tests, follow this <a href="README_GUIDE.md">guide</a>.
+
