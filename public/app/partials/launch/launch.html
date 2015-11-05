@@ -197,9 +197,9 @@
         </div>
     </div>
 
-    <div class="modal" id="TestDetailsModal" tabindex="-1" role="dialog"
+    <div class="modal modal-wide" id="TestDetailsModal" tabindex="-1" role="dialog"
          aria-labelledby="TestDetailsModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-lg" style="width: 70%;">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">
@@ -223,10 +223,12 @@
                     </h4>
                 </div>
 
-                <div class="modal-body">
+                <div class="modal-body" style="overflow-y: auto;">
                     <pre ng-if="modalBody===''">Test is passed. Failure reason is empty.</pre>
                     <pre ng-if="modalBody!==''" ng-bind-html="modalBody | linky:'_blank'"></pre>
-                    <a class="btn" ng-href="#testresult/{{ modalId }}/" ng-if="!modalHideTestControls">Open detailed view <i class="glyphicon glyphicon-share"></i></a>
+                </div>
+                <div class="modal-footer">
+                    <a  class="btn" ng-href="#testresult/{{ modalId }}/" ng-if="!modalHideTestControls">Open detailed view <i class="glyphicon glyphicon-share"></i></a>
                 </div>
             </div>
         </div>
