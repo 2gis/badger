@@ -51,28 +51,32 @@
                 <div class="row" ng-if="chart_testplan.charts.length === undefined">
                     <div class="col-md-6" ng-if="chart_testplan.charts">
                         <highchart config="chart_testplan.charts.failed" ng-if="chartPercentType === 'failed'"></highchart>
-                        <highchart config="chart_testplan.charts.skipped" ng-if="chartPercentType === 'skipped'"></highchart>
-                        <div class="text-center">
-                            <div class="btn-group btn-group-xs" role="group">
-                              <button type="button" class="btn btn-default active"
-                                      ng-click="chartPercentType = 'failed'">failed</button>
-                              <button type="button" class="btn btn-default"
-                                      ng-click="chartPercentType = 'skipped'">skipped</button>
-                            </div>
-                        </div>
                     </div>
                     <div class="col-md-6" ng-if="chart_testplan.charts">
                         <highchart config="chart_testplan.charts.total"></highchart>
                     </div>
+                    <div class="col-md-2"></div>
+                    <div ng-if="isMainDashboard === false && chart_testplan.branch_name !== ''">
+                        <div class="col-md-8" ng-if="chart_testplan.charts.branch.length !== 0">
+                            <highchart config="chart_testplan.charts.branch"></highchart>
+                        </div>
+                        <div class="col-md-8" ng-if="chart_testplan.charts.branch">
+                            <div class="alert alert-warning text-center" role="alert"
+                                 ng-if="isMainDashboard === false && chart_testplan.charts.branch.length === 0">
+                                There are no branch statistics for last {{ chart_testplan.days }} days
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="text-center" ng-if="isMainDashboard === false">
                         <div class="btn-group btn-group-xs" role="group">
-                          <button ng-repeat="days in [3, 7, 14, 28]" type="button" class="btn btn-default"
+                            <button ng-repeat="days in [3, 7, 14, 28]" type="button" class="btn btn-default"
                                   ng-click="prepareDataForChart(chart_testplan, days)"
                                   ng-class="{active: days === 7}">{{days}} days
-                          </button>
+                            </button>
                         </div>
                     </div>
+                </div>
             </div>
         </div>
     </div>

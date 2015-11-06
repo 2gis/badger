@@ -107,27 +107,58 @@ app.controller('DashboardCtrl', ['$scope', '$rootScope', '$filter', '$routeParam
                 _.each(launches, function(item) {
                     var d = new Date(item.created);
                     item.groupDate = d.toLocaleDateString(LANG);
+                    if (typeof item.parameters.env !== 'undefined' &&
+                            typeof item.parameters.env[testplan.branch_name] !== 'undefined') {
+                        item.branch = item.parameters.env[testplan.branch_name];
+                    } else {
+                        item.branch =  'unknown_build';
+                    }
                 });
 
                 var chartLaunches = _.map(_.groupBy(launches, 'groupDate'), function (group) {
                     return _.max(group, 'id');
                 });
+                var chartLaunchesByBranch = _.map(_.groupBy(launches, 'branch'), function (group) {
+                    return _.max(group, 'id');
+                });
 
-                var labels = [];
-                var failed = [];
-                var skipped = [];
-                var total = [];
+                testplan.charts = {};
+                createChart(testplan, chartLaunches, days);
+                if (testplan.branch !== '') {
+                    createChart(testplan, chartLaunchesByBranch, days, 'branch');
+                }
+            });
+        };
 
-                chartLaunches = _.sortBy(chartLaunches, 'id');
-                _.map(chartLaunches, function(item) {
+        function createChart(testplan, launches, days, type) {
+            var labels = [];
+            var failed = [];
+            var skipped = [];
+            var total = [];
+
+            launches = _.sortBy(launches, 'id');
+            if (typeof type === 'undefined') {
+                _.map(launches, function(item) {
                     item = updateStatistics(item);
                     labels.push(item.groupDate);
                     failed.push({ y: item.percent_of_failed, id: item.id });
                     skipped.push({ y: item.percent_of_skipped, id: item.id });
                     total.push({ y: item.total_count, id: item.id });
                 });
+            } else {
+                _.map(launches, function(item) {
+                    var pattern = (testplan.branch_regexp !== '') ? new RegExp(testplan.branch_regexp, 'm') : /.*/;
+                    if (pattern.test(item.branch)) {
+                        item = updateStatistics(item);
+                        labels.push(item.branch + ' (' + item.groupDate + ')');
+                        failed.push({ y: item.percent_of_failed, id: item.id });
+                        skipped.push({ y: item.percent_of_skipped, id: item.id });
+                        total.push({y: item.total_count, id: item.id});
+                    }
+                });
+            }
 
-                testplan.charts = {};
+            if (typeof type === 'undefined') {
                 if (labels.length !== 0) {
                     testplan.charts.failed = ChartConfig.column();
                     testplan.charts.failed.xAxis.categories = labels;
@@ -136,13 +167,11 @@ app.controller('DashboardCtrl', ['$scope', '$rootScope', '$filter', '$routeParam
                         data: failed,
                         color: appConfig.CHART_COLORS.red
                     });
-
-                    testplan.charts.skipped = ChartConfig.column();
-                    testplan.charts.skipped.xAxis.categories = labels;
-                    testplan.charts.skipped.series.push({
+                    testplan.charts.failed.series.push({
                         name: '% of skipped for last '.concat(days, ' days'),
                         data: skipped,
-                        color: appConfig.CHART_COLORS.yellow
+                        color: appConfig.CHART_COLORS.yellow,
+                        visible: false
                     });
 
                     testplan.charts.total = ChartConfig.column();
@@ -153,14 +182,47 @@ app.controller('DashboardCtrl', ['$scope', '$rootScope', '$filter', '$routeParam
                         color: appConfig.CHART_COLORS.blue
                     });
                     testplan.charts.total.options.tooltip = {
-                        formatter: function() {
+                        formatter: function () {
                             return this.y;
                         }
                     };
                 } else {
                     testplan.charts = [];
-                };
-            });
+                }
+            } else {
+                if (labels.length !== 0) {
+                    testplan.charts.branch = ChartConfig.column();
+                    testplan.charts.branch.xAxis.categories = labels;
+                    testplan.charts.branch.series.push({
+                        name: '% of failure for last '.concat(days, ' days'),
+                        data: failed,
+                        color: appConfig.CHART_COLORS.red
+                    });
+                    testplan.charts.branch.series.push({
+                        name: '% of skipped for last '.concat(days, ' days'),
+                        data: skipped,
+                        color: appConfig.CHART_COLORS.yellow,
+                        visible: false
+                    });
+                    testplan.charts.branch.series.push({
+                        name: 'Total tests count for last '.concat(days, ' days'),
+                        data: total,
+                        color: appConfig.CHART_COLORS.blue,
+                        visible: false
+                    });
+                    testplan.charts.branch.options.tooltip = {
+                        formatter: function () {
+                            if (this.color === '#7cb5ec') {
+                                return this.y;
+                            } else {
+                                return this.y.toFixed(3) + '%';
+                            }
+                        }
+                    };
+                } else {
+                    testplan.charts.branch = [];
+                }
+            }
         }
     }
 ]);

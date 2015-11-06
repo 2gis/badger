@@ -142,23 +142,41 @@
                           placeholder="Testplan description (can be empty)"></textarea>
             </div>
             <div class="form-group">
-                <label>Settings</label>
-                <div class="checkbox">
-                    <label>
-                        <input type="checkbox" ng-model="testplan.hidden"> Hidden
-                    </label>
-                </div>
-                <div class="checkbox">
-                    <label>
-                        <input type="checkbox" ng-model="testplan.main"> Show in statistics
-                        <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" title="If you choose this option, you will see this testplan on 'Short Statictics' page"></span>
-                    </label>
-                </div>
-                <div class="form-group" ng-show="testplan.main===true">
-                    <div class="input-group">
-                        <label>StartedBy filter for statistics</label>
-                        <input ng-model="testplan.filter" type="text"
-                               class="form-control" placeholder="ex. job/WebAPI_regression_full">
+                <label>Testplan settings</label>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="thumbnail">
+                            <div class="caption">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" ng-model="testplan.hidden"> Hidden
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" ng-model="testplan.main"> Show in statistics
+                                        <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" title="If you choose this option, you will see this testplan on 'Short Statictics' page"></span>
+                                    </label>
+                                </div>
+                                <div class="row form-group" ng-show="testplan.main===true">
+                                    <div class="col-md-8">
+                                        <b>StartedBy filter for statistics:</b>
+                                        <input ng-model="testplan.filter" type="text"
+                                               class="form-control" placeholder="ex. job/WebAPI_regression_full">
+                                    </div>
+                                </div>
+                                <div class="row form-group" ng-show="testplan.main===true">
+                                    <div class="col-md-3">
+                                        <b>Name of env var for branch:</b>
+                                        <input ng-model="testplan.branch_name" type="text" class="form-control" placeholder="ex. BRANCH">
+                                    </div>
+                                    <div class="col-md-5">
+                                        <b>Regexp for statistic branches:</b>
+                                        <input ng-model="testplan.branch_regexp" type="text" class="form-control" placeholder="ex. ^\d+$">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
