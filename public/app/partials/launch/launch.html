@@ -191,7 +191,7 @@
             </div>
             <div ng-if="currentTask.result.result.env">
                 <h4>Env</h4>
-                <pre>{{ currentTask.result.result.env | jsonToString }}</pre>
+                <pre ng-bind-html="currentTask.result.result.env | jsonToString | linky:'_blank'"></pre>
             </div>
             <a ng-click="closeTask()" class="btn btn-primary"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> Back</a>
         </div>
