@@ -124,7 +124,7 @@ app.controller('DashboardCtrl', ['$scope', '$rootScope', '$filter', '$routeParam
 
                 testplan.charts = {};
                 createChart(testplan, chartLaunches, days);
-                if (testplan.branch !== '') {
+                if (typeof testplan.branch !== 'undefined' && testplan.branch !== '') {
                     createChart(testplan, chartLaunchesByBranch, days, 'branch');
                 }
             });

@@ -56,7 +56,7 @@
                         <highchart config="chart_testplan.charts.total"></highchart>
                     </div>
                     <div class="col-md-2"></div>
-                    <div ng-if="isMainDashboard === false && chart_testplan.branch_name !== ''">
+                    <div ng-if="isMainDashboard === false && chart_testplan.branch_name && chart_testplan.branch_name !== ''">
                         <div class="col-md-8" ng-if="chart_testplan.charts.branch.length !== 0">
                             <highchart config="chart_testplan.charts.branch"></highchart>
                         </div>
