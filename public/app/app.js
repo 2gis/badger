@@ -7,6 +7,7 @@ var app = angular.module('testReport', [
     'testReport.auth.login',
     'testReport.auth.settings',
     'testReport.dashboard',
+    'testReport.mainDashboard',
     'testReport.project',
     'testReport.testPlan',
     'testReport.testPlan.execute',
