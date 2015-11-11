@@ -3,7 +3,7 @@
 var app = angular.module('testReport.mainDashboard', [
     'ngRoute',
     'testReportServices',
-    'testReportCommon',
+    'testReportServicesDashboard',
     'highcharts-ng'
 ]);
 

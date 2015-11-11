@@ -1,8 +1,8 @@
 'use strict';
 
-var common = angular.module('testReportCommon', ['ngResource']);
+var servicesDashboard = angular.module('testReportServicesDashboard', ['ngResource']);
 
-common.factory('HandleTestplans', ['$rootScope', function($rootScope) {
+servicesDashboard.factory('HandleTestplans', ['$rootScope', function($rootScope) {
     return function(testplans) {
         var stat_plans = [];
         _.each(testplans, function (testplan) {
