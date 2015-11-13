@@ -4,11 +4,11 @@ var servicesDashboard = angular.module('testReportServicesDashboard', ['ngResour
 
 servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
     return {
-        showOnDashboard: showOnDashboard,
+        isMain: isMain,
         removeHidden: removeHidden
     };
 
-    function showOnDashboard(item) {
+    function isMain(item) {
         return item.main === true;
     }
 
@@ -18,7 +18,7 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
         }
         return item.hidden === false;
     }
-}]).factory('UpdateLaunches', function() {
+}]).factory('LaunchHelpers', function() {
     return {
         cutDate: cutDate,
         addEnvVariable: addEnvVariable,
@@ -60,7 +60,7 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
         return launches;
     }
 
-}).factory('FilterLaunches', function() {
+}).factory('LaunchFilters', function() {
     return {
         byDate: byDate,
         byEnvVar: byEnvVar,

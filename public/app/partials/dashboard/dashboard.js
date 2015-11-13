@@ -14,12 +14,12 @@ app.config(['$routeProvider', function ($routeProvider) {
     });
 }]);
 
-app.controller('DashboardCtrl', ['$scope', '$rootScope', '$routeParams', 'appConfig', 'TestPlan', 'Launch', 'Stage', 'Filters', 'UpdateLaunches', 'FilterLaunches', 'GetChartsData', 'SeriesStructure', 'Tooltips', 'GetChartStructure',
-    function ($scope, $rootScope, $routeParams, appConfig, TestPlan, Launch, Stage, Filters, UpdateLaunches, FilterLaunches, GetChartsData, SeriesStructure, Tooltips, GetChartStructure) {
+app.controller('DashboardCtrl', ['$scope', '$rootScope', '$routeParams', 'appConfig', 'TestPlan', 'Launch', 'Stage', 'Filters', 'LaunchHelpers', 'LaunchFilters', 'GetChartsData', 'SeriesStructure', 'Tooltips', 'GetChartStructure',
+    function ($scope, $rootScope, $routeParams, appConfig, TestPlan, Launch, Stage, Filters, LaunchHelpers, LaunchFilters, GetChartsData, SeriesStructure, Tooltips, GetChartStructure) {
         $rootScope.selectProject($routeParams.projectId);
 
         TestPlan.get({ projectId: $routeParams.projectId }, function (response) {
-            $scope.testplans = _.filter(response.results, Filters.showOnDashboard);
+            $scope.testplans = _.filter(response.results, Filters.isMain);
             $scope.testplans = _.filter($scope.testplans, Filters.removeHidden);
             $scope.testplans = _.sortBy($scope.testplans, 'name');
 
@@ -43,9 +43,9 @@ app.controller('DashboardCtrl', ['$scope', '$rootScope', '$routeParams', 'appCon
                 testplan.charts = [];
 
                 //launches for common chart by date
-                var launches = UpdateLaunches.cutDate(response.results);
-                launches = FilterLaunches.byDate(launches);
-                launches = UpdateLaunches.addStatisticData(launches);
+                var launches = LaunchHelpers.cutDate(response.results);
+                launches = LaunchFilters.byDate(launches);
+                launches = LaunchHelpers.addStatisticData(launches);
                 launches = _.sortBy(launches, 'id');
 
                 var seriesData = GetChartsData.series(launches);
@@ -69,10 +69,10 @@ app.controller('DashboardCtrl', ['$scope', '$rootScope', '$routeParams', 'appCon
                 }
 
                 //launches for chart by environment variable
-                launches = UpdateLaunches.addEnvVariable(launches, testplan.variable_name);
-                launches = FilterLaunches.byRegExp(launches, testplan.variable_value_regexp);
-                launches = FilterLaunches.byEnvVar(launches);
-                launches = UpdateLaunches.addStatisticData(launches);
+                launches = LaunchHelpers.addEnvVariable(launches, testplan.variable_name);
+                launches = LaunchFilters.byRegExp(launches, testplan.variable_value_regexp);
+                launches = LaunchFilters.byEnvVar(launches);
+                launches = LaunchHelpers.addStatisticData(launches);
 
                 var seriesData = GetChartsData.series(launches);
                 var labels = GetChartsData.labels(launches, true);
