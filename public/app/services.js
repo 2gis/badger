@@ -361,7 +361,7 @@ services.factory('Project', ['$resource',
                     text: ''
                 },
                 size: {
-                    height: 320
+                    height: 240
                 },
                 xAxis: {
                     gridLineWidth: 1
