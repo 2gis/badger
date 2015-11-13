@@ -14,31 +14,25 @@ app.config(['$routeProvider', function ($routeProvider) {
     });
 }]);
 
-app.controller('DashboardCtrl', ['$scope', '$rootScope', '$filter', '$routeParams', 'appConfig', 'Project', 'TestPlan', 'Launch', 'Stage', 'HandleTestplans', 'HandleLaunches', 'GroupLaunches', 'CreateTestChart', 'CreateReleaseChart',
-    function ($scope, $rootScope, $filter, $routeParams, appConfig, Project, TestPlan, Launch, Stage, HandleTestplans, HandleLaunches, GroupLaunches, CreateTestChart, CreateReleaseChart) {
-        $scope.projects = [];
-        $rootScope.isMainDashboard = false;
-        $scope.chartPercentType = 'failed';
-
+app.controller('DashboardCtrl', ['$scope', '$rootScope', '$routeParams', 'appConfig', 'TestPlan', 'Launch', 'Stage', 'Filters', 'UpdateLaunches', 'FilterLaunches', 'GetChartsData', 'SeriesStructure', 'Tooltips', 'GetChartStructure',
+    function ($scope, $rootScope, $routeParams, appConfig, TestPlan, Launch, Stage, Filters, UpdateLaunches, FilterLaunches, GetChartsData, SeriesStructure, Tooltips, GetChartStructure) {
         $rootScope.selectProject($routeParams.projectId);
-        Project.get({projectId: $routeParams.projectId}, function (response) {
-            $scope.project = response;
-            fetchData();
+
+        TestPlan.get({ projectId: $routeParams.projectId }, function (response) {
+            $scope.testplans = _.filter(response.results, Filters.showOnDashboard);
+            $scope.testplans = _.filter($scope.testplans, Filters.removeHidden);
+            $scope.testplans = _.sortBy($scope.testplans, 'name');
+
+            _.each($scope.testplans, function (testplan) {
+                $scope.addChartsToTestplan(testplan, appConfig.DEFAULT_DAYS);
+            });
         });
 
-        function fetchData() {
-            TestPlan.get({ projectId: $scope.project.id }, function (response) {
-                $scope.project.statistics = HandleTestplans(response.results);
-                _.each($scope.project.statistics, function (statistic_testplan) {
-                    $scope.prepareDataForChart(statistic_testplan, appConfig.DEFAULT_DAYS);
-                });
-            });
-            Stage.get({ projectId: $scope.project.id }, function (response) {
-               $scope.project.stages = _.sortBy(response.results, 'weight');
-            });
-        }
+        Stage.get({ projectId: $routeParams.projectId }, function (response) {
+           $scope.stages = _.sortBy(response.results, 'weight');
+        });
 
-        $scope.prepareDataForChart = function(testplan, days) {
+        $scope.addChartsToTestplan = function(testplan, days) {
             testplan.days = days;
             Launch.custom_list({
                 testPlanId: testplan.id,
@@ -46,14 +40,49 @@ app.controller('DashboardCtrl', ['$scope', '$rootScope', '$filter', '$routeParam
                 days: days,
                 search: testplan.filter
             }, function (response) {
-                var launches = HandleLaunches(testplan, response.results);
+                testplan.charts = [];
 
-                var chartLaunches = GroupLaunches(launches, 'groupDate');
-                var chartLaunchesByBranch = GroupLaunches(launches, 'branch');
+                //launches for common chart by date
+                var launches = UpdateLaunches.cutDate(response.results);
+                launches = FilterLaunches.byDate(launches);
+                launches = UpdateLaunches.addStatisticData(launches);
+                launches = _.sortBy(launches, 'id');
 
-                testplan.charts = {};
-                CreateTestChart(testplan, chartLaunches, days);
-                CreateReleaseChart(testplan, chartLaunchesByBranch, days);
+                var seriesData = GetChartsData.series(launches);
+                var labels = GetChartsData.labels(launches);
+
+                testplan.charts.push(
+                    GetChartStructure(
+                        labels,
+                        SeriesStructure.getFailedAndSkipped(seriesData.failed, seriesData.skipped)
+                    ));
+
+                testplan.charts.push(
+                    GetChartStructure(
+                        labels,
+                        SeriesStructure.getTotal(seriesData.total),
+                        Tooltips.total()
+                    ));
+
+                if (testplan.variable_name === '') {
+                    return;
+                }
+
+                //launches for chart by environment variable
+                launches = UpdateLaunches.addEnvVariable(launches, testplan.variable_name);
+                launches = FilterLaunches.byRegExp(launches, testplan.variable_value_regexp);
+                launches = FilterLaunches.byEnvVar(launches);
+                launches = UpdateLaunches.addStatisticData(launches);
+
+                var seriesData = GetChartsData.series(launches);
+                var labels = GetChartsData.labels(launches, true);
+
+                testplan.charts.push(
+                    GetChartStructure(
+                        labels,
+                        SeriesStructure.getAll(seriesData.failed, seriesData.skipped, seriesData.total),
+                        Tooltips.envVar()
+                    ));
             });
         };
     }

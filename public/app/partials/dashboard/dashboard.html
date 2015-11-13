@@ -1,28 +1,28 @@
-<div class="row" ng-show="!project">
+<div class="row" ng-show="!testplans">
     <div class="alert alert-warning text-center" role="alert" style="margin-top: 40px">
         List of projects is not available.<br/>
         Check you api instance. If it is working, open the link <a href="{{ api_path }}">{{ api_path }}</a> in new tab and accept certificate. <br/>
         Then refresh the page.
     </div>
 </div>
-<div ng-show="project">
+<div ng-show="testplans">
     <h3>Short statistics
         <a><span class="glyphicon glyphicon-question-sign small pull-right" ng-click="open('dashboard/short_statistics')"></span></a>
     </h3>
-    <div class="row" ng-show="project.statistics.length === 0">
+    <div class="row" ng-show="testplans.length === 0">
         <div class="alert alert-warning text-center" role="alert" style="margin-top: 40px">
-            Project <b>'{{ project.name }}'</b> doesn't have any testplans to show in 'Short Statistics'.
+            Your project doesn't have any testplans to show in 'Short Statistics'.
             Please, configure testplans.
         </div>
     </div>
-    <div ng-show="project.stages.length !== 0">
+    <div ng-show="stages.length !== 0">
         <div class="panel panel-default">
-            <table class="table table-bordered table-striped" ng-show="isMainDashboard === false">
+            <table class="table table-bordered table-striped">
                 <tr>
-                    <td ng-repeat="stage in project.stages"><b>{{ stage.name }}</b></td>
+                    <td ng-repeat="stage in stages"><b>{{ stage.name }}</b></td>
                 </tr>
                 <tr>
-                    <td ng-repeat="stage in project.stages">
+                    <td ng-repeat="stage in stages">
                         <span class="label label-{{ stage.state }}">{{ stage.text }}</span>
                         <a href="{{ stage.link }}"><span class="glyphicon glyphicon-link"></span></a>
                         <br><span class="text-muted"><small>{{ stage.updated|date:"dd/MM/yy HH:mm" }}</small></span>
@@ -31,7 +31,7 @@
             </table>
         </div>
     </div>
-    <div ng-repeat="testplan in project.statistics">
+    <div ng-repeat="testplan in testplans">
         <div class="panel panel-default">
             <div class="panel-heading">{{ testplan.name }}
                 <a ng-href="#/testplan/{{ testplan.id }}" class="pull-right">
@@ -39,27 +39,27 @@
                 </a>
             </div>
             <div class="panel-body">
-                <div ng-if="testplan.charts.length === 0">
+                <div ng-if="testplan.charts[0].xAxis.categories.length === 0">
                     <div class="alert alert-warning text-center" role="alert">
                         There are no finished launches for last {{ testplan.days }} days
                     </div>
                 </div>
-                <div class="row" ng-if="testplan.charts.length === undefined">
+                <div class="row" ng-if="testplan.charts[0].xAxis.categories.length !== 0">
                     <div class="col-md-6" ng-if="testplan.charts">
-                        <highchart config="testplan.charts.failed" ng-if="chartPercentType === 'failed'"></highchart>
+                        <highchart config="testplan.charts[0]"></highchart>
                     </div>
                     <div class="col-md-6" ng-if="testplan.charts">
-                        <highchart config="testplan.charts.total"></highchart>
+                        <highchart config="testplan.charts[1]"></highchart>
                     </div>
                     <div class="col-md-2"></div>
                     <div ng-if="testplan.variable_name && testplan.variable_name !== ''">
-                        <div class="col-md-8" ng-if="testplan.charts.branch.length !== 0">
-                            <highchart config="testplan.charts.branch"></highchart>
+                        <div class="col-md-8" ng-if="testplan.charts[2].xAxis.categories.length !== 0">
+                            <highchart config="testplan.charts[2]"></highchart>
                         </div>
-                        <div class="col-md-8" ng-if="testplan.charts.branch">
+                        <div class="col-md-8" ng-if="testplan.charts[2]">
                             <div class="alert alert-warning text-center" role="alert"
-                                 ng-if="testplan.charts.branch.length === 0">
-                                There are no branch statistics for last {{ testplan.days }} days
+                                 ng-if="testplan.charts[2].xAxis.categories.length === 0">
+                                There are no statistics for last {{ testplan.days }} days
                             </div>
                         </div>
                     </div>
@@ -67,7 +67,7 @@
                 <div class="text-center">
                     <div class="btn-group btn-group-xs" role="group">
                         <button ng-repeat="days in [3, 7, 14, 28]" type="button" class="btn btn-default"
-                              ng-click="prepareDataForChart(testplan, days)"
+                              ng-click="addChartsToTestplan(testplan, days)"
                               ng-class="{active: days === 7}">{{days}} days
                         </button>
                     </div>

@@ -6,8 +6,8 @@
     </div>
 </div>
 <div ng-repeat="project in projects">
-    <h3 ng-bind="project.name" ng-if="project.statistics.length > 0"></h3>
-    <div ng-repeat="testplan in project.statistics">
+    <h3 ng-bind="project.name" ng-if="project.testplans.length > 0"></h3>
+    <div ng-repeat="testplan in project.testplans">
         <div class="panel panel-default">
             <div class="panel-heading">{{ testplan.name }}
                 <a ng-href="#/testplan/{{ testplan.id }}" class="pull-right">
@@ -15,17 +15,17 @@
                 </a>
             </div>
             <div class="panel-body">
-                <div ng-if="testplan.charts.length === 0">
+                <div ng-if="testplan.charts[0].xAxis.categories.length === 0">
                     <div class="alert alert-warning text-center" role="alert">
                         Testplan have not been launched for last {{ default_days }} days
                     </div>
                 </div>
-                <div class="row" ng-if="testplan.charts.length === undefined">
+                <div class="row" ng-if="testplan.charts[0].xAxis.categories.length !== 0">
                     <div class="col-md-6" ng-if="testplan.charts">
-                        <highchart config="testplan.charts.failed"></highchart>
+                        <highchart config="testplan.charts[0]"></highchart>
                     </div>
                     <div class="col-md-6" ng-if="testplan.charts">
-                        <highchart config="testplan.charts.total"></highchart>
+                        <highchart config="testplan.charts[1]"></highchart>
                     </div>
                 </div>
             </div>
