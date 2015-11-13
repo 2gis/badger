@@ -60,7 +60,7 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$location', '$routePara
 
         $scope.launchItems = new ngTableParams({
                 page: 1,
-                count: 10,
+                count: 100,
                 sorting: { created: 'desc' }
             },{
                 total: 0,
