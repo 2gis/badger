@@ -59,12 +59,12 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
 
         return launches;
     }
-
 }).factory('LaunchFilters', function() {
     return {
         byDate: byDate,
         byEnvVar: byEnvVar,
-        byRegExp: byRegExp
+        byRegExp: byRegExp,
+        emptyResults: emptyResults
     };
 
     function byDate(launches) {
@@ -83,6 +83,12 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
         pattern = (pattern !== '') ? new RegExp(pattern, 'm') : /.*/;
         return _.filter(launches, function(launch) {
             return pattern.test(launch.env_var);
+        });
+    }
+
+    function emptyResults(launches) {
+        return _.filter(launches, function(launch) {
+            return launch.counts.total !== 0;
         });
     }
 
@@ -186,7 +192,7 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
                 if (this.color === '#7cb5ec') {
                     return this.y;
                 } else {
-                    return this.y.toFixed(3) + '%';
+                    return roundValue(this.y) + '%';
                 }
             }
         }

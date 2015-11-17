@@ -45,6 +45,7 @@ app.controller('DashboardCtrl', ['$scope', '$rootScope', '$routeParams', 'appCon
                 //launches for common chart by date
                 var launches = LaunchHelpers.cutDate(response.results);
                 launches = LaunchFilters.byDate(launches);
+                launches = LaunchFilters.emptyResults(launches);
                 launches = LaunchHelpers.addStatisticData(launches);
                 launches = _.sortBy(launches, 'id');
 
