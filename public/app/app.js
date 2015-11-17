@@ -36,14 +36,6 @@ function secondsToString(seconds, withoutMinutes) {
     return withoutMinutes ? dateFormat : dateFormat + ' ' + minutes + 'm';
 }
 
-function roundValue(value) {
-    var res = value.toFixed(3);
-    if (res.toString().split(".")[1] === '000') {
-        res = res.toString().split(".")[0];
-    }
-    return res;
-}
-
 function parseEnvString(str) {
     var output = [];
     _.each(str.split(';'), function (item) {

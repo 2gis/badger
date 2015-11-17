@@ -192,7 +192,7 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
                 if (this.color === '#7cb5ec') {
                     return this.y;
                 } else {
-                    return roundValue(this.y) + '%';
+                    return Math.round(this.y * 1000) / 1000 + '%';
                 }
             }
         }

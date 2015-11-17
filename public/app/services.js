@@ -349,7 +349,7 @@ services.factory('Project', ['$resource',
                     },
                     tooltip: {
                         formatter: function() {
-                            return roundValue(this.y) + '%';
+                            return Math.round(this.y * 1000) / 1000 + '%';
                         }
                     }
                 },
