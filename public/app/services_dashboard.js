@@ -59,12 +59,12 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
 
         return launches;
     }
-
 }).factory('LaunchFilters', function() {
     return {
         byDate: byDate,
         byEnvVar: byEnvVar,
-        byRegExp: byRegExp
+        byRegExp: byRegExp,
+        isEmptyResults: isEmptyResults
     };
 
     function byDate(launches) {
@@ -84,6 +84,10 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
         return _.filter(launches, function(launch) {
             return pattern.test(launch.env_var);
         });
+    }
+
+    function isEmptyResults(launch) {
+        return launch.counts.total !== 0;
     }
 
 }).factory('GetChartsData', function() {
@@ -186,7 +190,7 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
                 if (this.color === '#7cb5ec') {
                     return this.y;
                 } else {
-                    return this.y.toFixed(3) + '%';
+                    return Math.round(this.y * 1000) / 1000 + '%';
                 }
             }
         }

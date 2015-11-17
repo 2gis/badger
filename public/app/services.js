@@ -338,7 +338,6 @@ services.factory('Project', ['$resource',
                             animation: false
                         },
                         series: {
-                            //cursor: 'pointer',
                             point: {
                                 events: {
                                     click: function () {
@@ -350,7 +349,7 @@ services.factory('Project', ['$resource',
                     },
                     tooltip: {
                         formatter: function() {
-                            return this.y.toFixed(3) + '%';
+                            return Math.round(this.y * 1000) / 1000 + '%';
                         }
                     }
                 },

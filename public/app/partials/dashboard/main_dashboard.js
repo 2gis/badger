@@ -50,6 +50,7 @@ app.controller('MainDashboardCtrl', ['$scope', '$rootScope', 'appConfig', 'Proje
                 //launches for common chart by date
                 var launches = LaunchHelpers.cutDate(response.results);
                 launches = LaunchFilters.byDate(launches);
+                launches = _.filter(launches, LaunchFilters.isEmptyResults);
                 launches = LaunchHelpers.addStatisticData(launches);
                 launches = _.sortBy(launches, 'id');
 
