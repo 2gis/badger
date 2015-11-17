@@ -64,7 +64,7 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
         byDate: byDate,
         byEnvVar: byEnvVar,
         byRegExp: byRegExp,
-        emptyResults: emptyResults
+        isEmptyResults: isEmptyResults
     };
 
     function byDate(launches) {
@@ -86,10 +86,8 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
         });
     }
 
-    function emptyResults(launches) {
-        return _.filter(launches, function(launch) {
-            return launch.counts.total !== 0;
-        });
+    function isEmptyResults(launch) {
+        return launch.counts.total !== 0;
     }
 
 }).factory('GetChartsData', function() {
