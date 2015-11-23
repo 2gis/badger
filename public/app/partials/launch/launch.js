@@ -99,7 +99,7 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
                 $scope.updateBugBinding();
                 $scope.tableParams.reload();
             }, function (result) {
-                $scope.apiErrors = result.data.detail;
+                $scope.apiErrors = result.data.message;
             });
         };
 
