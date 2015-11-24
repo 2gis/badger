@@ -98,12 +98,12 @@
         </div>
 
         <div role="tabpanel" class="tab-pane" ng-class="{'active': activeTab === 'launchItems'}" loading-container="launchItems.settings().$loading">
+            <br/>
+            <div class="alert alert-danger" role="alert" ng-bind="launchItemsErrors" ng-if="launchItemsErrors"></div>
             <a id="add_new_launch_item" ng-href="#testplan/{{ testPlanId }}/launch-item/add" style="margin-top: 10px;" class="pull-right">
                 <span class="glyphicon glyphicon-plus"></span>
                 Add new launch item
             </a>
-            <br/>
-            <div class="alert alert-danger" role="alert" ng-bind="launchItemsErrors" ng-if="launchItemsErrors"></div>
             <table  ng-table="launchItems" class="table table-striped">
                 <tr ng-repeat="launchItem in $data" ng-class="{ 'info': launchItem.type === 1, 'warning': launchItem.type === 2 }">
                     <td data-title="'Name'">
