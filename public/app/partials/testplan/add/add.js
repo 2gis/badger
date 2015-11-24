@@ -21,12 +21,13 @@ app.run(function ($http, $cookies) {
     $http.defaults.xsrfHeaderName = 'X-CSRFToken';
 });
 
-app.controller('TestPlanAdd', ['$rootScope', '$scope', '$routeParams', '$location', 'TestPlan', 'LaunchItem',
-    function ($rootScope, $scope, $routeParams, $location, TestPlan, LaunchItem) {
+app.controller('TestPlanAdd', ['$rootScope', '$scope', '$routeParams', '$location', '$q','TestPlan', 'LaunchItem',
+    function ($rootScope, $scope, $routeParams, $location, $q, TestPlan, LaunchItem) {
         $rootScope.selectProject($routeParams.projectId);
         $scope.formErrors = null;
         $scope.projectId = $routeParams.projectId;
         $scope.testPlan = {hidden: true};
+
         $scope.save = function(formData) {
             var testPlan;
 
@@ -48,9 +49,10 @@ app.controller('TestPlanAdd', ['$rootScope', '$scope', '$routeParams', '$locatio
                         deploy.type = 1;
                         deploy.timeout = 120;
                         deploy.command = 'echo "Edit me"';
-                        LaunchItem.save(deploy);
-                        $location.path('testplan/' + result.id);
-                        $rootScope.reloadProjects();
+                        LaunchItem.save(deploy, function(result) {
+                            $location.path('testplan/' + result.test_plan);
+                            $rootScope.reloadProjects();
+                        });
                     }, function (result) {
                         $scope.formErrors = result.data.detail;
                     });
