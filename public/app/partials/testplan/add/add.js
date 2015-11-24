@@ -50,7 +50,7 @@ app.controller('TestPlanAdd', ['$rootScope', '$scope', '$routeParams', '$locatio
                         deploy.timeout = 120;
                         deploy.command = 'echo "Edit me"';
                         LaunchItem.save(deploy, function(result) {
-                            $location.path('testplan/' + result.test_plan);
+                            $location.path('testplan/' + deploy.test_plan);
                             $rootScope.reloadProjects();
                         });
                     }, function (result) {
