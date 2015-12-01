@@ -18,8 +18,8 @@ app.config(['$routeProvider',
     }
 ]);
 
-app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$location', '$routeParams', '$filter', 'ngTableParams', 'appConfig', 'TestPlan', 'Launch', 'LaunchItem', 'SortLaunchItems', 'Comment', 'ChartConfig',
-    function ($rootScope, $scope, $location, $routeParams, $filter, ngTableParams, appConfig, TestPlan, Launch, LaunchItem, SortLaunchItems, Comment, ChartConfig) {
+app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$window', '$location', '$routeParams', '$filter', 'ngTableParams', 'appConfig', 'TestPlan', 'Launch', 'LaunchItem', 'SortLaunchItems', 'Comment', 'ChartConfig',
+    function ($rootScope, $scope, $window, $location, $routeParams, $filter, ngTableParams, appConfig, TestPlan, Launch, LaunchItem, SortLaunchItems, Comment, ChartConfig) {
         $scope.chartPercentType = 'failed';
 
         function getPercent(count, total) {
@@ -276,5 +276,10 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$location', '$routePara
         $('body').on('click', '.alert alert-info', function (e) {
             $(this).removeClass('.alert alert-info');
         });
+
+        $scope.redirect = function(evt, url) {
+            (evt.button === 1 || evt.ctrlKey === true) ?
+                $window.open('#' + url, '_blank') : $location.path(url);
+        }
     }
 ]);
