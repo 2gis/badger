@@ -35,8 +35,8 @@ app.directive('goClick', function ($location) {
     };
 });
 
-app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter', '$timeout', 'ngTableParams', 'hotkeys', 'appConfig', 'TestResult', 'Launch', 'Task', 'Comment', 'Bug', 'SortLaunchItems', 'TestPlan',
-    function ($scope, $rootScope, $routeParams, $filter, $timeout, ngTableParams, hotkeys, appConfig, TestResult, Launch, Task, Comment, Bug, SortLaunchItems, TestPlan) {
+app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter', '$timeout', '$window', 'ngTableParams', 'hotkeys', 'appConfig', 'TestResult', 'Launch', 'Task', 'Comment', 'Bug', 'SortLaunchItems', 'TestPlan',
+    function ($scope, $rootScope, $routeParams, $filter, $timeout, $window, ngTableParams, hotkeys, appConfig, TestResult, Launch, Task, Comment, Bug, SortLaunchItems, TestPlan) {
         var initialized = false;
 
         Launch.get({ launchId: $routeParams.launchId }, function (launch) {
@@ -189,6 +189,11 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
         });
 
         $scope.openResults = function (item, index) {
+            var selection = $window.getSelection();
+            if (selection.type === 'Range') {
+                return false;
+            }
+
             var modal = $('#TestDetailsModal');
 
             modal.modal('hide');

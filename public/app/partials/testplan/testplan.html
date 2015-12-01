@@ -47,7 +47,7 @@
                 <tbody>
                     <tr ng-repeat="launch in $data"
                         ng-class="{ 'danger': launch.percent_of_failed > 1 && launch.state === 2 }"
-                        ng-click="location.path('/launch/' + launch.id )"
+                        ng-click="redirect($event, '/launch/' + launch.id)"
                         style="cursor:pointer">
                         <td data-title="'By'" filter="{'started_by': 'text'}">
                             <span class="info">{{ launch.started_by }}</span>
