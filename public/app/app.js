@@ -47,6 +47,7 @@ function parseEnvString(str) {
 
 app.constant('appConfig', {
     LAUNCH_STATE_FINISHED: 2,
+    LAUNCH_STATE_SUCCESS: 4,
     TESTRESULT_PASSED: 0,
     TESTRESULT_FAILED: 1,
     TESTRESULT_SKIPPED: 2,

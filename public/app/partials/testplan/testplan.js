@@ -22,6 +22,16 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$window', '$location', 
     function ($rootScope, $scope, $window, $location, $routeParams, $filter, ngTableParams, appConfig, TestPlan, Launch, LaunchItem, SortLaunchItems, Comment, ChartConfig) {
         $scope.chartPercentType = 'failed';
 
+        function markSuccessLaunch(launches) {
+            var res = _.filter(launches, function(launch) {
+                return launch.state === appConfig.LAUNCH_STATE_SUCCESS;
+            });
+
+            if (res.length === 1) {
+                res[0].success = true;
+            }
+        }
+
         function getPercent(count, total) {
             if (total === 0) {
                 return 100.0;
@@ -43,6 +53,11 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$window', '$location', 
                     comments: result
                 });
             });
+
+            if (item.state === appConfig.LAUNCH_STATE_FINISHED &&
+                    item.counts.blocked === 0 && item.counts.failed === 0 && item.counts.passed !== 0) {
+                item.state = appConfig.LAUNCH_STATE_SUCCESS;
+            }
 
             return item;
         }
@@ -164,6 +179,7 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$window', '$location', 
                     }, function (result) {
                         params.total(result.count);
                         tableData = result.results.map(updateStats);
+                        markSuccessLaunch(tableData);
                         $defer.resolve(tableData);
 
                         $scope.labels = [];
