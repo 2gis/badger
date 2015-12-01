@@ -42,7 +42,7 @@ describe('Testplan', function () {
         var buttons = modalFooter.all(by.tagName('button'));
         expect(buttons.count()).toBe(2);
         buttons.last().click();
-        expect(browser.getCurrentUrl()).toBe(browser.baseUrl + '/#/dashboard');
+        expect(browser.getCurrentUrl()).toBe(browser.baseUrl + '/#/dashboard/1/');
     });
 
     it('checkbox in show statistics open filter field', function () {

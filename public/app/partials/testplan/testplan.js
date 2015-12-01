@@ -261,7 +261,7 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$location', '$routePara
                     function (result) {
                         $rootScope.reloadProjects();
                         modal.on('hidden.bs.modal', function(){
-                            $location.path('/');
+                            $location.path('/dashboard/' + result.project);
                         });
                     },
                     function (result) {
