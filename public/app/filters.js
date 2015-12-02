@@ -15,7 +15,7 @@ var filters = angular.module('testReportFilters', []);
 
 filters.filter('states', function () {
     return function (input) {
-        var launch_states = ['STARTED', 'IN_PROGRESS', 'FINISHED', 'STOPPED'];
+        var launch_states = ['STARTED', 'IN_PROGRESS', 'FINISHED', 'STOPPED', 'SUCCESS'];
         return launch_states[input];
     };
 }).filter('statesClass', function () {
@@ -29,6 +29,8 @@ filters.filter('states', function () {
                 return 'label label-default';
             case 3:
                 return 'label label-danger';
+            case 4:
+                return 'label label-success';
             default:
                 return 'reverse';
         }

@@ -81,7 +81,8 @@
                             ng-class="{ 'danger': launch.percent_of_failed > 1,
                                         'warning': launch.percent_of_failed > 0,
                                         'success': launch.percent_of_failed == 0 }">
-                            <span class="{{ launch.state | statesClass }}">{{ launch.state | states }}</span>
+                            <img ng-if="launch.success" src="./static/images/parrot_party.gif"/>
+                            <span ng-if="!launch.success" class="{{ launch.state | statesClass }}">{{ launch.state | states }}</span>
                         </td>
                         <td data-title="'% of Failed'" class="text-center"
                             ng-class="{ 'danger': launch.percent_of_failed > 1,
