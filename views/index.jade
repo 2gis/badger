@@ -12,9 +12,10 @@ html
     link(rel='stylesheet', href='/static/bower_components/angular-loading-bar/build/loading-bar.min.css')
     link(rel='stylesheet', href='/static/bower_components/angular-cron-jobs/dist/angular-cron-jobs.min.css')
     link(rel='stylesheet', href='/static/bower_components/angular-datepicker/dist/index.min.css')
+    link(rel='stylesheet', href='/static/bower_components/angular-multi-select-alexandernst/dist/angular-multi-select.min.css')
     link(rel='stylesheet', href='/static/css/theme.css')
 
-  body(ng-app="testReport")
+  body(ng-app="testReport" angular-multi-select-mouse-trap angular-multi-select-key-trap)
     include menu.jade
     div.container
       div(ng-view)
@@ -45,6 +46,8 @@ html
     script(src='/static/bower_components/underscore/underscore-min.js')
     script(src='/static/bower_components/angular-cron-jobs/dist/angular-cron-jobs.min.js')
     script(src='/static/bower_components/angular-datepicker/dist/index.min.js')
+    script(src='/static/bower_components/angular-multi-select-alexandernst/dist/angular-multi-select.min.js')
+    script(src='/static/bower_components/angular-filter/dist/angular-filter.min.js')
     script(src='/static/bower_components/highcharts-ng/src/highcharts-ng.js')
     script(src='//code.highcharts.com/highcharts.js')
     script(src='//code.highcharts.com/highcharts-more.js')

@@ -5,7 +5,17 @@
         Then refresh the page.
     </div>
 </div>
-<div ng-repeat="project in projects">
+<div class="row" ng-show="!profile">
+    <div class="alert alert-warning text-center" role="alert" style="margin-top: 40px">
+        To show your dashboards, please login.<br/>
+    </div>
+</div>
+<div class="row" ng-show="profile && profile.settings.dashboards.length === 0">
+    <div class="alert alert-warning text-center" role="alert" style="margin-top: 40px">
+        You don't have any dashboards. Create it in profile settings.<br/>
+    </div>
+</div>
+<div ng-repeat="project in profile.settings.dashboards">
     <h3 ng-bind="project.name" ng-if="project.testplans.length > 0"></h3>
     <div ng-repeat="testplan in project.testplans">
         <div class="panel panel-default">
