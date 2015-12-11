@@ -21,6 +21,7 @@ app.config(['$routeProvider',
 app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$window', '$location', '$routeParams', '$filter', 'ngTableParams', 'appConfig', 'TestPlan', 'Launch', 'LaunchItem', 'SortLaunchItems', 'Comment', 'ChartConfig',
     function ($rootScope, $scope, $window, $location, $routeParams, $filter, ngTableParams, appConfig, TestPlan, Launch, LaunchItem, SortLaunchItems, Comment, ChartConfig) {
         $scope.chartPercentType = 'failed';
+        $scope.maxSymbolsForBranch = 8;
 
         function markSuccessLaunch(launches) {
             var res = _.filter(launches, function(launch) {

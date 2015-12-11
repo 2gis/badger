@@ -46,51 +46,45 @@
             <table ng-table="tableParams" show-filter="true" class="table table-condensed table-bordered table-hover">
                 <tbody>
                     <tr ng-repeat="launch in $data"
-                        ng-class="{ 'danger': launch.percent_of_failed > 1 && launch.state === 2 }"
+                        ng-class="{ 'danger': launch.percent_of_failed > 1 && launch.state === 2,
+                         'warning': launch.percent_of_failed > 0,
+                                        'success': launch.percent_of_failed == 0}"
                         ng-click="redirect($event, '/launch/' + launch.id)"
                         style="cursor:pointer">
                         <td data-title="'By'" filter="{'started_by': 'text'}">
                             <span class="info">{{ launch.started_by }}</span>
                         </td>
                         <td data-title="'Branch'">
-                            <div ng-if="launch.parameters.env.BRANCH.length <= 8
-                                            || launch.parameters.env.branch.length <= 8
-                                            || launch.parameters.env.CORE_APP.length <=8" class="text-center">
+                            <div ng-if="launch.parameters.env.BRANCH.length <= maxSymbolsForBranch
+                                            || launch.parameters.env.branch.length <= maxSymbolsForBranch
+                                            || launch.parameters.env.CORE_APP.length <=maxSymbolsForBranch" class="text-center">
                                 {{ launch.parameters.env.BRANCH || launch.parameters.env.branch || launch.parameters.env.CORE_APP }}
                             </div>
-                            <div ng-if="launch.parameters.env.BRANCH.length > 8 || launch.parameters.env.branch.length > 8" class="text-center">
+                            <div ng-if="launch.parameters.env.BRANCH.length > maxSymbolsForBranch ||
+                                            launch.parameters.env.branch.length > maxSymbolsForBranch" class="text-center">
                                 <span class="glyphicon glyphicon-info-sign" title="{{ launch.parameters.env.BRANCH || launch.parameters.env.branch }}"></span>
                             </div>
                         </td>
-                        <td data-title="'Date'">
-                            {{ launch.created | date:"dd/MM/yyyy" }}
+                        <td data-title="'Date'" class="text-center" style="width: 7em;">
+                            {{ launch.created | date:"dd.MM HH:mm" }}
                         </td>
-                        <td data-title="'Passed'" class="text-center success">
-                            {{ launch.counts.passed }}
+
+                        <td data-title="'Counts'" class="text-center" style="width: 15em;">
+                            <span class="label label-success" style="display: inline-block; width: 4em;">{{ launch.counts.passed }}</span>
+                            <span class="label label-warning" style="display: inline-block; width: 4em;">{{ launch.counts.skipped }}</span>
+                            <span class="label label-danger" style="display: inline-block; width: 4em;">{{ launch.counts.failed }}</span>
+                            <span class="label label-danger" style="display: inline-block; width: 4em;">{{ launch.counts.blocked }}</span>
                         </td>
-                        <td data-title="'Skipped'" class="text-center warning">
-                            {{ launch.counts.skipped }}
-                        </td>
-                        <td data-title="'Failed'" class="text-center danger">
-                            {{ launch.counts.failed }}
-                        </td>
-                        <td data-title="'Blocked'" class="text-center danger">
-                            {{ launch.counts.blocked }}
-                        </td>
-                        <td data-title="'State'" class="text-center"
-                            ng-class="{ 'danger': launch.percent_of_failed > 1,
-                                        'warning': launch.percent_of_failed > 0,
-                                        'success': launch.percent_of_failed == 0 }">
+
+                        <td data-title="'State'" class="text-center" style="width: 4em;">
                             <img ng-if="launch.success" src="./static/images/parrot_party.gif"/>
                             <span ng-if="!launch.success" class="{{ launch.state | statesClass }}">{{ launch.state | states }}</span>
                         </td>
-                        <td data-title="'% of Failed'" class="text-center"
-                            ng-class="{ 'danger': launch.percent_of_failed > 1,
-                                        'warning': launch.percent_of_failed > 0,
-                                        'success': launch.percent_of_failed == 0 }">
+
+                        <td data-title="'% fail'" class="text-center" style="width: 4em;">
                             {{ launch.percent_of_failed | number }}
                         </td>
-                        <td data-title="'C'">
+                        <td data-title="'C'" style="width: 2em;">
                             <span class="badge" ng-if="launch.comments.count > 0">{{ launch.comments.count }}</span>
                         </td>
                     </tr>
