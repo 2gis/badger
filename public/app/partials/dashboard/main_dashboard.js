@@ -59,15 +59,33 @@ app.controller('MainDashboardCtrl', ['$scope', '$rootScope', 'appConfig', 'Proje
 
                 testplan.charts.push(
                     GetChartStructure(
+                        'column',
                         labels,
-                        SeriesStructure.getFailedAndSkipped(seriesData.failed, seriesData.skipped)
+                        SeriesStructure.getFailedAndSkipped(seriesData.percents.failed, seriesData.percents.skipped)
                     ));
 
                 testplan.charts.push(
                     GetChartStructure(
+                        'column',
                         labels,
-                        SeriesStructure.getTotal(seriesData.total),
+                        SeriesStructure.getTotal(seriesData.percents.total),
                         Tooltips.total()
+                    ));
+
+                testplan.charts.push(
+                    GetChartStructure(
+                        'area_percent',
+                        labels,
+                        SeriesStructure.getPercent(seriesData.percents.failed, seriesData.percents.skipped, seriesData.percents.passed),
+                        Tooltips.areaPercent()
+                    ));
+
+                testplan.charts.push(
+                    GetChartStructure(
+                        'area_absolute',
+                        labels,
+                        SeriesStructure.getAbsolute(seriesData.absolute.failed, seriesData.absolute.skipped, seriesData.absolute.passed),
+                        Tooltips.areaAbsolute()
                     ));
             });
         };
