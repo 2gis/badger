@@ -1,31 +1,101 @@
-<div class="row container-fluid">
-    <h3>Profile settings
-        <a><span class="glyphicon glyphicon-question-sign small pull-right" ng-click="open('profile/settings')"></span></a>
-    </h3>
-    <div ng-if="formErrors || formUpdate">
-        <div ng-class="{ 'disabled': !formErrors, 'alert alert-danger text-center': formErrors}"
-             role="alert">{{ formErrors }}</div>
-        <div ng-class="{ 'disabled': !formUpdate, 'alert alert-info text-center': formUpdate}"
-             role="alert">{{ formUpdate }}</div>
+<h3>Profile settings
+    <a><span class="glyphicon glyphicon-question-sign small" ng-click="open('profile/settings')"></span></a>
+    <div class="btn-toolbar pull-right" role="toolbar">
+        <div class="btn-group" role="group">
+            <button class="btn btn-primary pull-right" ng-click="update(profile.settings)">Save changes</button>
+        </div>
     </div>
-    <div class="row container col-md-6">
-        <label >Default project</label>
+</h3>
+<div ng-if="formErrors || formUpdate">
+    <br>
+    <div ng-class="{ 'disabled': !formErrors, 'alert alert-danger text-center': formErrors}"
+         role="alert">{{ formErrors }}</div>
+    <div ng-class="{ 'disabled': !formUpdate, 'alert alert-info text-center': formUpdate}"
+         role="alert">{{ formUpdate }}</div>
+</div>
+<hr>
+
+<div class="row">
+    <div class="col-md-6">
+        <h4>Default project</h4>
         <select class="form-control" ng-model="profile.settings.default_project"
-                ng-options="projectOption.id as projectOption.name for projectOption in projectOptions">
+                ng-options="project.id as project.name for project in projects">
             <option value="">Choose default project</option>
         </select>
-        <p></p>
-        <hr>
-        <label >Count of launches on page</label>
+    </div>
+    <div class="col-md-3">
+        <h4>Count of launches on page</h4>
         <select class="form-control" ng-model="profile.settings.launches_on_page"
                 ng-options="option for option in launchesOnPage">
         </select>
-        <p></p>
-        <label >Count of testresults on page</label>
+    </div>
+    <div class="col-md-3">
+        <h4>Count of testresults on page</h4>
         <select class="form-control" ng-model="profile.settings.testresults_on_page"
                 ng-options="option for option in resultsOnPage">
         </select>
-        <hr>
-        <button type="submit" class="btn btn-primary pull-right" ng-click="update(profile.settings)">Update</button>
+    </div>
+    <div class="col-md-12">
+        <br><br>
+    </div>
+</div>
+
+<h4>Dashboards</h4>
+<div class="row">
+    <div class="col-md-6" ng-if="multiData">
+        <div class="panel panel-default" ng-repeat="dashboard in userDashboards">
+            <div class="panel-heading">
+                <h4 class="panel-title">{{dashboard.name}}
+                    <button class="btn btn-danger btn-xs pull-right" ng-click="deleteDashboard(dashboard.name)">
+                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                    </button>
+                </h4>
+            </div>
+            <div class="panel-body">
+                <p class="list-group-item-text" ng-repeat="testplan in dashboard.testplans">
+                    <b>{{ testplan.project_name }}</b> - {{ testplan.name }}</p>
+            </div>
+        </div>
+        <div class="alert alert-warning text-center" role="alert" ng-if="userDashboards.length === 0">
+            You don't have any dashboards.
+        </div>
+    </div>
+    <div class="col-md-6">
+        <form>
+            <div>
+                <div class="panel panel-default">
+                  <div class="panel-body">
+                    <div class="col-md-12" ng-if="addErrors">
+                        <div ng-class="{ 'disabled': !addErrors, 'alert alert-danger text-center': addErrors}"
+                                role="alert">{{ addErrors }}</div>
+                    </div>
+                    <div class="col-md-12" id="multi-select-panel"
+                        angular-multi-select
+                        api="select_cache"
+                        input-model="multiData"
+                        output-model="dashboards"
+                        item-label="<[ name ]>"
+                        button-template="angular-multi-select-btn-data.htm"
+                        button-label="<[ name ]>"
+                        button-label-separator='[" & ", ""]'
+                        tick-property="checked"
+                        group-property="sub"
+                        helper-elements="all none noreset nofilter">
+                    </div>
+                    <div class="col-md-10">
+                        <br>
+                        <input ng-model="dashboardName" placeholder="Dashboard name" class="form-control">
+                    </div>
+                    <div class="col-md-2">
+                        <br>
+                        <button type="submit" class="btn btn-default pull-right"
+                                ng-click="addDashboard(dashboardName, dashboards);
+                                reset(select_cache); dashboardName = null;">Ok
+                        </button>
+                    </div>
+                  </div>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
