@@ -31,6 +31,7 @@ app.controller('MainDashboardCtrl', ['$scope', '$rootScope', 'appConfig', 'Proje
                     dashboard.testplans = response.results;
                     _.each(dashboard.testplans, function (testplan) {
                         updateName(testplan);
+                        testplan.chartsType = $rootScope.getProjectChartsType(testplan.project);
                         $scope.addChartsToTestplan(testplan, appConfig.DEFAULT_DAYS);
                     });
                     dashboard.testplans = _.sortBy(dashboard.testplans, 'name');
@@ -58,36 +59,40 @@ app.controller('MainDashboardCtrl', ['$scope', '$rootScope', 'appConfig', 'Proje
                 var seriesData = GetChartsData.series(launches);
                 var labels = GetChartsData.labels(launches);
 
-                testplan.charts.push(
-                    GetChartStructure(
-                        'column',
-                        labels,
-                        SeriesStructure.getFailedAndSkipped(seriesData.percents.failed, seriesData.percents.skipped)
-                    ));
+                if (testplan.chartsType === appConfig.CHART_TYPE_COLUMN) {
+                    testplan.charts.push(
+                        GetChartStructure(
+                            'column',
+                            labels,
+                            SeriesStructure.getFailedAndSkipped(seriesData.percents.failed, seriesData.percents.skipped)
+                        ));
 
-                testplan.charts.push(
-                    GetChartStructure(
-                        'column',
-                        labels,
-                        SeriesStructure.getTotal(seriesData.percents.total),
-                        Tooltips.total()
-                    ));
+                    testplan.charts.push(
+                        GetChartStructure(
+                            'column',
+                            labels,
+                            SeriesStructure.getTotal(seriesData.percents.total),
+                            Tooltips.total()
+                        ));
+                }
 
-                testplan.charts.push(
-                    GetChartStructure(
-                        'area_percent',
-                        labels,
-                        SeriesStructure.getPercent(seriesData.percents.failed, seriesData.percents.skipped, seriesData.percents.passed),
-                        Tooltips.areaPercent()
-                    ));
+                if (testplan.chartsType === appConfig.CHART_TYPE_AREA) {
+                    testplan.charts.push(
+                        GetChartStructure(
+                            'area_percent',
+                            labels,
+                            SeriesStructure.getPercent(seriesData.percents.failed, seriesData.percents.skipped, seriesData.percents.passed),
+                            Tooltips.areaPercent()
+                        ));
 
-                testplan.charts.push(
-                    GetChartStructure(
-                        'area_absolute',
-                        labels,
-                        SeriesStructure.getAbsolute(seriesData.absolute.failed, seriesData.absolute.skipped, seriesData.absolute.passed),
-                        Tooltips.areaAbsolute()
-                    ));
+                    testplan.charts.push(
+                        GetChartStructure(
+                            'area_absolute',
+                            labels,
+                            SeriesStructure.getAbsolute(seriesData.absolute.failed, seriesData.absolute.skipped, seriesData.absolute.passed),
+                            Tooltips.areaAbsolute()
+                        ));
+                }
             });
         };
 
