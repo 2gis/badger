@@ -24,15 +24,16 @@ app.controller('MainDashboardCtrl', ['$scope', '$rootScope', 'appConfig', 'Proje
         });
 
         function fetchData() {
-            _.each($scope.projects, function (project) {
-                TestPlan.get({ projectId: project.id }, function (response) {
-                    project.testplans = _.filter(response.results, Filters.isMain);
-                    project.testplans = _.filter(project.testplans, Filters.removeHidden);
-                    project.testplans = _.sortBy(project.testplans, 'name');
-
-                    _.each(project.testplans, function (testplan) {
+            _.each($rootScope.profile.settings.dashboards, function(dashboard) {
+                TestPlan.custom_list({
+                    id__in: getTestplanIds(dashboard.testplans)
+                }, function (response) {
+                    dashboard.testplans = response.results;
+                    _.each(dashboard.testplans, function (testplan) {
+                        updateName(testplan);
                         $scope.addChartsToTestplan(testplan, appConfig.DEFAULT_DAYS);
                     });
+                    dashboard.testplans = _.sortBy(dashboard.testplans, 'name');
                 });
             });
         }
@@ -89,5 +90,21 @@ app.controller('MainDashboardCtrl', ['$scope', '$rootScope', 'appConfig', 'Proje
                     ));
             });
         };
+
+        function getTestplanIds(testplans) {
+            var ids = [];
+            _.each(testplans, function(tesplan) {
+                ids.push(tesplan.id);
+            });
+            return ids.join();
+        }
+
+        function updateName(testplan) {
+            _.each($scope.projects, function (project) {
+                if (project.id === testplan.project) {
+                    testplan.name = project.name + ' - ' + testplan.name;
+                }
+            });
+        }
     }
 ]);

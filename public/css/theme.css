@@ -59,3 +59,8 @@ body {
 .selected-launch-items {
     background-color: #EFEFEF;
 }
+
+.ams .ams_layer.position_top {
+	transform: translate(0, -100%);
+	top: 200px; /* The shadow height */
+}
