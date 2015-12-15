@@ -374,6 +374,63 @@ services.factory('Project', ['$resource',
                 },
                 series: []
             };
+        },
+        area: function () {
+            return {
+                options: {
+                    chart: {
+                        type: 'area'
+                    },
+                    plotOptions: {
+                        area: {
+                            animation: false,
+                            stacking: 'percent',
+                            lineColor: '#ffffff',
+                            lineWidth: 0,
+                            marker: {
+                                enabled: false,
+                                radius: 1,
+                                symbol: 'circle',
+                                lineWidth: 0,
+                                lineColor: '#ffffff'
+                            }
+                        },
+                        column: {
+                            stacking: 'percent'
+                        },
+                        series: {
+                            point: {
+                                events: {
+                                    click: function () {
+                                        $rootScope.$apply($location.path('/launch/' + this.id));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                credits: {
+                    enabled: false
+                },
+                title: {
+                    text: ''
+                },
+                size: {
+                    height: 240
+                },
+                xAxis: {
+                    //tickmarkPlacement: 'on',
+                    gridLineWidth: 1
+                },
+                yAxis: {
+                    min: 0,
+                    minRange : 0.01,
+                    title: {
+                        text: ''
+                    }
+                },
+                series: []
+            };
         }
     }
 }]);

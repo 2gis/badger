@@ -26,6 +26,8 @@ app.controller('DashboardCtrl', ['$scope', '$rootScope', '$routeParams', 'appCon
             _.each($scope.testplans, function (testplan) {
                 $scope.addChartsToTestplan(testplan, appConfig.DEFAULT_DAYS);
             });
+
+            $scope.chartsType = $rootScope.getProjectChartsType($routeParams.projectId);
         });
 
         Stage.get({ projectId: $routeParams.projectId }, function (response) {
@@ -52,18 +54,40 @@ app.controller('DashboardCtrl', ['$scope', '$rootScope', '$routeParams', 'appCon
                 var seriesData = GetChartsData.series(launches);
                 var labels = GetChartsData.labels(launches);
 
-                testplan.charts.push(
-                    GetChartStructure(
-                        labels,
-                        SeriesStructure.getFailedAndSkipped(seriesData.failed, seriesData.skipped)
-                    ));
+                if ($scope.chartsType === appConfig.CHART_TYPE_COLUMN) {
+                    testplan.charts.push(
+                        GetChartStructure(
+                            'column',
+                            labels,
+                            SeriesStructure.getFailedAndSkipped(seriesData.percents.failed, seriesData.percents.skipped)
+                        ));
 
-                testplan.charts.push(
-                    GetChartStructure(
-                        labels,
-                        SeriesStructure.getTotal(seriesData.total),
-                        Tooltips.total()
-                    ));
+                    testplan.charts.push(
+                        GetChartStructure(
+                            'column',
+                            labels,
+                            SeriesStructure.getTotal(seriesData.percents.total),
+                            Tooltips.total()
+                        ));
+                }
+
+                if ($scope.chartsType === appConfig.CHART_TYPE_AREA) {
+                    testplan.charts.push(
+                        GetChartStructure(
+                            'area_percent',
+                            labels,
+                            SeriesStructure.getPercent(seriesData.percents.failed, seriesData.percents.skipped, seriesData.percents.passed),
+                            Tooltips.areaPercent()
+                        ));
+
+                    testplan.charts.push(
+                        GetChartStructure(
+                            'area_absolute',
+                            labels,
+                            SeriesStructure.getAbsolute(seriesData.absolute.failed, seriesData.absolute.skipped, seriesData.absolute.passed),
+                            Tooltips.areaAbsolute()
+                        ));
+                }
 
                 if (testplan.variable_name === '') {
                     return;
@@ -80,8 +104,9 @@ app.controller('DashboardCtrl', ['$scope', '$rootScope', '$routeParams', 'appCon
 
                 testplan.charts.push(
                     GetChartStructure(
+                        'column',
                         labels,
-                        SeriesStructure.getAll(seriesData.failed, seriesData.skipped, seriesData.total),
+                        SeriesStructure.getAll(seriesData.percents.failed, seriesData.percents.skipped, seriesData.percents.total),
                         Tooltips.envVar()
                     ));
             });
