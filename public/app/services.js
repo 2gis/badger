@@ -383,6 +383,7 @@ services.factory('Project', ['$resource',
                     },
                     plotOptions: {
                         area: {
+                            animation: false,
                             stacking: 'percent',
                             lineColor: '#ffffff',
                             lineWidth: 0,
@@ -418,7 +419,7 @@ services.factory('Project', ['$resource',
                     height: 240
                 },
                 xAxis: {
-                    tickmarkPlacement: 'on',
+                    //tickmarkPlacement: 'on',
                     gridLineWidth: 1
                 },
                 yAxis: {

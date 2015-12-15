@@ -18,10 +18,16 @@ app.config(['$routeProvider',
     }
 ]);
 
-app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$window', '$location', '$routeParams', '$filter', 'ngTableParams', 'appConfig', 'TestPlan', 'Launch', 'LaunchItem', 'SortLaunchItems', 'Comment', 'ChartConfig',
-    function ($rootScope, $scope, $window, $location, $routeParams, $filter, ngTableParams, appConfig, TestPlan, Launch, LaunchItem, SortLaunchItems, Comment, ChartConfig) {
+app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$window', '$location', '$routeParams', '$filter', 'ngTableParams', 'appConfig', 'TestPlan', 'Launch', 'LaunchItem', 'SortLaunchItems', 'Comment', 'ChartConfig', 'GetChartsData', 'SeriesStructure', 'Tooltips', 'LaunchHelpers', 'GetChartStructure',
+    function ($rootScope, $scope, $window, $location, $routeParams, $filter, ngTableParams, appConfig, TestPlan, Launch, LaunchItem, SortLaunchItems, Comment, ChartConfig, GetChartsData, SeriesStructure, Tooltips, LaunchHelpers, GetChartStructure) {
         $scope.chartPercentType = 'failed';
         $scope.maxSymbolsForBranch = 8;
+        var options = {
+            month: 'numeric',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric'
+        };
 
         function markSuccessLaunch(launches) {
             var res = _.filter(launches, function(launch) {
@@ -183,72 +189,45 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$window', '$location', 
                         markSuccessLaunch(tableData);
                         $defer.resolve(tableData);
 
-                        $scope.labels = [];
-                        $scope.skipped = [];
-                        $scope.failed = [];
-                        $scope.duration = [];
+                        $scope.charts = [];
 
-                        tableData.forEach(function (item) {
-                            var duration = item.duration ? parseInt(item.duration / 60) :
-                                parseInt((Date.parse(item.finished) - Date.parse(item.created)) / (1000 * 60));
-                            var d = new Date(item.created);
-                            var options = {
-                                month: 'numeric',
-                                day: 'numeric',
-                                hour: 'numeric',
-                                minute: 'numeric'
-                            };
-                            $scope.labels.unshift(d.toLocaleString(LANG, options));
-                            $scope.failed.unshift({
-                                y: item.percent_of_failed,
-                                id: item.id
-                            });
-                            $scope.skipped.unshift({
-                                y: item.percent_of_skipped,
-                                id: item.id
-                            });
-                            $scope.duration.unshift({
-                                y: duration,
-                                id: item.id
-                            });
+                        tableData = LaunchHelpers.cutDate(tableData, options);
+                        tableData = LaunchHelpers.addDuration(tableData);
+                        tableData = LaunchHelpers.addStatisticData(tableData);
+                        tableData = _.sortBy(tableData, 'id');
+                        var seriesData = GetChartsData.series(tableData);
+                        var labels = GetChartsData.labels(tableData);
 
-                            $scope.failedConfig = ChartConfig.column();
-                            $scope.failedConfig.xAxis.categories = $scope.labels;
-                            $scope.failedConfig.yAxis.title.text = '%';
-                            $scope.failedConfig.series.push({
-                                name: '% of failed tests',
-                                data: $scope.failed,
-                                color: appConfig.CHART_COLORS.red
-                            });
+                        $scope.charts.push(
+                            GetChartStructure(
+                                'column',
+                                labels,
+                                SeriesStructure.getFailedAndSkipped(seriesData.percents.failed, seriesData.percents.skipped)
+                            ));
 
-                            $scope.skippedConfig = ChartConfig.column();
-                            $scope.skippedConfig.xAxis.categories = $scope.labels;
-                            $scope.skippedConfig.yAxis.title.text = '%';
-                            $scope.skippedConfig.series.push({
-                                name: '% of skipped tests',
-                                data: $scope.skipped,
-                                color: appConfig.CHART_COLORS.yellow
-                            });
+                        $scope.charts.push(
+                            GetChartStructure(
+                                'column',
+                                labels,
+                                SeriesStructure.getDuration(seriesData.duration),
+                                Tooltips.duration()
+                            ));
 
-                            $scope.durationConfig = ChartConfig.column();
-                            $scope.durationConfig.xAxis.categories = $scope.labels;
-                            $scope.durationConfig.yAxis.title.text = 'min';
-                            $scope.durationConfig.series.push({
-                                name: 'launch duration',
-                                data: $scope.duration,
-                                color: appConfig.CHART_COLORS.green
-                            });
-                            $scope.durationConfig.options.tooltip = {
-                                formatter: function () {
-                                    return this.y + ' min';
-                                }
-                            };
-                        });
+                        $scope.charts.push(
+                            GetChartStructure(
+                                'area_percent',
+                                labels,
+                                SeriesStructure.getPercent(seriesData.percents.failed, seriesData.percents.skipped, seriesData.percents.passed),
+                                Tooltips.areaPercent()
+                            ));
 
-                        if ($scope.failed.length !== 0 && $scope.skipped.length !== 0) {
-                            $scope.dataFailed = [$scope.failed];
-                            $scope.dataSkipped = [$scope.skipped];
-                        }
+                        $scope.charts.push(
+                            GetChartStructure(
+                                'area_absolute',
+                                labels,
+                                SeriesStructure.getAbsolute(seriesData.absolute.failed, seriesData.absolute.skipped, seriesData.absolute.passed),
+                                Tooltips.areaAbsolute()
+                            ));
                     });
                 }
             });

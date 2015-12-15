@@ -21,14 +21,19 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
 }]).factory('LaunchHelpers', function() {
     return {
         cutDate: cutDate,
+        addDuration: addDuration,
         addEnvVariable: addEnvVariable,
         addStatisticData: addStatisticData
     };
 
-    function cutDate(launches) {
+    function cutDate(launches, options) {
         _.each(launches, function (launch) {
             var d = new Date(launch.created);
-            launch.groupDate = d.toLocaleDateString(LANG);
+            if (options) {
+                launch.groupDate = d.toLocaleDateString(LANG, options);
+            } else {
+                launch.groupDate = d.toLocaleDateString(LANG);
+            }
         });
         return launches;
     }
@@ -41,10 +46,18 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
         return launches;
     }
 
+    function addDuration(launches) {
+        _.each(launches, function(launch) {
+            launch.duration = launch.duration ? parseInt(launch.duration / 60) :
+                                parseInt((Date.parse(launch.finished) - Date.parse(launch.created)) / (1000 * 60));
+        });
+        return launches;
+    }
+
     function addStatisticData(launches) {
         function getPercent(count, total) {
             if (total === 0) {
-                return 100.0;
+                return 0.0;
             }
             return (count / total) * 100.0;
         }
@@ -105,6 +118,7 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
         var skipped = [];
         var passed = [];
         var total = [];
+        var duration = [];
 
         function clearArrays() {
             failed = [];
@@ -132,6 +146,11 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
         });
         result.absolute = { failed: failed, skipped: skipped, passed: passed, total: total };
 
+        _.each(launches, function(launch) {
+            duration.push({ y: launch.duration, id: launch.id });
+        });
+        result.duration = duration;
+
         return result;
     }
 
@@ -155,6 +174,7 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
         getPercent: getPercent,
         getAbsolute: getAbsolute,
         getTotal: getTotal,
+        getDuration: getDuration,
         getAll: getAll
     };
 
@@ -190,6 +210,14 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
         };
     }
 
+    function durationStruct(data) {
+        return {
+            name: 'duration',
+            data: data,
+            color: appConfig.CHART_COLORS.green
+        };
+    }
+
     function getFailedAndSkipped(array_of_failed, array_of_skipped) {
         return [ failedStruct(array_of_failed), skippedStruct(array_of_skipped)];
     }
@@ -212,6 +240,10 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
         return [ totalStruct(array_of_total) ];
     }
 
+    function getDuration(array_of_duration) {
+        return [ durationStruct(array_of_duration) ];
+    }
+
     function getAll(array_of_failed, array_of_skipped, array_of_total) {
         var total =  totalStruct(array_of_total);
         total.visible = false;
@@ -221,6 +253,7 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
 }]).factory('Tooltips', function() {
     return {
         total: total,
+        duration: duration,
         envVar: envVar,
         areaPercent: AreaPercent,
         areaAbsolute: AreaAbsolute
@@ -230,6 +263,14 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
         return {
             formatter: function () {
                 return this.y;
+            }
+        }
+    }
+
+    function duration() {
+        return {
+            formatter: function () {
+                return this.y + 'min';
             }
         }
     }

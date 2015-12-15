@@ -1,16 +1,18 @@
 <h3 id="statistic_header">"{{ name }}" statistics</h3>
-<div ng-if="dataFailed || dataSkipped">
-    <highchart config="failedConfig" ng-if="chartPercentType === 'failed'"></highchart>
-    <highchart config="skippedConfig" ng-if="chartPercentType === 'skipped'"></highchart>
-    <highchart config="durationConfig" ng-if="chartPercentType === 'duration'"></highchart>
+<div>
+    <highchart config="charts[0]" ng-if="chartPercentType === 'failed'"></highchart>
+    <highchart config="charts[1]" ng-if="chartPercentType === 'duration'"></highchart>
+    <highchart config="charts[2]" ng-if="chartPercentType === 'percent'"></highchart>
+    <highchart config="charts[3]" ng-if="chartPercentType === 'number'"></highchart>
     <div class="text-center">
         <div class="btn-group btn-group-xs" role="group">
-            <button type="button" class="btn btn-default active" ng-click="chartPercentType = 'failed'">failed</button>
-            <button type="button" class="btn btn-default" ng-click="chartPercentType = 'skipped'">skipped</button>
+            <button type="button" class="btn btn-default active" ng-click="chartPercentType = 'failed'">failed & skipped</button>
             <button type="button" class="btn btn-default" ng-click="chartPercentType = 'duration'"
                     title="Duration is a sum of all tests execution time (can differ from testplan execution time)">
                 duration
             </button>
+            <button type="button" class="btn btn-default" ng-click="chartPercentType = 'percent'">tests percent</button>
+            <button type="button" class="btn btn-default" ng-click="chartPercentType = 'number'">tests number</button>
         </div>
     </div>
 </div>
