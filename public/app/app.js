@@ -46,6 +46,8 @@ function parseEnvString(str) {
 }
 
 app.constant('appConfig', {
+    CHART_TYPE_COLUMN: 0,
+    CHART_TYPE_AREA: 1,
     LAUNCH_STATE_FINISHED: 2,
     LAUNCH_STATE_SUCCESS: 4,
     TESTRESULT_PASSED: 0,

@@ -51,20 +51,14 @@
                     <div class="col-md-6" ng-if="testplan.charts">
                         <highchart config="testplan.charts[1]"></highchart>
                     </div>
-                    <div class="col-md-6" ng-if="testplan.charts">
-                        <highchart config="testplan.charts[2]"></highchart>
-                    </div>
-                    <div class="col-md-6" ng-if="testplan.charts">
-                        <highchart config="testplan.charts[3]"></highchart>
-                    </div>
                     <div class="col-md-2"></div>
                     <div ng-if="testplan.variable_name && testplan.variable_name !== ''">
                         <div class="col-md-8" ng-if="testplan.charts[2].xAxis.categories.length !== 0">
-                            <highchart config="testplan.charts[4]"></highchart>
+                            <highchart config="testplan.charts[2]"></highchart>
                         </div>
-                        <div class="col-md-8" ng-if="testplan.charts[4]">
+                        <div class="col-md-8" ng-if="testplan.charts[2]">
                             <div class="alert alert-warning text-center" role="alert"
-                                 ng-if="testplan.charts[4].xAxis.categories.length === 0">
+                                 ng-if="testplan.charts[2].xAxis.categories.length === 0">
                                 There are no statistics for last {{ testplan.days }} days
                             </div>
                         </div>

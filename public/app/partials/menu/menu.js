@@ -1,7 +1,7 @@
 'use strict';
 
-app.controller('Menu', ['$rootScope', '$routeParams','$scope', '$location', 'Project', 'TestPlan', 'Auth', 'isSafari','$q',
-    function ($rootScope, $routeParams, $scope, $location, Project, TestPlan, Auth, isSafari, $q) {
+app.controller('Menu', ['$rootScope', '$routeParams','$scope', '$location', 'Project', 'TestPlan', 'Auth', 'isSafari','$q', 'appConfig',
+    function ($rootScope, $routeParams, $scope, $location, Project, TestPlan, Auth, isSafari, $q, appConfig) {
         $scope.isSafari = isSafari;
         $scope.jira = JIRA_INTEGRATION;
 
@@ -90,6 +90,17 @@ app.controller('Menu', ['$rootScope', '$routeParams','$scope', '$location', 'Pro
 
         $rootScope.getActiveProject = function() {
             return $scope.activeProjectId;
+        };
+
+        $rootScope.getProjectChartsType = function(id) {
+            var project = $scope.findProjectById(id);
+            var res = _.filter(project.settings, function (item) {
+                return item.key && item.key === 'chart_type';
+            });
+            if (res.length === 1) {
+                return parseInt(res[0].value);
+            }
+            return appConfig.CHART_TYPE_COLUMN;
         };
 
         $scope.login = function () {

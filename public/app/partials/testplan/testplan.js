@@ -73,6 +73,7 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$window', '$location', 
             $rootScope.selectProject(result.project);
             $scope.testplan = result;
             $scope.name = result.name;
+            $scope.chartsType = $rootScope.getProjectChartsType(result.project);
         });
 
         $scope.testPlanId = $routeParams.testPlanId;
@@ -202,32 +203,36 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$window', '$location', 
                             GetChartStructure(
                                 'column',
                                 labels,
-                                SeriesStructure.getFailedAndSkipped(seriesData.percents.failed, seriesData.percents.skipped)
-                            ));
-
-                        $scope.charts.push(
-                            GetChartStructure(
-                                'column',
-                                labels,
                                 SeriesStructure.getDuration(seriesData.duration),
                                 Tooltips.duration()
                             ));
 
-                        $scope.charts.push(
-                            GetChartStructure(
-                                'area_percent',
-                                labels,
-                                SeriesStructure.getPercent(seriesData.percents.failed, seriesData.percents.skipped, seriesData.percents.passed),
-                                Tooltips.areaPercent()
-                            ));
+                        if ($scope.chartsType === appConfig.CHART_TYPE_COLUMN) {
+                            $scope.charts.push(
+                                GetChartStructure(
+                                    'column',
+                                    labels,
+                                    SeriesStructure.getFailedAndSkipped(seriesData.percents.failed, seriesData.percents.skipped)
+                                ));
+                        }
 
-                        $scope.charts.push(
-                            GetChartStructure(
-                                'area_absolute',
-                                labels,
-                                SeriesStructure.getAbsolute(seriesData.absolute.failed, seriesData.absolute.skipped, seriesData.absolute.passed),
-                                Tooltips.areaAbsolute()
-                            ));
+                        if ($scope.chartsType === appConfig.CHART_TYPE_AREA) {
+                            $scope.charts.push(
+                                GetChartStructure(
+                                    'area_percent',
+                                    labels,
+                                    SeriesStructure.getPercent(seriesData.percents.failed, seriesData.percents.skipped, seriesData.percents.passed),
+                                    Tooltips.areaPercent()
+                                ));
+
+                            $scope.charts.push(
+                                GetChartStructure(
+                                    'area_absolute',
+                                    labels,
+                                    SeriesStructure.getAbsolute(seriesData.absolute.failed, seriesData.absolute.skipped, seriesData.absolute.passed),
+                                    Tooltips.areaAbsolute()
+                                ));
+                        }
                     });
                 }
             });
