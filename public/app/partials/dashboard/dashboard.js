@@ -17,6 +17,7 @@ app.config(['$routeProvider', function ($routeProvider) {
 app.controller('DashboardCtrl', ['$scope', '$rootScope', '$routeParams', 'appConfig', 'TestPlan', 'Launch', 'Stage', 'Filters', 'LaunchHelpers', 'LaunchFilters', 'GetChartsData', 'SeriesStructure', 'Tooltips', 'GetChartStructure',
     function ($scope, $rootScope, $routeParams, appConfig, TestPlan, Launch, Stage, Filters, LaunchHelpers, LaunchFilters, GetChartsData, SeriesStructure, Tooltips, GetChartStructure) {
         $rootScope.selectProject($routeParams.projectId);
+        $rootScope.isMainDashboard = false;
 
         TestPlan.get({ projectId: $routeParams.projectId }, function (response) {
             $scope.testplans = _.filter(response.results, Filters.isMain);

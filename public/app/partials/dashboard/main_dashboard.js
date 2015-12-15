@@ -17,6 +17,7 @@ app.config(['$routeProvider', function ($routeProvider) {
 app.controller('MainDashboardCtrl', ['$scope', '$rootScope', 'appConfig', 'Project', 'TestPlan', 'Launch', 'Filters', 'LaunchHelpers', 'LaunchFilters', 'GetChartsData', 'SeriesStructure', 'Tooltips', 'GetChartStructure',
     function ($scope, $rootScope, appConfig, Project, TestPlan, Launch, Filters, LaunchHelpers, LaunchFilters, GetChartsData, SeriesStructure, Tooltips, GetChartStructure) {
         $scope.default_days = appConfig.DEFAULT_DAYS;
+        $rootScope.isMainDashboard = true;
 
         Project.query(function (response) {
             $scope.projects = response.results;
