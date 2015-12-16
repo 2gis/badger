@@ -64,3 +64,12 @@ body {
 	transform: translate(0, -100%);
 	top: 200px; /* The shadow height */
 }
+
+.label-history {
+    display: inline-block;
+    width: 4em;
+}
+
+.label-zero {
+    background-color: #b2b2b2;
+}

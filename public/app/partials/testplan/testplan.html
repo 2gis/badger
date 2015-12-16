@@ -72,10 +72,22 @@
                         </td>
 
                         <td data-title="'Counts'" class="text-center" style="width: 15em;">
-                            <span class="label label-success" style="display: inline-block; width: 4em;">{{ launch.counts.passed }}</span>
-                            <span class="label label-warning" style="display: inline-block; width: 4em;">{{ launch.counts.skipped }}</span>
-                            <span class="label label-danger" style="display: inline-block; width: 4em;">{{ launch.counts.failed }}</span>
-                            <span class="label label-danger" style="display: inline-block; width: 4em;">{{ launch.counts.blocked }}</span>
+                            <span ng-if="launch.counts.passed !== 0" class="label label-success label-history" title="passed">
+                                {{ launch.counts.passed }}</span>
+                            <span ng-if="launch.counts.passed === 0" class="label label-default label-history label-zero" title="passed">
+                                {{ launch.counts.passed }}</span>
+                            <span ng-if="launch.counts.skipped !== 0" class="label label-warning label-history" title="skipped">
+                                {{ launch.counts.skipped }}</span>
+                            <span ng-if="launch.counts.skipped === 0" class="label label-default label-history label-zero" title="skipped">
+                                {{ launch.counts.skipped }}</span>
+                            <span ng-if="launch.counts.failed !== 0" class="label label-danger label-history" title="failed">
+                                {{ launch.counts.failed }}</span>
+                            <span ng-if="launch.counts.failed === 0" class="label label-default label-history label-zero" title="failed">
+                                {{ launch.counts.failed }}</span>
+                            <span ng-if="launch.counts.blocked !== 0" class="label label-danger label-history" title="blocked">
+                                {{ launch.counts.blocked }}</span>
+                            <span ng-if="launch.counts.blocked === 0" class="label label-default label-history label-zero" title="blocked">
+                                {{ launch.counts.blocked }}</span>
                         </td>
 
                         <td data-title="'State'" class="text-center" style="width: 4em;">
