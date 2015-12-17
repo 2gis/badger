@@ -14,8 +14,8 @@ app.config(['$routeProvider', function ($routeProvider) {
     });
 }]);
 
-app.controller('DashboardCtrl', ['$scope', '$rootScope', '$routeParams', 'appConfig', 'TestPlan', 'Launch', 'Stage', 'Filters', 'LaunchHelpers', 'LaunchFilters', 'GetChartsData', 'SeriesStructure', 'Tooltips', 'GetChartStructure',
-    function ($scope, $rootScope, $routeParams, appConfig, TestPlan, Launch, Stage, Filters, LaunchHelpers, LaunchFilters, GetChartsData, SeriesStructure, Tooltips, GetChartStructure) {
+app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', 'appConfig', 'TestPlan', 'Launch', 'Stage', 'Filters', 'LaunchHelpers', 'LaunchFilters', 'GetChartsData', 'SeriesStructure', 'Tooltips', 'GetChartStructure',
+    function ($q, $scope, $rootScope, $routeParams, appConfig, TestPlan, Launch, Stage, Filters, LaunchHelpers, LaunchFilters, GetChartsData, SeriesStructure, Tooltips, GetChartStructure) {
         $rootScope.selectProject($routeParams.projectId);
         $rootScope.isMainDashboard = false;
 
@@ -28,12 +28,107 @@ app.controller('DashboardCtrl', ['$scope', '$rootScope', '$routeParams', 'appCon
                 $scope.addChartsToTestplan(testplan, appConfig.DEFAULT_DAYS);
             });
 
+            $scope.summaryTestplans = $scope.testplans;
+
             $scope.chartsType = $rootScope.getProjectChartsType($routeParams.projectId);
+            $scope.draw(appConfig.DEFAULT_DAYS);
         });
 
         Stage.get({ projectId: $routeParams.projectId }, function (response) {
            $scope.stages = _.sortBy(response.results, 'weight');
         });
+
+        $scope.draw = function(days) {
+            $scope.addLaunchesToTestplans($scope.summaryTestplans, days).then(function(launches) {
+                var dates = [];
+                _.each(launches, function(launch) {
+                    _.extend(dates, _.keys(launch));
+                });
+
+                var new_launches = {};
+                _.each(launches, function(launch) {
+                    _.each(launch, function(value, key) {
+                        if (new_launches[key]) {
+                            var counts = _.max(value, 'id').counts;
+                            new_launches[key].counts.failed += counts.failed;
+                            new_launches[key].counts.skipped += counts.skipped;
+                            new_launches[key].counts.passed += counts.passed;
+                            new_launches[key].counts.blocked += counts.blocked;
+                            new_launches[key].counts.total += counts.total;
+                        } else {
+                            new_launches[key] = _.max(value, 'id');
+                        }
+                    });
+                });
+
+                new_launches = _.values(new_launches);
+                new_launches = LaunchHelpers.addStatisticData(new_launches);
+                new_launches = _.sortBy(new_launches, 'created');
+
+                var seriesData = GetChartsData.series(new_launches);
+                var labels = GetChartsData.labels(new_launches);
+
+                $scope.charts = [];
+                if ($scope.chartsType === appConfig.CHART_TYPE_COLUMN) {
+                    $scope.charts.push(
+                        GetChartStructure(
+                            'column',
+                            labels,
+                            SeriesStructure.getFailedAndSkipped(seriesData.percents.failed, seriesData.percents.skipped)
+                        ));
+
+                    $scope.charts.push(
+                        GetChartStructure(
+                            'column',
+                            labels,
+                            SeriesStructure.getTotal(seriesData.percents.total),
+                            Tooltips.total()
+                        ));
+                }
+
+                if ($scope.chartsType === appConfig.CHART_TYPE_AREA) {
+                    $scope.charts.push(
+                        GetChartStructure(
+                            'area_percent',
+                            labels,
+                            SeriesStructure.getPercent(seriesData.percents.failed, seriesData.percents.skipped, seriesData.percents.passed),
+                            Tooltips.areaPercent()
+                        ));
+
+                    $scope.charts.push(
+                        GetChartStructure(
+                            'area_absolute',
+                            labels,
+                            SeriesStructure.getAbsolute(seriesData.absolute.failed, seriesData.absolute.skipped, seriesData.absolute.passed),
+                            Tooltips.areaAbsolute()
+                        ));
+                }
+            });
+        };
+
+        $scope.addLaunchesToTestplans = function(testplans, days) {
+            var promises = [];
+            _.each(testplans, function(testplan) {
+                var promise = $scope.getLaunches(testplan, days);
+                promises.push(promise);
+            });
+            return $q.all(promises);
+        };
+
+        $scope.getLaunches = function(testplan, days) {
+            var deferred = $q.defer();
+            Launch.custom_list({
+                testPlanId: testplan.id,
+                state: appConfig.LAUNCH_STATE_FINISHED,
+                days: days,
+                search: testplan.filter
+            }, function (response) {
+                var launches = LaunchHelpers.cutDate(response.results);
+                launches = _.groupBy(launches, 'groupDate');
+                deferred.resolve(launches);
+            });
+            return deferred.promise;
+        };
 
         $scope.addChartsToTestplan = function(testplan, days) {
             testplan.days = days;
