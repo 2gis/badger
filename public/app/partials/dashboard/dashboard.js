@@ -20,6 +20,10 @@ app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '
         $rootScope.isMainDashboard = false;
 
         TestPlan.get({ projectId: $routeParams.projectId }, function (response) {
+
+            $scope.summaryTestplans = _.filter(response.results, Filters.isSummary);
+            $scope.summaryTestplans = _.filter($scope.summaryTestplans, Filters.removeHidden);
+
             $scope.testplans = _.filter(response.results, Filters.isMain);
             $scope.testplans = _.filter($scope.testplans, Filters.removeHidden);
             $scope.testplans = _.sortBy($scope.testplans, 'name');
@@ -28,94 +32,44 @@ app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '
                 $scope.addChartsToTestplan(testplan, appConfig.DEFAULT_DAYS);
             });
 
-            $scope.summaryTestplans = $scope.testplans;
-
             $scope.chartsType = $rootScope.getProjectChartsType($routeParams.projectId);
-            $scope.draw(appConfig.DEFAULT_DAYS);
+            $scope.createTotalChart(appConfig.DEFAULT_DAYS);
         });
 
         Stage.get({ projectId: $routeParams.projectId }, function (response) {
            $scope.stages = _.sortBy(response.results, 'weight');
         });
 
-        $scope.draw = function(days) {
-            $scope.addLaunchesToTestplans($scope.summaryTestplans, days).then(function(launches) {
-                var dates = [];
-                _.each(launches, function(launch) {
-                    _.extend(dates, _.keys(launch));
-                });
+        $scope.createTotalChart = function(days) {
+            addLaunchesToTestplans($scope.summaryTestplans, days).then(function(launches) {
+                var launches = LaunchHelpers.sumLaunchesByDate(launches);
+                launches = LaunchHelpers.addStatisticData(launches);
+                launches = _.sortBy(launches, 'created');
 
-                var new_launches = {};
-                _.each(launches, function(launch) {
-                    _.each(launch, function(value, key) {
-                        if (new_launches[key]) {
-                            var counts = _.max(value, 'id').counts;
-                            new_launches[key].counts.failed += counts.failed;
-                            new_launches[key].counts.skipped += counts.skipped;
-                            new_launches[key].counts.passed += counts.passed;
-                            new_launches[key].counts.blocked += counts.blocked;
-                            new_launches[key].counts.total += counts.total;
-                        } else {
-                            new_launches[key] = _.max(value, 'id');
-                        }
-                    });
-                });
-
-                new_launches = _.values(new_launches);
-                new_launches = LaunchHelpers.addStatisticData(new_launches);
-                new_launches = _.sortBy(new_launches, 'created');
-
-                var seriesData = GetChartsData.series(new_launches);
-                var labels = GetChartsData.labels(new_launches);
+                var seriesData = GetChartsData.series(launches);
+                var labels = GetChartsData.labels(launches);
 
                 $scope.charts = [];
                 if ($scope.chartsType === appConfig.CHART_TYPE_COLUMN) {
-                    $scope.charts.push(
-                        GetChartStructure(
-                            'column',
-                            labels,
-                            SeriesStructure.getFailedAndSkipped(seriesData.percents.failed, seriesData.percents.skipped)
-                        ));
-
-                    $scope.charts.push(
-                        GetChartStructure(
-                            'column',
-                            labels,
-                            SeriesStructure.getTotal(seriesData.percents.total),
-                            Tooltips.total()
-                        ));
+                    pushColumnCharts($scope.charts, labels, seriesData);
                 }
 
                 if ($scope.chartsType === appConfig.CHART_TYPE_AREA) {
-                    $scope.charts.push(
-                        GetChartStructure(
-                            'area_percent',
-                            labels,
-                            SeriesStructure.getPercent(seriesData.percents.failed, seriesData.percents.skipped, seriesData.percents.passed),
-                            Tooltips.areaPercent()
-                        ));
-
-                    $scope.charts.push(
-                        GetChartStructure(
-                            'area_absolute',
-                            labels,
-                            SeriesStructure.getAbsolute(seriesData.absolute.failed, seriesData.absolute.skipped, seriesData.absolute.passed),
-                            Tooltips.areaAbsolute()
-                        ));
+                    pushAreaCharts($scope.charts, labels, seriesData);
                 }
             });
         };
 
-        $scope.addLaunchesToTestplans = function(testplans, days) {
+        function addLaunchesToTestplans(testplans, days) {
             var promises = [];
             _.each(testplans, function(testplan) {
-                var promise = $scope.getLaunches(testplan, days);
+                var promise = getLaunches(testplan, days);
                 promises.push(promise);
             });
             return $q.all(promises);
-        };
+        }
 
-        $scope.getLaunches = function(testplan, days) {
+        function getLaunches (testplan, days) {
             var deferred = $q.defer();
             Launch.custom_list({
                 testPlanId: testplan.id,
@@ -128,21 +82,16 @@ app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '
                 deferred.resolve(launches);
             });
             return deferred.promise;
-        };
+        }
 
         $scope.addChartsToTestplan = function(testplan, days) {
             testplan.days = days;
-            Launch.custom_list({
-                testPlanId: testplan.id,
-                state: appConfig.LAUNCH_STATE_FINISHED,
-                days: days,
-                search: testplan.filter
-            }, function (response) {
+            getLaunches(testplan, days).then(function(launches) {
                 testplan.charts = [];
 
                 //launches for common chart by date
-                var launches = LaunchHelpers.cutDate(response.results);
-                launches = LaunchFilters.byDate(launches);
+                launches = LaunchHelpers.cutDate(launches);
+                launches = LaunchFilters.getMax(launches);
                 launches = _.filter(launches, LaunchFilters.isEmptyResults);
                 launches = LaunchHelpers.addStatisticData(launches);
                 launches = _.sortBy(launches, 'id');
@@ -151,38 +100,11 @@ app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '
                 var labels = GetChartsData.labels(launches);
 
                 if ($scope.chartsType === appConfig.CHART_TYPE_COLUMN) {
-                    testplan.charts.push(
-                        GetChartStructure(
-                            'column',
-                            labels,
-                            SeriesStructure.getFailedAndSkipped(seriesData.percents.failed, seriesData.percents.skipped)
-                        ));
-
-                    testplan.charts.push(
-                        GetChartStructure(
-                            'column',
-                            labels,
-                            SeriesStructure.getTotal(seriesData.percents.total),
-                            Tooltips.total()
-                        ));
+                    pushColumnCharts(testplan.charts, labels, seriesData);
                 }
 
                 if ($scope.chartsType === appConfig.CHART_TYPE_AREA) {
-                    testplan.charts.push(
-                        GetChartStructure(
-                            'area_percent',
-                            labels,
-                            SeriesStructure.getPercent(seriesData.percents.failed, seriesData.percents.skipped, seriesData.percents.passed),
-                            Tooltips.areaPercent()
-                        ));
-
-                    testplan.charts.push(
-                        GetChartStructure(
-                            'area_absolute',
-                            labels,
-                            SeriesStructure.getAbsolute(seriesData.absolute.failed, seriesData.absolute.skipped, seriesData.absolute.passed),
-                            Tooltips.areaAbsolute()
-                        ));
+                    pushAreaCharts(testplan.charts, labels, seriesData);
                 }
 
                 if (testplan.variable_name === '') {
@@ -207,5 +129,40 @@ app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '
                     ));
             });
         };
+
+        function pushColumnCharts(charts, labels, series) {
+            charts.push(
+                GetChartStructure(
+                    'column',
+                    labels,
+                    SeriesStructure.getFailedAndSkipped(series.percents.failed, series.percents.skipped)
+                ));
+
+            charts.push(
+                GetChartStructure(
+                    'column',
+                    labels,
+                    SeriesStructure.getTotal(series.percents.total),
+                    Tooltips.total()
+                ));
+        }
+
+        function pushAreaCharts(charts, labels, series) {
+            charts.push(
+                GetChartStructure(
+                    'area_percent',
+                    labels,
+                    SeriesStructure.getPercent(series.percents.failed, series.percents.skipped, series.percents.passed),
+                    Tooltips.areaPercent()
+                ));
+
+            charts.push(
+                GetChartStructure(
+                    'area_absolute',
+                    labels,
+                    SeriesStructure.getAbsolute(series.absolute.failed, series.absolute.skipped, series.absolute.passed),
+                    Tooltips.areaAbsolute()
+                ));
+        }
     }
 ]);

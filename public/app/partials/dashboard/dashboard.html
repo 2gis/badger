@@ -32,9 +32,14 @@
         </div>
     </div>
 
-    <div class="panel panel-default">
+    <div class="panel panel-default" ng-if="summaryTestplans.length !== 0">
         <div class="panel-heading">Summary</div>
         <div class="panel-body">
+            <div ng-if="charts[0].xAxis.categories.length === 0">
+                    <div class="alert alert-warning text-center" role="alert">
+                        There are no total statistic for chosen period
+                    </div>
+                </div>
             <div class="row" ng-if="charts[0].xAxis.categories.length !== 0">
                 <div class="col-md-6" ng-if="charts">
                     <highchart config="charts[0]"></highchart>
@@ -46,7 +51,7 @@
             <div class="text-center">
                 <div class="btn-group btn-group-xs" role="group">
                     <button ng-repeat="days in [3, 7, 14, 28]" type="button" class="btn btn-default"
-                          ng-click="draw(days)"
+                          ng-click="createTotalChart(days)"
                           ng-class="{active: days === 7}">{{days}} days
                     </button>
                 </div>

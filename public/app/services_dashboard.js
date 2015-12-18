@@ -5,11 +5,16 @@ var servicesDashboard = angular.module('testReportServicesDashboard', ['ngResour
 servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
     return {
         isMain: isMain,
+        isSummary: isSummary,
         removeHidden: removeHidden
     };
 
     function isMain(item) {
         return item.main === true;
+    }
+
+    function isSummary(item) {
+        return item.show_in_summary === true;
     }
 
     function removeHidden(item) {
@@ -23,7 +28,8 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
         cutDate: cutDate,
         addDuration: addDuration,
         addEnvVariable: addEnvVariable,
-        addStatisticData: addStatisticData
+        addStatisticData: addStatisticData,
+        sumLaunchesByDate: sumLaunchesByDate
     };
 
     function cutDate(launches, options) {
@@ -76,12 +82,33 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
 
         return launches;
     }
+
+    function sumLaunchesByDate(launches) {
+        var finalLaunches = {};
+        _.each(launches, function(launch) {
+            _.each(launch, function(value, key) {
+                if (finalLaunches[key]) {
+                    var counts = _.max(value, 'id').counts;
+                    finalLaunches[key].counts.failed += counts.failed;
+                    finalLaunches[key].counts.skipped += counts.skipped;
+                    finalLaunches[key].counts.passed += counts.passed;
+                    finalLaunches[key].counts.blocked += counts.blocked;
+                    finalLaunches[key].counts.total += counts.total;
+                } else {
+                    finalLaunches[key] = _.max(value, 'id');
+                }
+            });
+        });
+        return _.values(finalLaunches);
+    }
+
 }).factory('LaunchFilters', function() {
     return {
         byDate: byDate,
         byEnvVar: byEnvVar,
         byRegExp: byRegExp,
-        isEmptyResults: isEmptyResults
+        isEmptyResults: isEmptyResults,
+        getMax: getMax
     };
 
     function byDate(launches) {
@@ -105,6 +132,14 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
 
     function isEmptyResults(launch) {
         return launch.counts.total !== 0;
+    }
+
+    function getMax(launches) {
+        var res = [];
+        _.each(launches, function(launch) {
+            res.push(_.max(launch, 'id'));
+        });
+        return res;
     }
 
 }).factory('GetChartsData', function() {
