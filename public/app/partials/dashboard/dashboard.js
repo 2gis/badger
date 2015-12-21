@@ -41,8 +41,8 @@ app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '
         });
 
         $scope.createTotalChart = function(days) {
-            addLaunchesToTestplans($scope.summaryTestplans, days).then(function(launches) {
-                var launches = LaunchHelpers.sumLaunchesByDate(launches);
+            addLaunchesToTestplans($scope.summaryTestplans, days).then(function(group_launches) {
+                var launches = LaunchHelpers.getLaunchesForTotalStatistic(group_launches);
                 launches = LaunchHelpers.addStatisticData(launches);
                 launches = _.sortBy(launches, 'created');
 

@@ -29,7 +29,7 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
         addDuration: addDuration,
         addEnvVariable: addEnvVariable,
         addStatisticData: addStatisticData,
-        sumLaunchesByDate: sumLaunchesByDate
+        getLaunchesForTotalStatistic: getLaunchesForTotalStatistic
     };
 
     function cutDate(launches, options) {
@@ -83,21 +83,23 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
         return launches;
     }
 
-    function sumLaunchesByDate(launches) {
+    function getLaunchesForTotalStatistic(group_launches) {
+        function sumLaunchCountsInDay(launch, date) {
+            if (finalLaunches[date]) {
+                var counts = _.max(launch, 'id').counts;
+                finalLaunches[date].counts.failed += counts.failed;
+                finalLaunches[date].counts.skipped += counts.skipped;
+                finalLaunches[date].counts.passed += counts.passed;
+                finalLaunches[date].counts.blocked += counts.blocked;
+                finalLaunches[date].counts.total += counts.total;
+            } else {
+                finalLaunches[date] = _.max(launch, 'id');
+            }
+        }
+
         var finalLaunches = {};
-        _.each(launches, function(launch) {
-            _.each(launch, function(value, key) {
-                if (finalLaunches[key]) {
-                    var counts = _.max(value, 'id').counts;
-                    finalLaunches[key].counts.failed += counts.failed;
-                    finalLaunches[key].counts.skipped += counts.skipped;
-                    finalLaunches[key].counts.passed += counts.passed;
-                    finalLaunches[key].counts.blocked += counts.blocked;
-                    finalLaunches[key].counts.total += counts.total;
-                } else {
-                    finalLaunches[key] = _.max(value, 'id');
-                }
-            });
+        _.each(group_launches, function(launches) {
+            _.each(launches, sumLaunchCountsInDay);
         });
         return _.values(finalLaunches);
     }
