@@ -32,7 +32,7 @@ app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '
                 $scope.addChartsToTestplan(testplan, appConfig.DEFAULT_DAYS);
             });
 
-            $scope.chartsType = $rootScope.getProjectChartsType($routeParams.projectId);
+            $scope.chartsType = $rootScope.getProjectSettings($routeParams.projectId, 'chart_type');
             $scope.createTotalChart(appConfig.DEFAULT_DAYS);
         });
 

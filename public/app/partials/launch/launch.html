@@ -77,13 +77,13 @@
             <div class="well">
                 <div ng-class="{ 'disabled': !apiErrors, 'alert alert-danger': apiErrors}" role="alert">{{ apiErrors }}</div>
                 <form class="form-inline" ng-submit="addBug()">
-                    <a ng-click="state = 0" class="btn btn-sm btn-success" ng-class="{ 'active': state == 0 }">Passed {{ launch.counts.passed }}</a>
-                    <a ng-click="state = 1" class="btn btn-sm btn-danger" ng-class="{ 'active': state == 1 }">Failed {{ launch.counts.failed }}</a>
-                    <a ng-click="state = 2" class="btn btn-sm btn-warning" ng-class="{ 'active': state == 2 }"> Skipped {{ launch.counts.skipped }}</a>
-                    <a ng-click="state = 3" class="btn btn-sm btn-danger" ng-class="{ 'active': state == 3 }"> Blocked {{ launch.counts.blocked }}</a>
+                    <a ng-show="result_view === 0" ng-click="state = 0" class="btn btn-sm btn-success" ng-class="{ 'active': state == 0 }">Passed {{ launch.counts.passed }}</a>
+                    <a ng-show="result_view === 0" ng-click="state = 1" class="btn btn-sm btn-danger" ng-class="{ 'active': state == 1 }">Failed {{ launch.counts.failed }}</a>
+                    <a ng-show="result_view === 0" ng-click="state = 2" class="btn btn-sm btn-warning" ng-class="{ 'active': state == 2 }"> Skipped {{ launch.counts.skipped }}</a>
+                    <a ng-show="result_view === 0" ng-click="state = 3" class="btn btn-sm btn-danger" ng-class="{ 'active': state == 3 }"> Blocked {{ launch.counts.blocked }}</a>
 
                     <div class="form-group" ng-show="jira">
-                        <span class="glyphicon glyphicon-minus"></span>
+                        <span ng-show="result_view === 0" class="glyphicon glyphicon-minus"></span>
                         <div class="input-group">
                             <input type="text" class="form-control input-sm" placeholder="Issue Id" ng-model="bugId">
                         </div>
@@ -101,33 +101,76 @@
                     </a>
                 </form>
             </div>
-            <table ng-table="tableParams" show-filter="true" class="table table-condensed table-bordered table-hover table-striped">
-                <tbody ng-repeat="(key, group) in $data">
-                <tr class="ng-table-group">
-                    <td colspan="{{ $columns.length }}">
-                        <a href="" ng-click="group.$hideRows = !group.$hideRows">
-                            <span class="glyphicon" ng-class="{ 'glyphicon-chevron-right': group.$hideRows, 'glyphicon-chevron-down': !group.$hideRows }"></span>
-                            <strong>{{ getLaunchItemById(key).name }} ({{ group.length }})</strong>
-                        </a>
-                    </td>
-                </tr>
-                <tr ng-hide="group.$hideRows" ng-repeat="test in group" ng-click="openResults(test, $index)" style="cursor:pointer" ng-class="{'hidden': test.hidden }">
-                    <td data-title="'Failure reason'" filter="{'failure_reason': 'text'}">
-                        <pre ng-if="test.failure_reason==='' && test.suite">{{ test.suite }}:{{ test.name }}</pre>
-                        <pre ng-if="test.failure_reason==='' && !test.suite">{{ test.name }}</pre>
-                        <pre ng-if="test.failure_reason!==''">{{ test.failure_reason | cut:true:256:' ...' }}</pre>
-                    </td>
-                    <td data-title="'sec.'" sortable="duration">{{ test.duration | toFixed }}</td>
-                    <td data-title="'Bugs'">
-                        <div ng-repeat="bug in test.bugs">
-                            <a class="label label-{{ bug.status | bugStatusClass }}"
-                               href="https://jira.2gis.ru/browse/{{ bug.externalId }}"
-                               title="{{ bug.name }}">{{ bug.externalId }}</a>
-                        </div>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+
+            <div ng-if="result_view === 0">
+                <table ng-table="tableParams" show-filter="true" class="table table-condensed table-bordered table-hover table-striped">
+                    <tbody ng-repeat="(key, group) in $data">
+                    <tr class="ng-table-group">
+                        <td colspan="{{ $columns.length }}">
+                            <a href="" ng-click="group.$hideRows = !group.$hideRows">
+                                <span class="glyphicon" ng-class="{ 'glyphicon-chevron-right': group.$hideRows, 'glyphicon-chevron-down': !group.$hideRows }"></span>
+                                <strong>{{ getLaunchItemById(key).name }} ({{ group.length }})</strong>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr ng-hide="group.$hideRows" ng-repeat="test in group" ng-click="openResults(test, $index)" style="cursor:pointer" ng-class="{'hidden': test.hidden }">
+                        <td data-title="'Failure reason'" filter="{'failure_reason': 'text'}">
+                            <pre ng-if="test.failure_reason==='' && test.suite">{{ test.suite }}:{{ test.name }}</pre>
+                            <pre ng-if="test.failure_reason==='' && !test.suite">{{ test.name }}</pre>
+                            <pre ng-if="test.failure_reason!==''">{{ test.failure_reason | cut:true:256:' ...' }}</pre>
+                        </td>
+                        <td data-title="'sec.'" sortable="duration">{{ test.duration | toFixed }}</td>
+                        <td data-title="'Bugs'">
+                            <div ng-repeat="bug in test.bugs">
+                                <a class="label label-{{ bug.status | bugStatusClass }}"
+                                   href="https://jira.2gis.ru/browse/{{ bug.externalId }}"
+                                   title="{{ bug.name }}">{{ bug.externalId }}</a>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div ng-if="result_view === 1">
+                <table ng-table="tableParams" show-filter="true" class="table table-condensed table-bordered table-hover table-striped">
+                    <tbody ng-repeat="(key, group) in $data">
+                    <tr class="ng-table-group">
+                        <td colspan="{{ $columns.length }}">
+                            <a href="" ng-click="group.$hideRows = !group.$hideRows" style="text-decoration: none;">
+                                <span class="glyphicon" ng-class="{ 'glyphicon-chevron-right': !group.$hideRows, 'glyphicon-chevron-down': group.$hideRows }"></span>
+                                <b ng-if="key">{{ key }} </b>
+                                <b ng-if="!key">unknown suite</b>
+                                <div class="pull-right">
+                                    <span class="label label-success" ng-if="group.passed !== 0">{{ group.passed }}</span>
+                                    <span class="label label-warning" ng-if="group.skipped !== 0">{{ group.skipped }}</span>
+                                    <span class="label label-danger" ng-if="group.failed !== 0 || group.blocked !== 0">{{ group.failed + group.blocked }}</span>
+                                    / <span class="label label-primary">{{ group.passed + group.failed + group.blocked + group.skipped}}</span>
+                                </div>
+
+                            </a>
+                        </td>
+                    </tr>
+                    <tr ng-hide="!group.$hideRows" ng-repeat="test in group | orderBy: ['order', '-duration']"
+                        ng-click="openResults(test, $index)" style="cursor:pointer" ng-class="{'hidden': test.hidden }">
+                        <td data-title="'Failure reason'" filter="{'failure_reason': 'text'}">
+                            <pre>{{ test.name }}</pre>
+                        </td>
+                        <td data-title="'state'" style="width: 4em;">
+                            <span class="{{ test.state | testStatesClass }}">{{ test.state | testStates }}</span>
+                        </td>
+                        <td data-title="'sec.'" style="width: 2em;" sortable="duration">{{ test.duration | toFixed }}</td>
+                        <td data-title="'Bugs'" style="width: 4em;">
+                            <div ng-repeat="bug in test.bugs">
+                                <a class="label label-{{ bug.status | bugStatusClass }}"
+                                   href="https://jira.2gis.ru/browse/{{ bug.externalId }}"
+                                   title="{{ bug.name }}">{{ bug.externalId }}</a>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <div role="tabpanel" class="tab-pane" id="tasks" ng-class="{ 'active': !finished }">
@@ -206,21 +249,24 @@
                         <span aria-hidden="true">&times;</span>
                         <span class="sr-only">Next</span>
                     </button>
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-xs btn-primary" ng-click="prevItem()">
-                            <span class="glyphicon glyphicon-chevron-left"></span>
-                        </button>
-                        <button type="button" class="btn btn-xs btn-primary" ng-click="nextItem()">
-                            <span class="glyphicon glyphicon-chevron-right"></span>
-                        </button>
+                    <div ng-if="result_view === 0">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-xs btn-primary" ng-click="prevItem()">
+                                <span class="glyphicon glyphicon-chevron-left"></span>
+                            </button>
+                            <button type="button" class="btn btn-xs btn-primary" ng-click="nextItem()">
+                                <span class="glyphicon glyphicon-chevron-right"></span>
+                            </button>
+                        </div>
+                        use keyboard <span class="label label-info">j</span> and
+                        <span class="label label-info">k</span> or
+                        <span class="label label-info">arrow right</span> and
+                        <span class="label label-info">arrow left</span> for navigation
                     </div>
-                    use keyboard <span class="label label-info">j</span> and
-                    <span class="label label-info">k</span> or
-                    <span class="label label-info">arrow right</span> and
-                    <span class="label label-info">arrow left</span> for navigation
                     <h4 class="modal-title" id="TestDetailsModalLabel">
                         {{ modalSuite }} <strong>{{ modalName }}</strong>
                     </h4>
+                    <span ng-if="result_view === 1" class="{{ modalState | testStatesClass }}">{{ modalState | testStates }}</span>
                 </div>
 
                 <div class="modal-body" style="overflow-y: auto;">

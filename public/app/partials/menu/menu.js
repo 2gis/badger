@@ -92,15 +92,15 @@ app.controller('Menu', ['$rootScope', '$routeParams','$scope', '$location', 'Pro
             return $scope.activeProjectId;
         };
 
-        $rootScope.getProjectChartsType = function(id) {
+        $rootScope.getProjectSettings = function(id, setting_name) {
             var project = $scope.findProjectById(id);
             var res = _.filter(project.settings, function (item) {
-                return item.key && item.key === 'chart_type';
+                return item.key && item.key === setting_name;
             });
             if (res.length === 1) {
                 return parseInt(res[0].value);
             }
-            return appConfig.CHART_TYPE_COLUMN;
+            return 0;
         };
 
         $scope.login = function () {

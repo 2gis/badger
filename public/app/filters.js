@@ -18,6 +18,26 @@ filters.filter('states', function () {
         var launch_states = ['STARTED', 'IN_PROGRESS', 'FINISHED', 'STOPPED', 'SUCCESS'];
         return launch_states[input];
     };
+}).filter('testStates', function () {
+    return function (input) {
+        var launch_states = ['PASSED', 'FAILED', 'SKIPPED', 'BLOCKED'];
+        return launch_states[input];
+    };
+}).filter('testStatesClass', function () {
+    return function (input) {
+        switch (input) {
+            case 0:
+                return 'label label-success';
+            case 1:
+                return 'label label-danger';
+            case 2:
+                return 'label label-warning';
+            case 3:
+                return 'label label-danger';
+            default:
+                return 'reverse';
+        }
+    };
 }).filter('statesClass', function () {
     return function (input) {
         switch (input) {

@@ -73,7 +73,7 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$window', '$location', 
             $rootScope.selectProject(result.project);
             $scope.testplan = result;
             $scope.name = result.name;
-            $scope.chartsType = $rootScope.getProjectChartsType(result.project);
+            $scope.chartsType = $rootScope.getProjectSettings(result.project, 'chart_type');
         });
 
         $scope.testPlanId = $routeParams.testPlanId;
