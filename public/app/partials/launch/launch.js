@@ -35,15 +35,32 @@ app.directive('goClick', function ($location) {
     };
 });
 
+app.filter('toArray', function() { return function(obj) {
+    if (!(obj instanceof Object)) return obj;
+    return _.map(obj, function(val, key) {
+        return Object.defineProperty(val, '$key', {__proto__: null, value: key});
+    });
+}});
+
 app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter', '$timeout', '$window', 'ngTableParams', 'hotkeys', 'appConfig', 'TestResult', 'Launch', 'Task', 'Comment', 'Bug', 'SortLaunchItems', 'TestPlan',
     function ($scope, $rootScope, $routeParams, $filter, $timeout, $window, ngTableParams, hotkeys, appConfig, TestResult, Launch, Task, Comment, Bug, SortLaunchItems, TestPlan) {
         var initialized = false;
+
+        function getProfileAndDrawTable() {
+            $rootScope.getProfile().then(function(profile) {
+                $scope.result_view = $rootScope.getProjectSettings($rootScope.getActiveProject(), 'results_view');
+                drawTable(profile, $scope.result_view);
+            });
+        }
 
         Launch.get({ launchId: $routeParams.launchId }, function (launch) {
             if($rootScope.getActiveProject() === null) {
                 TestPlan.get({'testPlanId': launch.test_plan}, function(testplan) {
                     $rootScope.selectProject(testplan.project);
+                    getProfileAndDrawTable();
                 });
+            } else {
+                getProfileAndDrawTable();
             }
             $scope.launch = launch;
             if (!$scope.launch.duration) {
@@ -197,18 +214,22 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
             var modal = $('#TestDetailsModal');
 
             modal.modal('hide');
-            if (item.id !== $scope.dataGroup[0].id) {
-                for (var i = 0; i < $scope.dataGroup.length; ++i) {
-                    if ($scope.dataGroup[i].id === item.id) {
-                        index = i;
-                        break;
+
+            if ($scope.result_view === 0) {
+                if (item.id !== $scope.dataGroup[0].id) {
+                    for (var i = 0; i < $scope.dataGroup.length; ++i) {
+                        if ($scope.dataGroup[i].id === item.id) {
+                            index = i;
+                            break;
+                        }
                     }
                 }
+                $scope.index = index;
             }
 
-            $scope.index = index;
             $scope.modalSuite = item.suite;
             $scope.modalName = item.name;
+            $scope.modalState = item.state;
             $scope.modalBody = item.failure_reason;
             $scope.modalId = item.id;
             modal.modal('show');
@@ -284,12 +305,17 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
 
         var create_table_attempt = 0;
 
-        $rootScope.getProfile().then(function(profile) {
-            drawTable(profile);
-        });
+        function drawTable(profile, type) {
+            if (type === appConfig.RESULT_VIEW_DEFAULT) {
+                $scope.tableParams = defaultTable(profile);
+            }
+            if (type === appConfig.RESULT_VIEW_TREE) {
+                $scope.tableParams = treeTable();
+            }
+        }
 
-        function drawTable(profile) {
-            $scope.tableParams = new ngTableParams({
+        function defaultTable (profile) {
+            return new ngTableParams({
                 page: 1,
                 count: 25,
                 sorting: {
@@ -322,7 +348,7 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
                     }, function (result) {
                         params.total(result.count);
                         $scope.data = _.groupBy(result.results, function (item) {
-                            return item.launch_item_id
+                            return item.launch_item_id;
                         });
 
                         var arrays = $.map($scope.data, function (value) {
@@ -336,6 +362,67 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
                     });
                 }
             });
+        }
+
+        function treeTable() {
+            return new ngTableParams({
+                count: 99999
+            }, {
+                total: 0,
+                getData: function ($defer, params) {
+                    TestResult.get({
+                        launchId: $routeParams.launchId,
+                        page: 1,
+                        pageSize: 9999,
+                        search: params.$params.filter.failure_reason
+                    }, function (result) {
+                        params.total(result.count);
+                        $scope.data = _.groupBy(result.results, function (item) {
+                            return item.suite;
+                        });
+
+                        _.each($scope.data, function(group, group_name) {
+                            group = setOrder(group);
+                            $scope.data[group_name].passed = _.filter(group, function(result) {
+                                return result.state === 0;
+                            }).length;
+                            $scope.data[group_name].skipped = _.filter(group, function(result) {
+                                return result.state === 2;
+                            }).length;
+                            $scope.data[group_name].failed = _.filter(group, function(result) {
+                                return result.state === 1;
+                            }).length;
+                            $scope.data[group_name].blocked = _.filter(group, function(result) {
+                                return result.state === 3;
+                            }).length;
+                        });
+                        $defer.resolve($scope.data);
+                        $scope.tableParams.settings({counts: []});
+                    });
+                }
+            });
+        }
+
+        function setOrder(group) {
+            _.each(group, function(item) {
+                switch(item.state) {
+                    case 0:
+                        item.order = 2;
+                        break;
+                    case 1:
+                        item.order = 1;
+                        break;
+                    case 2:
+                        item.order = 3;
+                        break;
+                    case 3:
+                        item.order = 0;
+                        break;
+                    default:
+                        item.order = 4;
+                }
+            });
+            return group;
         }
 
         $scope.comments = new ngTableParams({
