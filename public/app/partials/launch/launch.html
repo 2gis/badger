@@ -134,13 +134,13 @@
 
             <div ng-if="result_view === 1">
                 <table ng-table="tableParams" show-filter="true" class="table table-condensed table-bordered table-hover table-striped">
-                    <tbody ng-repeat="(key, group) in $data">
+                    <tbody ng-repeat="group in $data | toArray | orderBy:['-failed+blocked','$key']">
                     <tr class="ng-table-group">
                         <td colspan="{{ $columns.length }}">
                             <a href="" ng-click="group.$hideRows = !group.$hideRows" style="text-decoration: none;">
                                 <span class="glyphicon" ng-class="{ 'glyphicon-chevron-right': !group.$hideRows, 'glyphicon-chevron-down': group.$hideRows }"></span>
-                                <b ng-if="key">{{ key }} </b>
-                                <b ng-if="!key">unknown suite</b>
+                                <b ng-if="group.$key">{{ group.$key }} </b>
+                                <b ng-if="!group.$key">unknown suite</b>
                                 <div class="pull-right">
                                     <span class="label label-warning label-balanced" ng-if="group.skipped !== 0">{{ group.skipped }}</span>
                                     <span class="label label-danger label-balanced" ng-if="group.failed !== 0 || group.blocked !== 0">{{ group.failed + group.blocked }}</span>
