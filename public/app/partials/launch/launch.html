@@ -142,10 +142,10 @@
                                 <b ng-if="key">{{ key }} </b>
                                 <b ng-if="!key">unknown suite</b>
                                 <div class="pull-right">
-                                    <span class="label label-success" ng-if="group.passed !== 0">{{ group.passed }}</span>
-                                    <span class="label label-warning" ng-if="group.skipped !== 0">{{ group.skipped }}</span>
-                                    <span class="label label-danger" ng-if="group.failed !== 0 || group.blocked !== 0">{{ group.failed + group.blocked }}</span>
-                                    / <span class="label label-primary">{{ group.passed + group.failed + group.blocked + group.skipped}}</span>
+                                    <span class="label label-warning label-balanced" ng-if="group.skipped !== 0">{{ group.skipped }}</span>
+                                    <span class="label label-danger label-balanced" ng-if="group.failed !== 0 || group.blocked !== 0">{{ group.failed + group.blocked }}</span>
+                                    <span class="label label-success label-balanced" ng-if="group.passed !== 0">{{ group.passed }}</span>
+                                    / <span class="label label-primary label-balanced">{{ group.passed + group.failed + group.blocked + group.skipped}}</span>
                                 </div>
 
                             </a>
@@ -153,8 +153,13 @@
                     </tr>
                     <tr ng-hide="!group.$hideRows" ng-repeat="test in group | orderBy: ['order', '-duration']"
                         ng-click="openResults(test, $index)" style="cursor:pointer" ng-class="{'hidden': test.hidden }">
-                        <td data-title="'Failure reason'" filter="{'failure_reason': 'text'}">
-                            <pre>{{ test.name }}</pre>
+                        <td data-title="'Failure reason'" filter="{'failure_reason': 'text'}" style="padding-bottom: 1px;">
+                            <div class="panel panel-default panel-tree-view" style="margin-bottom: 5px;">
+                                <div class="panel-body" style="background-color: whitesmoke; padding: 10px; padding-bottom: 5px;">
+                                    {{ test.name }}
+                                    <pre ng-if="test.state !== 0" style="background-color: white; font-size: 12px;">{{ test.failure_reason | cut:true:256:' ...'  }}</pre>
+                                </div>
+                            </div>
                         </td>
                         <td data-title="'state'" style="width: 4em;">
                             <span class="{{ test.state | testStatesClass }}">{{ test.state | testStates }}</span>
