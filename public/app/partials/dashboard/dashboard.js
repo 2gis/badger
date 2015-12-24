@@ -57,6 +57,11 @@ app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '
                 if ($scope.chartsType === appConfig.CHART_TYPE_AREA) {
                     pushAreaCharts($scope.charts, labels, seriesData);
                 }
+
+                //disable click event for total chart
+                _.each($scope.charts, function(chart) {
+                    chart.options.plotOptions.series.point.events = {};
+                });
             });
         };
 
