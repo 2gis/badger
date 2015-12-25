@@ -53,6 +53,19 @@ app.controller('Menu', ['$rootScope', '$routeParams','$scope', '$location', 'Pro
             Project.query(function (result) {
 
                 $rootScope.projects = result.results;
+
+                $rootScope.projects = _.each($rootScope.projects, function(project) {
+                    project.weight = 1000;
+                    _.each(project.settings, function(setting) {
+                        if (setting.key === 'weight') {
+                            project.weight = parseInt(setting.value);
+                        }
+                        if (setting.key === 'color') {
+                            project.color = setting.value;
+                        }
+                    });
+                });
+
                 TestPlan.custom_list({ projectsIds: _.map($rootScope.projects, function (item) { return item.id})}, function (result) {
                     _.each($rootScope.projects, function (project) {
                         project.testplans = _.sortBy(
