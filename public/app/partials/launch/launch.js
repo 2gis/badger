@@ -79,7 +79,6 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
         $scope.modalId = 0;
         $scope.state = appConfig.TESTRESULT_FAILED;
         $scope.data = [];
-        $scope.dataGroup = [];
         $scope.index = null;
         $scope.tasks = [];
         $scope.states = [
@@ -291,7 +290,8 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
                                 return suites[i][j];
                             }
                         }
-                        if (suites[i][j].id === item.id) {
+                        if (suites[i][j].id === item.id)
+
                             currentFound = true;
                         }
                     }
@@ -384,7 +384,7 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
                         $scope.data = $filter('toArray')($scope.data)
 
                         $defer.resolve($scope.data);
-                        $scope.tableParams.settings({counts: $scope.dataGroup.length >= 10 ? [10, 25, 50, 100] : []});
+                        $scope.tableParams.settings({counts: $scope.data.length >= 10 ? [10, 25, 50, 100] : []});
                     });
                 }
             });
