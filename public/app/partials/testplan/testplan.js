@@ -209,6 +209,8 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$window', '$location', 
                                 SeriesStructure.getDuration(seriesData.duration),
                                 Tooltips.duration()
                             ));
+                        $scope.charts[0].yAxis.tickInterval = 5;
+                        $scope.charts[0].yAxis.title.text = 'min';
 
                         if ($scope.chartsType === appConfig.CHART_TYPE_COLUMN) {
                             $scope.charts.push(
