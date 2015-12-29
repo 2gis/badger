@@ -14,8 +14,8 @@ app.config(['$routeProvider', function ($routeProvider) {
     });
 }]);
 
-app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', 'appConfig', 'TestPlan', 'Launch', 'Stage', 'Filters', 'LaunchHelpers', 'LaunchFilters', 'GetChartsData', 'SeriesStructure', 'Tooltips', 'GetChartStructure',
-    function ($q, $scope, $rootScope, $routeParams, appConfig, TestPlan, Launch, Stage, Filters, LaunchHelpers, LaunchFilters, GetChartsData, SeriesStructure, Tooltips, GetChartStructure) {
+app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', 'appConfig', 'ngTableParams', 'TestPlan', 'Launch', 'Stage', 'Filters', 'LaunchHelpers', 'LaunchFilters', 'GetChartsData', 'SeriesStructure', 'Tooltips', 'GetChartStructure',
+    function ($q, $scope, $rootScope, $routeParams, appConfig, ngTableParams, TestPlan, Launch, Stage, Filters, LaunchHelpers, LaunchFilters, GetChartsData, SeriesStructure, Tooltips, GetChartStructure) {
         $rootScope.selectProject($routeParams.projectId);
         $rootScope.isMainDashboard = false;
 
@@ -31,6 +31,8 @@ app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '
             _.each($scope.testplans, function (testplan) {
                 $scope.addChartsToTestplan(testplan, appConfig.DEFAULT_DAYS);
             });
+
+            drawTable($scope.testplans);
 
             $scope.chartsType = $rootScope.getProjectSettings($routeParams.projectId, 'chart_type');
             $scope.createTotalChart(appConfig.DEFAULT_DAYS);
@@ -101,6 +103,8 @@ app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '
                 launches = LaunchHelpers.addStatisticData(launches);
                 launches = _.sortBy(launches, 'id');
 
+                addLastTwoDaysCounts(testplan, launches);
+
                 var seriesData = GetChartsData.series(launches);
                 var labels = GetChartsData.labels(launches);
 
@@ -168,6 +172,33 @@ app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '
                     SeriesStructure.getAbsolute(series.absolute.failed, series.absolute.skipped, series.absolute.passed),
                     Tooltips.areaAbsolute()
                 ));
+        }
+
+        function drawTable(testplans) {
+            $scope.tableParams = new ngTableParams({
+                count: 999
+            }, {
+                total: 0,
+                getData: function ($defer) {
+                    $defer.resolve(testplans);
+                }
+            });
+        }
+
+        function addLastTwoDaysCounts(testplan, launches) {
+            var d = new Date();
+            $scope.today = d.toLocaleDateString(LANG);
+            d.setDate(d.getDate() - 1);
+            $scope.yesterday = d.toLocaleDateString(LANG);
+
+            _.each(launches, function(launch) {
+                if (launch.groupDate === $scope.today) {
+                    testplan.today = launch.counts;
+                }
+                if (launch.groupDate === $scope.yesterday) {
+                    testplan.yesterday = launch.counts;
+                }
+            });
         }
     }
 ]);

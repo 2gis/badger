@@ -33,8 +33,15 @@
     </div>
 
     <div class="panel panel-info" ng-if="summaryTestplans.length !== 0">
-        <div class="panel-heading">Total statistic</div>
-        <div class="panel-body">
+        <div class="panel-heading">Total statistic
+                <div class="btn-group btn-group-xs pull-right" role="group">
+                    <button ng-repeat="days in [3, 7, 14, 28]" type="button" class="btn btn-default"
+                          ng-click="createTotalChart(days)"
+                          ng-class="{active: days === 7}">{{days}} days
+                    </button>
+                </div>
+        </div>
+        <div class="panel-body" style="padding-bottom: 2px;">
             <div ng-if="charts[0].xAxis.categories.length === 0">
                     <div class="alert alert-warning text-center" role="alert">
                         There are no total statistic for chosen period
@@ -48,16 +55,65 @@
                     <highchart config="charts[1]"></highchart>
                 </div>
             </div>
-            <div class="text-center">
-                <div class="btn-group btn-group-xs" role="group">
-                    <button ng-repeat="days in [3, 7, 14, 28]" type="button" class="btn btn-default"
-                          ng-click="createTotalChart(days)"
-                          ng-class="{active: days === 7}">{{days}} days
-                    </button>
-                </div>
-            </div>
         </div>
     </div>
+
+    <div class="panel panel-info" ng-if="summaryTestplans.length !== 0">
+        <div class="panel-body" style="padding-top: 5px; padding-bottom: 1px;">
+            <table  ng-table="tableParams" class="table table-striped" template-pagination="removePagerRow.html">
+                <tr ng-repeat="tableParam in $data" ng-class="{ 'danger': launch.percent_of_failed > 1 && launch.state === 2,
+                         'warning': launch.percent_of_failed > 0,
+                                        'success': launch.percent_of_failed == 0}">
+                    <td data-title="''">
+                        {{ tableParam.name }}
+                    </td>
+                    <td data-title="today" class="text-center" style="width: 15em;">
+                        <div ng-if="tableParam.today">
+                            <span ng-if="tableParam.today.passed !== 0" class="label label-success label-history" title="passed">
+                                {{ tableParam.today.passed }}</span>
+                            <span ng-if="tableParam.today.passed === 0" class="label label-default label-history label-zero" title="passed">
+                                {{ tableParam.today.passed }}</span>
+                            <span ng-if="tableParam.today.skipped !== 0" class="label label-warning label-history" title="skipped">
+                                {{ tableParam.today.skipped }}</span>
+                            <span ng-if="tableParam.today.skipped === 0" class="label label-default label-history label-zero" title="skipped">
+                                {{ tableParam.today.skipped }}</span>
+                            <span ng-if="tableParam.today.failed !== 0" class="label label-danger label-history" title="failed">
+                                {{ tableParam.today.failed }}</span>
+                            <span ng-if="tableParam.today.failed === 0" class="label label-default label-history label-zero" title="failed">
+                                {{ tableParam.today.failed }}</span>
+                            <span ng-if="tableParam.today.blocked !== 0" class="label label-danger label-history" title="blocked">
+                                {{ tableParam.today.blocked }}</span>
+                            <span ng-if="tableParam.today.blocked === 0" class="label label-default label-history label-zero" title="blocked">
+                                {{ tableParam.today.blocked }}</span>
+                        </div>
+                        <div ng-if="tableParams && !tableParam.today">NOT RUN</div>
+                    </td>
+                    <td data-title="yesterday" class="text-center" style="width: 15em;">
+                        <div ng-if="tableParam.yesterday">
+                            <span ng-if="tableParam.yesterday.passed !== 0" class="label label-success label-history" title="passed">
+                                {{ tableParam.yesterday.passed }}</span>
+                            <span ng-if="tableParam.yesterday.passed === 0" class="label label-default label-history label-zero" title="passed">
+                                {{ tableParam.yesterday.passed }}</span>
+                            <span ng-if="tableParam.yesterday.skipped !== 0" class="label label-warning label-history" title="skipped">
+                                {{ tableParam.yesterday.skipped }}</span>
+                            <span ng-if="tableParam.yesterday.skipped === 0" class="label label-default label-history label-zero" title="skipped">
+                                {{ tableParam.yesterday.skipped }}</span>
+                            <span ng-if="tableParam.yesterday.failed !== 0" class="label label-danger label-history" title="failed">
+                                {{ tableParam.yesterday.failed }}</span>
+                            <span ng-if="tableParam.yesterday.failed === 0" class="label label-default label-history label-zero" title="failed">
+                                {{ tableParam.yesterday.failed }}</span>
+                            <span ng-if="tableParam.yesterday.blocked !== 0" class="label label-danger label-history" title="blocked">
+                                {{ tableParam.yesterday.blocked }}</span>
+                            <span ng-if="tableParam.yesterday.blocked === 0" class="label label-default label-history label-zero" title="blocked">
+                                {{ tableParam.yesterday.blocked }}</span>
+                        </div>
+                        <div ng-if="!tableParam.yesterday">NOT RUN</div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <hr ng-if="summaryTestplans.length !== 0">
 
     <div ng-repeat="testplan in testplans">
         <div class="panel panel-default">
