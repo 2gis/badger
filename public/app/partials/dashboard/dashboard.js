@@ -191,12 +191,13 @@ app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '
             d.setDate(d.getDate() - 1);
             $scope.yesterday = d.toLocaleDateString(LANG);
 
+            testplan.twodays = [{},{}];
             _.each(launches, function(launch) {
                 if (launch.groupDate === $scope.today) {
-                    testplan.today = launch.counts;
+                    testplan.twodays[0] = launch.counts;
                 }
                 if (launch.groupDate === $scope.yesterday) {
-                    testplan.yesterday = launch.counts;
+                    testplan.twodays[1] = launch.counts;
                 }
             });
         }
