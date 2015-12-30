@@ -44,7 +44,7 @@ div.navbar.navbar-default.navbar-fixed-top(role='navigation', ng-controller='Men
           li
             a(href='javascript:;', ng-click="login()") Login
           li(ng-if='profile === null')
-            img(ng-if='xmasTree' ng-cloak src='./static/images/xmastree.gif' width=48 title='Happy New Year!')
+            img(ng-if='xmasTree' ng-cloak src='./static/images/xmastree.gif' width=43 title='Happy New Year!')
         ul.nav.navbar-nav.navbar-right
           li(ng-if='profile !== null')
             a(id='{{ profile.username }}' ng-href='#/profile/settings') {{ profile.username }}
@@ -58,4 +58,4 @@ div.navbar.navbar-default.navbar-fixed-top(role='navigation', ng-controller='Men
             a(href='javascript:;', ng-click='logout()')
               span.glyphicon.glyphicon-log-out
           li(ng-if='profile !== null')
-            img(ng-if='xmasTree' ng-cloak src='./static/images/xmastree.gif' width=48 title='Happy New Year!')
+            img(ng-if='xmasTree' ng-cloak src='./static/images/xmastree.gif' width=43 title='Happy New Year!')
