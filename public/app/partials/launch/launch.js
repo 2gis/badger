@@ -572,8 +572,8 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
             if (results.length !== 0) {
                 var ids = getFirstAndLastIds(results);
 
-                $scope.disableFailedPrev = (item.id === ids[0]) ? true : false;
-                $scope.disableFailedNext = (item.id === ids[1]) ? true : false;
+                $scope.disableFailedPrev = (item.id === ids[0]);
+                $scope.disableFailedNext = (item.id === ids[1]);
             }
         }
 
@@ -581,8 +581,8 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
             var results = $scope.tableParams.data;
             var ids = getFirstAndLastIds(results);
 
-            $scope.disableMainPrev = (item.id === ids[0]) ? true : false;
-            $scope.disableMainNext = (item.id === ids[1]) ? true : false;
+            $scope.disableMainPrev = (item.id === ids[0]);
+            $scope.disableMainNext = (item.id === ids[1]);
         }
     }
 ]);
