@@ -65,9 +65,9 @@
                     <th style="border-top-color: white;"></th>
                     <th style="border-top-color: white;" ng-repeat="day in [today, yesterday] track by $index">{{day}}</th>
                 </tr>
-                <tr ng-repeat="tableParam in $data" ng-class="{ 'danger': launch.percent_of_failed > 1 && launch.state === 2,
-                         'warning': launch.percent_of_failed > 0,
-                                        'success': launch.percent_of_failed == 0}">
+                <tr ng-repeat="tableParam in $data" ng-class="{ 'danger': tableParam.percent_of_failed > 1,
+                         'warning': tableParam.percent_of_failed > 0,
+                                        'success': tableParam.percent_of_failed == 0}">
                     <td>{{ tableParam.name }}</td>
                     <td ng-repeat="day in tableParam.twodays" class="text-center" style="width: 15em;">
                         <div ng-if="day.total">
