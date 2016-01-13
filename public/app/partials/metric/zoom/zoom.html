@@ -57,7 +57,7 @@
 </div>
 <div class="container-fluid">
     <div class="row-fluid">
-        <div class="span9" ng-if="metric.chart.length !== 0">
+        <div class="span9" ng-if="metric.chart && metric.chart.length !== 0">
             <highchart config="metric.chart"></highchart>
         </div>
     </div>

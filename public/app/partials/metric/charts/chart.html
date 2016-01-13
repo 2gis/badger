@@ -45,7 +45,7 @@
                         </div>
                     </div>
                     <div>
-                        <highchart ng-if="metric.chart.length !== 0" config="metric.chart"></highchart>
+                        <highchart ng-if="metric.chart && metric.chart.length !== 0" config="metric.chart"></highchart>
                         <p></p>
                         <div class="text-center" ng-hide="!metric.chart || metric.chart.length === 0">
                             <div class="btn-group btn-group-xs" role="group">

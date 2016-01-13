@@ -4,6 +4,7 @@ app.controller('Menu', ['$rootScope', '$routeParams','$scope', '$location', 'Pro
     function ($rootScope, $routeParams, $scope, $location, Project, TestPlan, Auth, isSafari, $q, appConfig) {
         $scope.isSafari = isSafari;
         $scope.jira = JIRA_INTEGRATION;
+        $scope.xmasTree = showXmasTree();
 
         //hide menu if hideMenu=true
         var scope = $routeParams;
@@ -53,6 +54,12 @@ app.controller('Menu', ['$rootScope', '$routeParams','$scope', '$location', 'Pro
             Project.query(function (result) {
 
                 $rootScope.projects = result.results;
+                _.each($rootScope.projects, function(project) {
+                    _.each(project.settings, function(setting) {
+                        project[setting.key] = setting.value;
+                    });
+                });
+
                 TestPlan.custom_list({ projectsIds: _.map($rootScope.projects, function (item) { return item.id})}, function (result) {
                     _.each($rootScope.projects, function (project) {
                         project.testplans = _.sortBy(
@@ -108,5 +115,17 @@ app.controller('Menu', ['$rootScope', '$routeParams','$scope', '$location', 'Pro
             $location.path('/auth/login/');
         };
 
+        function showXmasTree() {
+            var today = new Date();
+            var year = today.getFullYear();
+
+            var startDate = new Date(year, 11, 15);
+            var finishDate = new Date(year, 0, 15);
+            if ((today > startDate && today > finishDate) ||
+                (today < startDate && today < finishDate)) {
+                return true;
+            }
+            return false;
+        }
     }
 ]);
