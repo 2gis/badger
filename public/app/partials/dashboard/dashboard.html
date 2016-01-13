@@ -70,7 +70,7 @@
                                         'success': launch.percent_of_failed == 0}">
                     <td>{{ tableParam.name }}</td>
                     <td ng-repeat="day in tableParam.twodays" class="text-center" style="width: 15em;">
-                        <div ng-if="day.passed">
+                        <div ng-if="day.total">
                             <span ng-if="day.passed !== 0" class="label label-success label-history" title="passed">
                                 {{ day.passed }}</span>
                             <span ng-if="day.passed === 0" class="label label-default label-history label-zero" title="passed">
@@ -88,7 +88,7 @@
                             <span ng-if="day.blocked === 0" class="label label-default label-history label-zero" title="blocked">
                                 {{ day.blocked }}</span>
                         </div>
-                        <div ng-if="!day.passed">NOT RUN</div>
+                        <div ng-if="!day.total">NOT RUN</div>
                     </td>
                 </tr>
             </table>
