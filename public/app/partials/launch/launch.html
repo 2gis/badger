@@ -152,7 +152,7 @@
                         </td>
                     </tr>
                     <tr ng-hide="!group.$hideRows" ng-repeat="test in group"
-                        ng-click="openResults(test, $index)" style="cursor:pointer" ng-class="{'hidden': test.hidden }">
+                        ng-click="openResults(test)" style="cursor:pointer" ng-class="{'hidden': test.hidden }">
                         <td data-title="'Failure reason'" filter="{'failure_reason': 'text'}" style="padding-bottom: 1px;">
                             <div class="panel panel-default panel-tree-view" style="margin-bottom: 5px;">
                                 <div class="panel-body" style="background-color: whitesmoke; padding: 10px; padding-bottom: 5px;">
@@ -255,10 +255,10 @@
                     </button>
                     <div>
                         <div class="btn-group">
-                            <button type="button" class="btn btn-xs btn-primary" ng-click="prevItem()">
+                            <button ng-class="{ disabled: disableMainPrev }" type="button" class="btn btn-xs btn-primary" ng-click="prevItem()">
                                 <span class="glyphicon glyphicon-chevron-left"></span>
                             </button>
-                            <button type="button" class="btn btn-xs btn-primary" ng-click="nextItem()">
+                            <button ng-class="{ disabled: disableMainNext }" type="button" class="btn btn-xs btn-primary" ng-click="nextItem()">
                                 <span class="glyphicon glyphicon-chevron-right"></span>
                             </button>
                         </div>
@@ -267,10 +267,27 @@
                         <span class="label label-info">arrow right</span> and
                         <span class="label label-info">arrow left</span> for navigation
                     </div>
+                    <div ng-if="result_view === 1">
+
+                    </div>
                     <h4 class="modal-title" id="TestDetailsModalLabel">
                         {{ modalSuite }} <strong>{{ modalName }}</strong>
                     </h4>
-                    <span ng-if="result_view === 1" class="{{ modalState | testStatesClass }}">{{ modalState | testStates }}</span>
+                    <div ng-if="result_view === 1">
+                        <button ng-class="{ disabled: disableFailedPrev }"
+                                ng-show="modalState === 1 || modalState === 3" type="button"
+                                class="btn btn-xs btn-default" ng-click="prevItem([1, 3])">
+                            <span class="glyphicon glyphicon-chevron-left"></span>
+                            prev
+                        </button>
+                        <span class="{{ modalState | testStatesClass }}">{{ modalState | testStates }}</span>
+                        <button ng-class="{ disabled: disableFailedNext }"
+                                ng-show="modalState === 1 || modalState === 3" type="button"
+                                class="btn btn-xs btn-default" ng-click="nextItem([1, 3])">
+                            next
+                            <span class="glyphicon glyphicon-chevron-right"></span>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="modal-body" style="overflow-y: auto;">

@@ -211,6 +211,9 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
 
         $scope.openResults = function (item) {
             $scope.index = item;
+            setFirstAndLastElementsForFailedNavigation(item);
+            setFirstAndLastElementsForFullNavigation(item);
+
             var selection = $window.getSelection();
             if (selection.type === 'Range') {
                 return false;
@@ -291,13 +294,11 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
                             }
                         }
                         if (suites[i][j].id === item.id)
-
                             currentFound = true;
                         }
-                    }
                 }
             } else {
-                 for (var i = suites.length - 1; i >= 0; i--) {
+                for (var i = suites.length - 1; i >= 0; i--) {
                     for (var j = suites[i].length - 1; j >= 0; j--) {
                         if (state instanceof Array) {
                             if (currentFound && state.indexOf(suites[i][j].state) !== -1) {
@@ -320,12 +321,28 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
             }
         }
 
-        $scope.nextItem = function () {
-            $scope.openResults(findNextItem($scope.index, $scope.states, 'forward'));
+        $scope.nextItem = function(states) {
+            if ($scope.disableMainNext) {
+                return;
+            }
+
+            if (_.isArray(states)) {
+                $scope.openResults(findNextItem($scope.index, states, 'forward'));
+            } else {
+                $scope.openResults(findNextItem($scope.index, $scope.states, 'forward'));
+            }
         };
 
-        $scope.prevItem = function (states) {
-            $scope.openResults(findNextItem($scope.index, $scope.states, 'backward'));
+        $scope.prevItem = function(states) {
+            if ($scope.disableMainPrev) {
+                return;
+            }
+
+            if (_.isArray(states)) {
+                $scope.openResults(findNextItem($scope.index, states, 'backward'));
+            } else {
+                $scope.openResults(findNextItem($scope.index, $scope.states, 'backward'));
+            }
         };
 
         hotkeys.add({ combo: 'j', callback: $scope.nextItem });
@@ -381,10 +398,15 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
                             return item.launch_item_id;
                         });
 
-                        $scope.data = $filter('toArray')($scope.data)
+
+                        $scope.data = $filter('toArray')($scope.data);
+                        var dataLength = 0;
+                        _.each($scope.data, function(group) {
+                            dataLength += group.length;
+                        });
 
                         $defer.resolve($scope.data);
-                        $scope.tableParams.settings({counts: $scope.data.length >= 10 ? [10, 25, 50, 100] : []});
+                        $scope.tableParams.settings({counts: dataLength >= 10 ? [10, 25, 50, 100] : []});
                     });
                 }
             });
@@ -520,5 +542,47 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
           var height = $(window).height() - 250;
           $(this).find(".modal-body").css("max-height", height);
         });
+
+        //for navigation
+        function getBlockedAndFailedTestResults() {
+
+            function isBlockedOrFailed(result) {
+                return result.state === 1 || result.state === 3;
+            }
+
+            function isNotEmptyArray(array) {
+                return array.length > 0;
+            }
+
+            var failedAndBlockedResults = _.map($scope.tableParams.data, function(group) {
+                return _.filter(group, isBlockedOrFailed);
+            });
+
+            return _.filter(failedAndBlockedResults, isNotEmptyArray);
+        }
+
+        function getFirstAndLastIds(results) {
+            var i = results.length - 1;
+            var j = results[i].length - 1;
+            return [results[0][0].id, results[i][j].id];
+        }
+
+        function setFirstAndLastElementsForFailedNavigation(item) {
+            var results = getBlockedAndFailedTestResults();
+            if (results.length !== 0) {
+                var ids = getFirstAndLastIds(results);
+
+                $scope.disableFailedPrev = (item.id === ids[0]) ? true : false;
+                $scope.disableFailedNext = (item.id === ids[1]) ? true : false;
+            }
+        }
+
+        function setFirstAndLastElementsForFullNavigation(item) {
+            var results = $scope.tableParams.data;
+            var ids = getFirstAndLastIds(results);
+
+            $scope.disableMainPrev = (item.id === ids[0]) ? true : false;
+            $scope.disableMainNext = (item.id === ids[1]) ? true : false;
+        }
     }
 ]);
