@@ -412,7 +412,8 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
                         $defer.resolve($scope.data);
                         $scope.tableParams.settings({counts: dataLength >= 10 ? [10, 25, 50, 100] : []});
 
-                        setFirstAndLastElementsForFullNavigation($scope.data);
+                        $scope.fullNavigationFirstId = _.first(_.first($scope.data));
+                        $scope.fullNavigationLastId = _.last(_.last($scope.data));
                     });
                 }
             });
@@ -461,8 +462,18 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
                         $defer.resolve($scope.data);
                         $scope.tableParams.settings({counts: []});
 
-                        setFirstAndLastElementsForFailedNavigation($scope.data);
-                        setFirstAndLastElementsForFullNavigation($scope.data);
+                        // Fill navigation variables
+                        var failedAndBlockedResults = _.map(results, function(group) {
+                            return _.filter(group, isBlockedOrFailed);
+                        });
+
+                        failedAndBlockedResults = _.filter(failedAndBlockedResults, _.isEmpty));
+
+                        $scope.fullNavigationFirstId = _.first(_.first($scope.data));
+                        $scope.fullNavigationLastId = _.last(_.last($scope.data));
+
+                        $scope.failedNavigationFirstId = _.first(_.first(failedAndBlockedResults));
+                        $scope.failedNavigationLastId = _.last(_.last(failedAndBlockedResults));
                     });
                 }
             });
@@ -552,45 +563,8 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
           $(this).find(".modal-body").css("max-height", height);
         });
 
-        //for navigation
-        function getBlockedAndFailedTestResults(results) {
-
-            function isBlockedOrFailed(result) {
-                return result.state === 1 || result.state === 3;
-            }
-
-            function isNotEmptyArray(array) {
-                return array.length > 0;
-            }
-
-            var failedAndBlockedResults = _.map(results, function(group) {
-                return _.filter(group, isBlockedOrFailed);
-            });
-
-            return _.filter(failedAndBlockedResults, isNotEmptyArray);
-        }
-
-        function getFirstAndLastIds(results) {
-            var i = results.length - 1;
-            var j = results[i].length - 1;
-            return [results[0][0].id, results[i][j].id];
-        }
-
-        function setFirstAndLastElementsForFailedNavigation(results) {
-            results = getBlockedAndFailedTestResults(results);
-            if (results.length !== 0) {
-                var ids = getFirstAndLastIds(results);
-
-                $scope.failedNavigationFirstId = ids[0];
-                $scope.failedNavigationLastId = ids[1];
-            }
-        }
-
-        function setFirstAndLastElementsForFullNavigation(results) {
-            var ids = getFirstAndLastIds(results);
-
-            $scope.fullNavigationFirstId = ids[0];
-            $scope.fullNavigationLastId = ids[1];
+        function isBlockedOrFailed(result) {
+            return result.state === 1 || result.state === 3;
         }
     }
 ]);
