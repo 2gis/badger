@@ -50,7 +50,7 @@ describe('Execute launch', function () {
         expect(browser.getCurrentUrl()).toBe(browser.baseUrl + '/#/testplan/1');
     });
 
-    it('"Add new launch item" should navigate to the add-page', function () {
+    it('pagination count should be present on page', function () {
         browser.get('/#/launch/2222');
         element(by.css('[ng-click="state = 2"]')).click();
         expect(element.all(by.repeater('test in group')).count()).toBe(12);

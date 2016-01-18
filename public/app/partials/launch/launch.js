@@ -79,9 +79,13 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
         $scope.modalId = 0;
         $scope.state = appConfig.TESTRESULT_FAILED;
         $scope.data = [];
-        $scope.dataGroup = [];
-        $scope.index = 0;
+        $scope.index = null;
         $scope.tasks = [];
+        $scope.states = [
+            appConfig.TESTRESULT_PASSED,
+            appConfig.TESTRESULT_FAILED,
+            appConfig.TESTRESULT_SKIPPED,
+            appConfig.TESTRESULT_BLOCKED];
         $scope.form_comment = '';
         $scope.comment_disabled = false;
         $scope.bugs = [];
@@ -205,7 +209,15 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
             }
         });
 
-        $scope.openResults = function (item, index) {
+        $scope.openResults = function (item) {
+            $scope.index = item;
+
+            $scope.disableMainPrev = (item.id === $scope.fullNavigationFirstId);
+            $scope.disableMainNext = (item.id === $scope.fullNavigationLastId);
+
+            $scope.disableFailedPrev = (item.id === $scope.failedNavigationFirstId);
+            $scope.disableFailedNext = (item.id === $scope.failedNavigationLastId);
+
             var selection = $window.getSelection();
             if (selection.type === 'Range') {
                 return false;
@@ -214,18 +226,6 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
             var modal = $('#TestDetailsModal');
 
             modal.modal('hide');
-
-            if ($scope.result_view === 0) {
-                if (item.id !== $scope.dataGroup[0].id) {
-                    for (var i = 0; i < $scope.dataGroup.length; ++i) {
-                        if ($scope.dataGroup[i].id === item.id) {
-                            index = i;
-                            break;
-                        }
-                    }
-                }
-                $scope.index = index;
-            }
 
             $scope.modalSuite = item.suite;
             $scope.modalName = item.name;
@@ -280,22 +280,73 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
             }
         };
 
-        $scope.nextItem = function () {
-            if ($scope.index >= $scope.dataGroup.length - 1 || $scope.dataGroup.length === 0) {
+        function findNextItem(item, state, direction, currentFound) {
+            if (!currentFound) {
+                currentFound = false;
+            }
+            var suites = $scope.tableParams.data;
+            if (direction === 'forward') {
+                for (var i = 0; i < suites.length; i++) {
+                    for (var j = 0; j < suites[i].length; j++) {
+                        if (state instanceof Array) {
+                            if (currentFound && state.indexOf(suites[i][j].state) !== -1) {
+                                return suites[i][j];
+                            }
+                        } else {
+                            if (currentFound && suites[i][j].state == state) {
+                                return suites[i][j];
+                            }
+                        }
+                        if (suites[i][j].id === item.id)
+                            currentFound = true;
+                        }
+                }
+            } else {
+                for (var i = suites.length - 1; i >= 0; i--) {
+                    for (var j = suites[i].length - 1; j >= 0; j--) {
+                        if (state instanceof Array) {
+                            if (currentFound && state.indexOf(suites[i][j].state) !== -1) {
+                                return suites[i][j];
+                            }
+                        } else {
+                            if (currentFound && suites[i][j].state == state) {
+                                return suites[i][j];
+                            }
+                        }
+                        if (suites[i][j].id === item.id) {
+                            currentFound = true;
+                        }
+                    }
+                }
+            }
+            // Current item is last, find from start
+            if (currentFound) {
+                return findNextItem(item, state, direction, true);
+            }
+        }
+
+        $scope.nextItem = function(states) {
+            if ($scope.disableMainNext) {
                 return;
             }
 
-            $scope.index += 1;
-            $scope.openResults($scope.dataGroup[$scope.index], $scope.index);
+            if (_.isArray(states)) {
+                $scope.openResults(findNextItem($scope.index, states, 'forward'));
+            } else {
+                $scope.openResults(findNextItem($scope.index, $scope.states, 'forward'));
+            }
         };
 
-        $scope.prevItem = function () {
-            if ($scope.index === 0) {
+        $scope.prevItem = function(states) {
+            if ($scope.disableMainPrev) {
                 return;
             }
 
-            $scope.index -= 1;
-            $scope.openResults($scope.dataGroup[$scope.index], $scope.index);
+            if (_.isArray(states)) {
+                $scope.openResults(findNextItem($scope.index, states, 'backward'));
+            } else {
+                $scope.openResults(findNextItem($scope.index, $scope.states, 'backward'));
+            }
         };
 
         hotkeys.add({ combo: 'j', callback: $scope.nextItem });
@@ -351,14 +402,20 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
                             return item.launch_item_id;
                         });
 
-                        var arrays = $.map($scope.data, function (value) {
-                            return [value];
+
+                        $scope.data = $filter('toArray')($scope.data);
+                        var dataLength = 0;
+                        _.each($scope.data, function(group) {
+                            dataLength += group.length;
                         });
-                        var data = [];
-                        $scope.dataGroup = data.concat.apply(data, arrays);
 
                         $defer.resolve($scope.data);
-                        $scope.tableParams.settings({counts: $scope.dataGroup.length >= 10 ? [10, 25, 50, 100] : []});
+                        $scope.tableParams.settings({counts: dataLength >= 10 ? [10, 25, 50, 100] : []});
+
+                        if ($scope.data.length > 0) {
+                            $scope.fullNavigationFirstId = _.first(_.first($scope.data)).id;
+                            $scope.fullNavigationLastId = _.last(_.last($scope.data)).id;
+                        }
                     });
                 }
             });
@@ -381,8 +438,12 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
                             return item.suite;
                         });
 
+                        $scope.data = _.mapObject($scope.data, function (cases, key){
+                            cases = setOrder(cases);
+                            return $filter('orderBy')(cases, ['order', '-duration']);
+                        });
+
                         _.each($scope.data, function(group, group_name) {
-                            group = setOrder(group);
                             $scope.data[group_name].passed = _.filter(group, function(result) {
                                 return result.state === 0;
                             }).length;
@@ -396,8 +457,27 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
                                 return result.state === 3;
                             }).length;
                         });
+
+                        $scope.data = $filter('toArray')($scope.data)
+                        $scope.data = $filter('orderBy')($scope.data, ['-failed+blocked', '$key']);
+
                         $defer.resolve($scope.data);
                         $scope.tableParams.settings({counts: []});
+
+                        // Fill navigation variables
+                        var failedAndBlockedResults = _.map($scope.data, function(group) {
+                            return _.filter(group, isBlockedOrFailed);
+                        });
+
+                        failedAndBlockedResults = _.filter(failedAndBlockedResults, isNotEmptyArray);
+
+                        if ($scope.data.length !== 0) {
+                            $scope.fullNavigationFirstId = _.first(_.first($scope.data)).id;
+                            $scope.fullNavigationLastId = _.last(_.last($scope.data)).id;
+
+                            $scope.failedNavigationFirstId = _.first(_.first(failedAndBlockedResults)).id;
+                            $scope.failedNavigationLastId = _.last(_.last(failedAndBlockedResults)).id;
+                        }
                     });
                 }
             });
@@ -486,5 +566,13 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
           var height = $(window).height() - 250;
           $(this).find(".modal-body").css("max-height", height);
         });
+
+        function isBlockedOrFailed(result) {
+            return result.state === 1 || result.state === 3;
+        }
+
+        function isNotEmptyArray(array) {
+            return array.length > 0;
+        }
     }
 ]);
