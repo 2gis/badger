@@ -58,19 +58,20 @@
         </div>
     </div>
 
-    <div class="panel panel-info" ng-if="summaryTestplans.length !== 0">
+    <div class="panel panel-info" ng-if="twodaysStatistic">
         <div class="panel-body" style="padding-top: 5px; padding-bottom: 1px;">
             <table  ng-table="tableParams" class="table table-striped" template-pagination="removePagerRow.html">
                 <tr style="background-color: white;">
                     <th style="border-top-color: white;"></th>
                     <th style="border-top-color: white;" ng-repeat="day in [today, yesterday] track by $index">{{day}}</th>
                 </tr>
-                <tr ng-repeat="tableParam in $data" ng-class="{ 'danger': launch.percent_of_failed > 1 && launch.state === 2,
-                         'warning': launch.percent_of_failed > 0,
-                                        'success': launch.percent_of_failed == 0}">
+                <tr ng-repeat="tableParam in $data" ng-class="{ 'danger': tableParam.percent_of_failed > 1,
+                         'warning': tableParam.percent_of_failed > 0,
+                                        'success': tableParam.percent_of_failed == 0}"
+                        ng-if="tableParam.show_in_twodays">
                     <td>{{ tableParam.name }}</td>
                     <td ng-repeat="day in tableParam.twodays" class="text-center" style="width: 15em;">
-                        <div ng-if="day.passed">
+                        <div ng-if="day.total">
                             <span ng-if="day.passed !== 0" class="label label-success label-history" title="passed">
                                 {{ day.passed }}</span>
                             <span ng-if="day.passed === 0" class="label label-default label-history label-zero" title="passed">
@@ -88,7 +89,7 @@
                             <span ng-if="day.blocked === 0" class="label label-default label-history label-zero" title="blocked">
                                 {{ day.blocked }}</span>
                         </div>
-                        <div ng-if="!day.passed">NOT RUN</div>
+                        <div ng-if="!day.total">NOT RUN</div>
                     </td>
                 </tr>
             </table>

@@ -20,7 +20,6 @@ app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '
         $rootScope.isMainDashboard = false;
 
         TestPlan.get({ projectId: $routeParams.projectId }, function (response) {
-
             $scope.summaryTestplans = _.filter(response.results, Filters.isSummary);
             $scope.summaryTestplans = _.filter($scope.summaryTestplans, Filters.removeHidden);
 
@@ -103,7 +102,10 @@ app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '
                 launches = LaunchHelpers.addStatisticData(launches);
                 launches = _.sortBy(launches, 'id');
 
-                addLastTwoDaysCounts(testplan, launches);
+                if (testplan.show_in_twodays) {
+                    $scope.twodaysStatistic = true;
+                    addLastTwoDaysCounts(testplan, launches);
+                }
 
                 var seriesData = GetChartsData.series(launches);
                 var labels = GetChartsData.labels(launches);
@@ -195,6 +197,8 @@ app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '
             _.each(launches, function(launch) {
                 if (launch.groupDate === $scope.today) {
                     testplan.twodays[0] = launch.counts;
+                    testplan.percent_of_failed = launch.percents.failed + launch.percents.blocked;
+                    testplan.percent_of_skipped = launch.percents.skipped;
                 }
                 if (launch.groupDate === $scope.yesterday) {
                     testplan.twodays[1] = launch.counts;
