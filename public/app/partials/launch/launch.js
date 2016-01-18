@@ -412,8 +412,10 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
                         $defer.resolve($scope.data);
                         $scope.tableParams.settings({counts: dataLength >= 10 ? [10, 25, 50, 100] : []});
 
-                        $scope.fullNavigationFirstId = _.first(_.first($scope.data));
-                        $scope.fullNavigationLastId = _.last(_.last($scope.data));
+                        if ($scope.data.length > 0) {
+                            $scope.fullNavigationFirstId = _.first(_.first($scope.data)).id;
+                            $scope.fullNavigationLastId = _.last(_.last($scope.data)).id;
+                        }
                     });
                 }
             });
@@ -463,17 +465,19 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
                         $scope.tableParams.settings({counts: []});
 
                         // Fill navigation variables
-                        var failedAndBlockedResults = _.map(results, function(group) {
+                        var failedAndBlockedResults = _.map($scope.data, function(group) {
                             return _.filter(group, isBlockedOrFailed);
                         });
 
-                        failedAndBlockedResults = _.filter(failedAndBlockedResults, _.isEmpty));
+                        failedAndBlockedResults = _.filter(failedAndBlockedResults, isNotEmptyArray);
 
-                        $scope.fullNavigationFirstId = _.first(_.first($scope.data));
-                        $scope.fullNavigationLastId = _.last(_.last($scope.data));
+                        if ($scope.data.length !== 0) {
+                            $scope.fullNavigationFirstId = _.first(_.first($scope.data)).id;
+                            $scope.fullNavigationLastId = _.last(_.last($scope.data)).id;
 
-                        $scope.failedNavigationFirstId = _.first(_.first(failedAndBlockedResults));
-                        $scope.failedNavigationLastId = _.last(_.last(failedAndBlockedResults));
+                            $scope.failedNavigationFirstId = _.first(_.first(failedAndBlockedResults)).id;
+                            $scope.failedNavigationLastId = _.last(_.last(failedAndBlockedResults)).id;
+                        }
                     });
                 }
             });
@@ -565,6 +569,10 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
 
         function isBlockedOrFailed(result) {
             return result.state === 1 || result.state === 3;
+        }
+
+        function isNotEmptyArray(array) {
+            return array.length > 0;
         }
     }
 ]);
