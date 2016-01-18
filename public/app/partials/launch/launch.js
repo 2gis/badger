@@ -211,8 +211,12 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
 
         $scope.openResults = function (item) {
             $scope.index = item;
-            setFirstAndLastElementsForFailedNavigation(item);
-            setFirstAndLastElementsForFullNavigation(item);
+
+            $scope.disableMainPrev = (item.id === $scope.fullNavigationFirstId);
+            $scope.disableMainNext = (item.id === $scope.fullNavigationLastId);
+
+            $scope.disableFailedPrev = (item.id === $scope.failedNavigationFirstId);
+            $scope.disableFailedNext = (item.id === $scope.failedNavigationLastId);
 
             var selection = $window.getSelection();
             if (selection.type === 'Range') {
@@ -407,6 +411,8 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
 
                         $defer.resolve($scope.data);
                         $scope.tableParams.settings({counts: dataLength >= 10 ? [10, 25, 50, 100] : []});
+
+                        setFirstAndLastElementsForFullNavigation($scope.data);
                     });
                 }
             });
@@ -454,6 +460,9 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
 
                         $defer.resolve($scope.data);
                         $scope.tableParams.settings({counts: []});
+
+                        setFirstAndLastElementsForFailedNavigation($scope.data);
+                        setFirstAndLastElementsForFullNavigation($scope.data);
                     });
                 }
             });
@@ -544,7 +553,7 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
         });
 
         //for navigation
-        function getBlockedAndFailedTestResults() {
+        function getBlockedAndFailedTestResults(results) {
 
             function isBlockedOrFailed(result) {
                 return result.state === 1 || result.state === 3;
@@ -554,7 +563,7 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
                 return array.length > 0;
             }
 
-            var failedAndBlockedResults = _.map($scope.tableParams.data, function(group) {
+            var failedAndBlockedResults = _.map(results, function(group) {
                 return _.filter(group, isBlockedOrFailed);
             });
 
@@ -567,22 +576,21 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
             return [results[0][0].id, results[i][j].id];
         }
 
-        function setFirstAndLastElementsForFailedNavigation(item) {
-            var results = getBlockedAndFailedTestResults();
+        function setFirstAndLastElementsForFailedNavigation(results) {
+            results = getBlockedAndFailedTestResults(results);
             if (results.length !== 0) {
                 var ids = getFirstAndLastIds(results);
 
-                $scope.disableFailedPrev = (item.id === ids[0]);
-                $scope.disableFailedNext = (item.id === ids[1]);
+                $scope.failedNavigationFirstId = ids[0];
+                $scope.failedNavigationLastId = ids[1];
             }
         }
 
-        function setFirstAndLastElementsForFullNavigation(item) {
-            var results = $scope.tableParams.data;
+        function setFirstAndLastElementsForFullNavigation(results) {
             var ids = getFirstAndLastIds(results);
 
-            $scope.disableMainPrev = (item.id === ids[0]);
-            $scope.disableMainNext = (item.id === ids[1]);
+            $scope.fullNavigationFirstId = ids[0];
+            $scope.fullNavigationLastId = ids[1];
         }
     }
 ]);
