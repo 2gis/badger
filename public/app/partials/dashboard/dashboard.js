@@ -20,7 +20,6 @@ app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '
         $rootScope.isMainDashboard = false;
 
         TestPlan.get({ projectId: $routeParams.projectId }, function (response) {
-
             $scope.summaryTestplans = _.filter(response.results, Filters.isSummary);
             $scope.summaryTestplans = _.filter($scope.summaryTestplans, Filters.removeHidden);
 
@@ -103,7 +102,10 @@ app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '
                 launches = LaunchHelpers.addStatisticData(launches);
                 launches = _.sortBy(launches, 'id');
 
-                addLastTwoDaysCounts(testplan, launches);
+                if (testplan.show_in_twodays) {
+                    $scope.twodaysStatistic = true;
+                    addLastTwoDaysCounts(testplan, launches);
+                }
 
                 var seriesData = GetChartsData.series(launches);
                 var labels = GetChartsData.labels(launches);

@@ -58,7 +58,7 @@
         </div>
     </div>
 
-    <div class="panel panel-info" ng-if="summaryTestplans.length !== 0">
+    <div class="panel panel-info" ng-if="twodaysStatistic">
         <div class="panel-body" style="padding-top: 5px; padding-bottom: 1px;">
             <table  ng-table="tableParams" class="table table-striped" template-pagination="removePagerRow.html">
                 <tr style="background-color: white;">
@@ -67,7 +67,8 @@
                 </tr>
                 <tr ng-repeat="tableParam in $data" ng-class="{ 'danger': tableParam.percent_of_failed > 1,
                          'warning': tableParam.percent_of_failed > 0,
-                                        'success': tableParam.percent_of_failed == 0}">
+                                        'success': tableParam.percent_of_failed == 0}"
+                        ng-if="tableParam.show_in_twodays">
                     <td>{{ tableParam.name }}</td>
                     <td ng-repeat="day in tableParam.twodays" class="text-center" style="width: 15em;">
                         <div ng-if="day.total">
