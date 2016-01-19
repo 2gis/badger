@@ -14,8 +14,8 @@ app.config(['$routeProvider', function ($routeProvider) {
     });
 }]);
 
-app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', 'appConfig', 'ngTableParams', 'TestPlan', 'Launch', 'Stage', 'Filters', 'LaunchHelpers', 'LaunchFilters', 'GetChartsData', 'SeriesStructure', 'Tooltips', 'GetChartStructure',
-    function ($q, $scope, $rootScope, $routeParams, appConfig, ngTableParams, TestPlan, Launch, Stage, Filters, LaunchHelpers, LaunchFilters, GetChartsData, SeriesStructure, Tooltips, GetChartStructure) {
+app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$window', '$location', '$routeParams', 'appConfig', 'ngTableParams', 'TestPlan', 'Launch', 'Stage', 'Filters', 'LaunchHelpers', 'LaunchFilters', 'GetChartsData', 'SeriesStructure', 'Tooltips', 'GetChartStructure',
+    function ($q, $scope, $rootScope, $window, $location, $routeParams, appConfig, ngTableParams, TestPlan, Launch, Stage, Filters, LaunchHelpers, LaunchFilters, GetChartsData, SeriesStructure, Tooltips, GetChartStructure) {
         $rootScope.selectProject($routeParams.projectId);
         $rootScope.isMainDashboard = false;
 
@@ -204,6 +204,11 @@ app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '
                     testplan.twodays[1] = launch.counts;
                 }
             });
+        }
+
+        $scope.redirect = function(evt, url) {
+            (evt.button === 1 || evt.ctrlKey === true) ?
+                $window.open('#' + url, '_blank') : $location.path(url);
         }
     }
 ]);
