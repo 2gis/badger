@@ -73,22 +73,22 @@
                     <td ng-repeat="day in tableParam.twodays" class="text-center" style="width: 15em;">
                         <div ng-if="day.total">
                             <span ng-if="day.passed !== 0" class="label label-success label-history" title="passed"
-                                    ng-click="redirect($event, '/launch/' + day.launch_id)" style="cursor:pointer">
+                                    ng-click="redirect($event, '/launch/' + day.launch_id + '/0')" style="cursor:pointer">
                                 {{ day.passed }}</span>
                             <span ng-if="day.passed === 0" class="label label-default label-history label-zero" title="passed">
                                 {{ day.passed }}</span>
                             <span ng-if="day.skipped !== 0" class="label label-warning label-history" title="skipped"
-                                    ng-click="redirect($event, '/launch/' + day.launch_id)" style="cursor:pointer">
+                                    ng-click="redirect($event, '/launch/' + day.launch_id + '/2')" style="cursor:pointer">
                                 {{ day.skipped }}</span>
                             <span ng-if="day.skipped === 0" class="label label-default label-history label-zero" title="skipped">
                                 {{ day.skipped }}</span>
                             <span ng-if="day.failed !== 0" class="label label-danger label-history" title="failed"
-                                    ng-click="redirect($event, '/launch/' + day.launch_id)" style="cursor:pointer">
+                                    ng-click="redirect($event, '/launch/' + day.launch_id + '/1')" style="cursor:pointer">
                                 {{ day.failed }}</span>
                             <span ng-if="day.failed === 0" class="label label-default label-history label-zero" title="failed">
                                 {{ day.failed }}</span>
                             <span ng-if="day.blocked !== 0" class="label label-danger label-history" title="blocked"
-                                    ng-click="redirect($event, '/launch/' + day.launch_id)" style="cursor:pointer">
+                                    ng-click="redirect($event, '/launch/' + day.launch_id + '/3')" style="cursor:pointer">
                                 {{ day.blocked }}</span>
                             <span ng-if="day.blocked === 0" class="label label-default label-history label-zero" title="blocked">
                                 {{ day.blocked }}</span>

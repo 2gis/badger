@@ -16,6 +16,10 @@ app.config(['$routeProvider',
             templateUrl: '/static/app/partials/launch/launch.html',
             controller: 'LaunchCtrl'
         });
+        $routeProvider.when('/launch/:launchId/:state', {
+            templateUrl: '/static/app/partials/launch/launch.html',
+            controller: 'LaunchCtrl'
+        });
     }
 ]);
 
@@ -431,6 +435,7 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
                         launchId: $routeParams.launchId,
                         page: 1,
                         pageSize: 9999,
+                        state: $routeParams.state,
                         search: params.$params.filter.failure_reason
                     }, function (result) {
                         params.total(result.count);
