@@ -69,22 +69,26 @@
                          'warning': tableParam.percent_of_failed > 0,
                                         'success': tableParam.percent_of_failed == 0}"
                         ng-if="tableParam.show_in_twodays">
-                    <td>{{ tableParam.name }}</td>
+                    <td ng-click="redirectToLaunch($event, tableParam)" style="cursor:pointer">{{ tableParam.name }}</td>
                     <td ng-repeat="day in tableParam.twodays" class="text-center" style="width: 15em;">
                         <div ng-if="day.total">
-                            <span ng-if="day.passed !== 0" class="label label-success label-history" title="passed">
+                            <span ng-if="day.passed !== 0" class="label label-success label-history" title="passed"
+                                    ng-click="redirect($event, '/launch/' + day.launch_id)" style="cursor:pointer">
                                 {{ day.passed }}</span>
                             <span ng-if="day.passed === 0" class="label label-default label-history label-zero" title="passed">
                                 {{ day.passed }}</span>
-                            <span ng-if="day.skipped !== 0" class="label label-warning label-history" title="skipped">
+                            <span ng-if="day.skipped !== 0" class="label label-warning label-history" title="skipped"
+                                    ng-click="redirect($event, '/launch/' + day.launch_id)" style="cursor:pointer">
                                 {{ day.skipped }}</span>
                             <span ng-if="day.skipped === 0" class="label label-default label-history label-zero" title="skipped">
                                 {{ day.skipped }}</span>
-                            <span ng-if="day.failed !== 0" class="label label-danger label-history" title="failed">
+                            <span ng-if="day.failed !== 0" class="label label-danger label-history" title="failed"
+                                    ng-click="redirect($event, '/launch/' + day.launch_id)" style="cursor:pointer">
                                 {{ day.failed }}</span>
                             <span ng-if="day.failed === 0" class="label label-default label-history label-zero" title="failed">
                                 {{ day.failed }}</span>
-                            <span ng-if="day.blocked !== 0" class="label label-danger label-history" title="blocked">
+                            <span ng-if="day.blocked !== 0" class="label label-danger label-history" title="blocked"
+                                    ng-click="redirect($event, '/launch/' + day.launch_id)" style="cursor:pointer">
                                 {{ day.blocked }}</span>
                             <span ng-if="day.blocked === 0" class="label label-default label-history label-zero" title="blocked">
                                 {{ day.blocked }}</span>

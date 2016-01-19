@@ -475,8 +475,10 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
                             $scope.fullNavigationFirstId = _.first(_.first($scope.data)).id;
                             $scope.fullNavigationLastId = _.last(_.last($scope.data)).id;
 
-                            $scope.failedNavigationFirstId = _.first(_.first(failedAndBlockedResults)).id;
-                            $scope.failedNavigationLastId = _.last(_.last(failedAndBlockedResults)).id;
+                            if (failedAndBlockedResults.length !== 0) {
+                                $scope.failedNavigationFirstId = _.first(_.first(failedAndBlockedResults)).id;
+                                $scope.failedNavigationLastId = _.last(_.last(failedAndBlockedResults)).id;
+                            }
                         }
                     });
                 }
