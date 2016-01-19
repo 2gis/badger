@@ -20,6 +20,10 @@ app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '
         $rootScope.isMainDashboard = false;
 
         TestPlan.get({ projectId: $routeParams.projectId }, function (response) {
+            $scope.twodaysTestplans = _.filter(response.results, Filters.isTwodays);
+            $scope.twodaysTestplans = _.filter($scope.twodaysTestplans, Filters.removeHidden);
+            $scope.twodaysTestplans = _.sortBy($scope.twodaysTestplans, 'name');
+
             $scope.summaryTestplans = _.filter(response.results, Filters.isSummary);
             $scope.summaryTestplans = _.filter($scope.summaryTestplans, Filters.removeHidden);
 
@@ -31,7 +35,12 @@ app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '
                 $scope.addChartsToTestplan(testplan, appConfig.DEFAULT_DAYS);
             });
 
-            drawTable($scope.testplans);
+            _.each($scope.twodaysTestplans, function (testplan) {
+                $scope.twodaysStatistic = true;
+                addTwodaysStatistic(testplan, 2);
+            });
+
+            drawTable($scope.twodaysTestplans);
 
             $scope.chartsType = $rootScope.getProjectSettings($routeParams.projectId, 'chart_type');
             $scope.createTotalChart(appConfig.DEFAULT_DAYS);
@@ -44,6 +53,7 @@ app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '
         $scope.createTotalChart = function(days) {
             addLaunchesToTestplans($scope.summaryTestplans, days).then(function(group_launches) {
                 var launches = LaunchHelpers.getLaunchesForTotalStatistic(group_launches);
+                launches = _.filter(launches, LaunchFilters.isEmptyResults);
                 launches = LaunchHelpers.addStatisticData(launches);
                 launches = _.sortBy(launches, 'created');
 
@@ -65,6 +75,18 @@ app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '
                 });
             });
         };
+
+        function addTwodaysStatistic(testplan, days) {
+            getLaunches(testplan, days).then(function(launches) {
+                launches = LaunchHelpers.cutDate(launches);
+                launches = LaunchFilters.getMax(launches);
+                launches = _.filter(launches, LaunchFilters.isEmptyResults);
+                launches = LaunchHelpers.addStatisticData(launches);
+                launches = _.sortBy(launches, 'id');
+
+                addLastTwoDaysCounts(testplan, launches);
+            });
+        }
 
         function addLaunchesToTestplans(testplans, days) {
             var promises = [];
@@ -101,11 +123,6 @@ app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '
                 launches = _.filter(launches, LaunchFilters.isEmptyResults);
                 launches = LaunchHelpers.addStatisticData(launches);
                 launches = _.sortBy(launches, 'id');
-
-                if (testplan.show_in_twodays) {
-                    $scope.twodaysStatistic = true;
-                    addLastTwoDaysCounts(testplan, launches);
-                }
 
                 var seriesData = GetChartsData.series(launches);
                 var labels = GetChartsData.labels(launches);
@@ -177,6 +194,7 @@ app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '
         }
 
         function drawTable(testplans) {
+
             $scope.tableParams = new ngTableParams({
                 count: 999
             }, {
