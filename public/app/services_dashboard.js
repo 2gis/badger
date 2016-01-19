@@ -6,6 +6,7 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
     return {
         isMain: isMain,
         isSummary: isSummary,
+        isTwodays: isTwodays,
         removeHidden: removeHidden
     };
 
@@ -15,6 +16,10 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
 
     function isSummary(item) {
         return item.show_in_summary === true;
+    }
+
+    function isTwodays(item) {
+        return item.show_in_twodays === true;
     }
 
     function removeHidden(item) {
