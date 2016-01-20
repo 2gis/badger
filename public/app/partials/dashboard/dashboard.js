@@ -14,8 +14,8 @@ app.config(['$routeProvider', function ($routeProvider) {
     });
 }]);
 
-app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', 'appConfig', 'ngTableParams', 'TestPlan', 'Launch', 'Stage', 'Filters', 'LaunchHelpers', 'LaunchFilters', 'GetChartsData', 'SeriesStructure', 'Tooltips', 'GetChartStructure',
-    function ($q, $scope, $rootScope, $routeParams, appConfig, ngTableParams, TestPlan, Launch, Stage, Filters, LaunchHelpers, LaunchFilters, GetChartsData, SeriesStructure, Tooltips, GetChartStructure) {
+app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$window', '$location', 'appConfig', 'ngTableParams', 'TestPlan', 'Launch', 'Stage', 'Filters', 'LaunchHelpers', 'LaunchFilters', 'GetChartsData', 'SeriesStructure', 'Tooltips', 'GetChartStructure',
+    function ($q, $scope, $rootScope, $routeParams, $window, $location, appConfig, ngTableParams, TestPlan, Launch, Stage, Filters, LaunchHelpers, LaunchFilters, GetChartsData, SeriesStructure, Tooltips, GetChartStructure) {
         $rootScope.selectProject($routeParams.projectId);
         $rootScope.isMainDashboard = false;
 
@@ -215,13 +215,29 @@ app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '
             _.each(launches, function(launch) {
                 if (launch.groupDate === $scope.today) {
                     testplan.twodays[0] = launch.counts;
+                    testplan.twodays[0].launch_id = launch.id;
                     testplan.percent_of_failed = launch.percents.failed + launch.percents.blocked;
                     testplan.percent_of_skipped = launch.percents.skipped;
                 }
                 if (launch.groupDate === $scope.yesterday) {
                     testplan.twodays[1] = launch.counts;
+                    testplan.twodays[1].launch_id = launch.id;
                 }
             });
         }
+
+        $scope.redirect = function(evt, url) {
+            (evt.button === 1 || evt.ctrlKey === true) ?
+                $window.open('#' + url, '_blank') : $location.path(url);
+        };
+
+        $scope.redirectToLaunch = function(evt, testplan) {
+            if (testplan.twodays[0].launch_id) {
+                $scope.redirect(evt, '/launch/' + testplan.twodays[0].launch_id);
+            }
+            if (testplan.twodays[1].launch_id && !testplan.twodays[0].launch_id) {
+                $scope.redirect(evt, '/launch/' + testplan.twodays[1].launch_id);
+            }
+        };
     }
 ]);

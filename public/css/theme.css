@@ -79,6 +79,10 @@ body {
     background-color: #b2b2b2;
 }
 
+.label-hover:hover {
+    box-shadow: 0 0 2px rgba(0,0,0,0.5);
+}
+
 .panel-tree-view {
     font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
     font-size: 13px;
