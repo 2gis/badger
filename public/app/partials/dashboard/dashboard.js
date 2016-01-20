@@ -220,9 +220,6 @@ app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '
             if (testplan.twodays[1].launch_id && !testplan.twodays[0].launch_id) {
                 $scope.redirect(evt, '/launch/' + testplan.twodays[1].launch_id);
             }
-            if (!testplan.twodays[0].launch_id && !testplan.twodays[1].launch_id) {
-                $scope.redirect(evt, '/testplan/' + testplan.id);
-            }
         };
     }
 ]);
