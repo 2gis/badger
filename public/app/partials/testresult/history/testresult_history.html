@@ -1,0 +1,35 @@
+<div class="page-header">
+    <h3 class="text-center">{{ suite }} <strong>{{ name }}</strong></h3>
+</div>
+<div class="col-md-3"></div>
+<div class="col-md-6" ng-show="tableParams">
+    <table ng-show="tableParams" ng-table="tableParams" class="table table-hover">
+        <tr ng-repeat="result in $data">
+            <td title="'Launch'">
+                <a ng-href="#/launch/{{ result.launch }}">Launch #{{ result.launch }}</a>
+            </td>
+            <td title="'Date'" class="text-center" style="width: 7em;">{{ result.created | date:"dd.MM HH:mm" }}</td>
+            <td title="'State'" class="text-center" style="width: 2em;">
+                <span class="{{ result.state | testStatesClass }}">{{ result.state | testStates }}</span>
+            </td>
+            <td title="'Duration'" class="text-center" style="width: 2em;">{{ result.duration | toFixed }}</td>
+            <td class="text-center" style="width: 1em;">
+                <a href="#/testresult/{{ result.id }}"
+                        ng-if="result.state !== 0"><span class="glyphicon glyphicon-link"></span></a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="col-md-6" ng-show="!tableParams && !dataAbsent">
+    <div class="alert alert-warning text-center" role="alert">
+        <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+        Loading ...
+    </div>
+</div>
+<div class="col-md-6" ng-show="!tableParams && dataAbsent">
+    <div class="alert alert-info text-center" role="alert">
+        No information for last month
+    </div>
+</div>
+<div class="col-md-3"></div>
+<div class="row"></div>

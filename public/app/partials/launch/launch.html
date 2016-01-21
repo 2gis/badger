@@ -295,6 +295,7 @@
                     <pre ng-if="modalBody!==''" ng-bind-html="modalBody | linky:'_blank'"></pre>
                 </div>
                 <div class="modal-footer">
+                    <a  class="btn" ng-href="#testresult/{{ modalId }}/history" ng-if="!modalHideTestControls">Show test history <i class="glyphicon glyphicon-stats"></i></a>
                     <a  class="btn" ng-href="#testresult/{{ modalId }}/" ng-if="!modalHideTestControls">Open detailed view <i class="glyphicon glyphicon-share"></i></a>
                 </div>
             </div>
