@@ -109,7 +109,7 @@
                         <td colspan="{{ $columns.length }}">
                             <a href="" ng-click="group.$hideRows = !group.$hideRows">
                                 <span class="glyphicon" ng-class="{ 'glyphicon-chevron-right': group.$hideRows, 'glyphicon-chevron-down': !group.$hideRows }"></span>
-                                <strong>{{ getLaunchItemById(key).name }} ({{ group.length }})</strong>
+                                <strong>{{ getLaunchItemById(group[0].launch_item_id).name }} ({{ group.length }})</strong>
                             </a>
                         </td>
                     </tr>
