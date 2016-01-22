@@ -14,6 +14,7 @@ var app = angular.module('testReport', [
     'testReport.testPlan.add',
     'testReport.launch',
     'testReport.testResult',
+    'testReport.testResult.history',
     'testReport.launchItem.form',
     'testReport.dashboard.top',
     'testReport.metric.add',
