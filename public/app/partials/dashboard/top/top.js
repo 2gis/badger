@@ -11,8 +11,8 @@ app.config(['$routeProvider', function ($routeProvider) {
     });
 }]);
 
-app.controller('DashboardTopCtrl', ['$scope', '$rootScope', '$filter', '$routeParams', 'appConfig', 'Project', 'TestPlan', 'Launch', 'TestResult',
-    function ($scope, $rootScope, $filter, $routeParams, appConfig, Project, TestPlan, Launch, TestResult) {
+app.controller('DashboardTopCtrl', ['$scope', '$rootScope', '$filter', '$routeParams', '$location', '$window','appConfig', 'Project', 'TestPlan', 'Launch', 'TestResult',
+    function ($scope, $rootScope, $filter, $routeParams, $location, $window, appConfig, Project, TestPlan, Launch, TestResult) {
         $scope.projects = [];
         $scope.loading = false;
 
@@ -46,13 +46,14 @@ app.controller('DashboardTopCtrl', ['$scope', '$rootScope', '$filter', '$routePa
                     });
                     project.statistics = _.sortBy(project.statistics, 'name');
                     _.each(project.statistics, function (statistic_testplan) {
-                        $scope.prepareResults(statistic_testplan, appConfig.DEFAULT_DAYS);
+                        $scope.prepareResults(statistic_testplan, 3);
                     });
                 });
             });
         }
 
         $scope.prepareResults = function(testplan, days) {
+            testplan.days = days;
             testplan.launch_ids = [];
             testplan.top = [];
             testplan.loading = false;
@@ -76,16 +77,18 @@ app.controller('DashboardTopCtrl', ['$scope', '$rootScope', '$filter', '$routePa
                         page_size: 9999
                     }, function (results) {
                         testplan.loading = true;
-                        var names = _.map(results.results, function (result) {
-                            return result.name;
+
+                        _.each(results.results, function(result) {
+                            result.fullname = result.suite + ' ' + result.name;
                         });
 
-                        var groupNames = _.groupBy(names);
+                        var groupNames = _.groupBy(results.results, 'fullname');
                         _.each(groupNames, function (val, key) {
                             if (val.length !== 1) {
                                 testplan.top.push({
                                     name: key,
-                                    count: val.length
+                                    count: val.length,
+                                    id: _.max(val, function(result){ return result.id; }).id
                                 });
                             }
                         });
@@ -103,5 +106,10 @@ app.controller('DashboardTopCtrl', ['$scope', '$rootScope', '$filter', '$routePa
             $(this).addClass('active');
             $(this).siblings().removeClass('active');
         });
+
+        $scope.redirect = function(evt, url) {
+            (evt.button === 1 || evt.ctrlKey === true) ?
+                $window.open('#' + url, '_blank') : $location.path(url);
+        };
     }
 ]);
