@@ -21,11 +21,15 @@ app.controller('MainDashboardCtrl', ['$scope', '$rootScope', 'appConfig', 'Proje
 
         Project.query(function (response) {
             $scope.projects = response.results;
-            fetchData();
+            $rootScope.getProfile().then(function(profile) {
+                if (profile) {
+                    fetchData(profile);
+                }
+            });
         });
 
-        function fetchData() {
-            _.each($rootScope.profile.settings.dashboards, function(dashboard) {
+        function fetchData(profile) {
+            _.each(profile.settings.dashboards, function(dashboard) {
                 TestPlan.custom_list({
                     id__in: getTestplanIds(dashboard.testplans)
                 }, function (response) {

@@ -73,7 +73,7 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$window', '$location', 
             $rootScope.selectProject(result.project);
             $scope.testplan = result;
             $scope.name = result.name;
-            $scope.chartsType = $rootScope.getProjectSettings(result.project, 'chart_type');
+            $scope.chartsType = parseInt($rootScope.getProjectSettings(result.project, 'chart_type'));
             if ($scope.chartsType === appConfig.CHART_TYPE_AREA) {
                 $scope.chartPercentType = 'number';
             }

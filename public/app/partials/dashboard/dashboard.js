@@ -42,7 +42,7 @@ app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '
 
             drawTable($scope.twodaysTestplans);
 
-            $scope.chartsType = $rootScope.getProjectSettings($routeParams.projectId, 'chart_type');
+            $scope.chartsType = parseInt($rootScope.getProjectSettings($routeParams.projectId, 'chart_type'));
             $scope.createTotalChart(appConfig.DEFAULT_DAYS);
         });
 

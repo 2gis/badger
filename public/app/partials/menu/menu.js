@@ -105,7 +105,7 @@ app.controller('Menu', ['$rootScope', '$routeParams','$scope', '$location', 'Pro
                 return item.key && item.key === setting_name;
             });
             if (res.length === 1) {
-                return parseInt(res[0].value);
+                return res[0].value;
             }
             return 0;
         };

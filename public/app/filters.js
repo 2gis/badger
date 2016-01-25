@@ -99,7 +99,7 @@ filters.filter('states', function () {
         }
     }
 }).filter('cut', function () {
-    return function (value, wordwise, max, tail) {
+    return function (value, wordwise, max, tail, end) {
         if (!value) {
             return '';
         }
@@ -111,6 +111,18 @@ filters.filter('states', function () {
 
         if (value.length <= max) {
             return value;
+        }
+
+        if (end) {
+            var pos = value.length - max;
+            value = value.substr(pos);
+            if (wordwise) {
+                var first_space = value.indexOf(' ');
+                if (first_space != -1) {
+                    value = value.substr(first_space);
+                }
+            }
+            return (tail || '… ') + value;
         }
 
         value = value.substr(0, max);

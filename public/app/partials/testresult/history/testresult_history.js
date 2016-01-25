@@ -47,7 +47,6 @@ app.controller('TestResultHistoryCtrl', ['$scope', '$routeParams', '$q', 'TestRe
         });
 
 
-
         function drawTable(data) {
             $scope.tableParams = new ngTableParams({
                     page: 1,
