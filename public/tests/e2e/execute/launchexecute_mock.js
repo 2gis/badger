@@ -5,14 +5,21 @@ module.exports.executeMock = function () {
         "email": "user@test.zone",
         "username": "user",
         "is_active": true,
-        "is_staff": true
+        "is_staff": true,
+        "settings": {
+            "default_project": null,
+            "launches_on_page": 10,
+            "testresults_on_page": 25,
+            "dashboards": []
+        }
     };
 
     var project = {
         "count": 1,
         "results": [{
             "id": 1,
-            "name": "WEBAPI"
+            "name": "WEBAPI",
+            "settings": []
         }]
     };
 

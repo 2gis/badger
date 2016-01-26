@@ -35,6 +35,15 @@
                 ng-options="option for option in resultsOnPage">
         </select>
     </div>
+    <div class="col-md-6">
+    </div>
+    <div class="col-md-6">
+        <h4>Test result preview</h4>
+        <select required class="form-control" ng-model="profile.settings.result_preview"
+                ng-options="option.code as option.name for option in options">
+            <option value="">Choose test result preview</option>
+        </select>
+    </div>
     <div class="col-md-12">
         <br><br>
     </div>

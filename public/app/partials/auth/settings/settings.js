@@ -23,6 +23,11 @@ app.controller('ProfileSettingsCtrl', ['$rootScope', '$scope', '$routeParams', '
         $scope.select_cache = null;
         $scope.addErrors = null;
 
+        $scope.options = [
+            {name: 'Show head of test result', code: 'head'},
+            {name: 'Show tail of test result', code: 'tail'}
+        ];
+
         function getProjectsAndTestplansData() {
             var deferred = $q.defer();
 

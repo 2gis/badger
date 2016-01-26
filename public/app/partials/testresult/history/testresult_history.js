@@ -30,7 +30,7 @@ app.controller('TestResultHistoryCtrl', ['$scope', '$routeParams', '$q', 'TestRe
             $scope.suite = result.suite;
             $scope.name = result.name;
 
-            var days = 100;
+            var days = 30;
             if ($routeParams.days) {
                 days = $routeParams.days;
             }
@@ -56,7 +56,6 @@ app.controller('TestResultHistoryCtrl', ['$scope', '$routeParams', '$q', 'TestRe
                 });
             });
         });
-
 
 
         function drawTable(data) {

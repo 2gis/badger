@@ -117,7 +117,8 @@
                         <td data-title="'Failure reason'" filter="{'failure_reason': 'text'}">
                             <pre ng-if="test.failure_reason==='' && test.suite">{{ test.suite }}:{{ test.name }}</pre>
                             <pre ng-if="test.failure_reason==='' && !test.suite">{{ test.name }}</pre>
-                            <pre ng-if="test.failure_reason!==''">{{ test.failure_reason | cut:true:256:' ...' }}</pre>
+                            <pre ng-if="test.failure_reason!=='' && result_preview==='head'">{{ test.failure_reason | cut:true:256:' ...' }}</pre>
+                            <pre ng-if="test.failure_reason!=='' && result_preview==='tail'">{{ test.failure_reason | cut:true:256:'... ':true }}</pre>
                         </td>
                         <td data-title="'sec.'" sortable="duration">{{ test.duration | toFixed }}</td>
                         <td data-title="'Bugs'">
@@ -157,7 +158,8 @@
                             <div class="panel panel-default panel-tree-view" style="margin-bottom: 5px;">
                                 <div class="panel-body" style="background-color: whitesmoke; padding: 10px; padding-bottom: 5px;">
                                     {{ test.name }}
-                                    <pre ng-if="test.state !== 0" style="background-color: white; font-size: 12px;">{{ test.failure_reason | cut:true:256:' ...'  }}</pre>
+                                    <pre ng-if="test.state !== 0 && result_preview==='head'" style="background-color: white; font-size: 12px;">{{ test.failure_reason | cut:true:256:' ... '  }}</pre>
+                                    <pre ng-if="test.state !== 0 && result_preview==='tail'" style="background-color: white; font-size: 12px;">{{ test.failure_reason | cut:true:256:'... ':true  }}</pre>
                                 </div>
                             </div>
                         </td>

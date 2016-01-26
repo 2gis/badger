@@ -7,12 +7,12 @@
 </div>
 <div class="row" ng-show="!profile">
     <div class="alert alert-warning text-center" role="alert" style="margin-top: 40px">
-        To show your dashboards, please login.<br/>
+        To show your dashboards, please <a href="#/auth/login">login</a>.<br/>
     </div>
 </div>
 <div class="row" ng-show="profile && profile.settings.dashboards.length === 0">
     <div class="alert alert-warning text-center" role="alert" style="margin-top: 40px">
-        You don't have any dashboards. Create it in profile settings.<br/>
+        You don't have any dashboards. Create it in <a href="#/profile/settings">profile settings</a>.<br/>
     </div>
 </div>
 <div ng-repeat="project in profile.settings.dashboards">

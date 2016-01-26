@@ -52,7 +52,12 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
 
         function getProfileAndDrawTable() {
             $rootScope.getProfile().then(function(profile) {
-                $scope.result_view = $rootScope.getProjectSettings($rootScope.getActiveProject(), 'results_view');
+                $scope.result_view = parseInt($rootScope.getProjectSettings($rootScope.getActiveProject(), 'results_view'));
+                $scope.result_preview =
+                    $rootScope.getProjectSettings($rootScope.getActiveProject(), 'result_preview') === 0 ? 'head' : 'tail';
+
+                $scope.result_preview = profile.settings.result_preview ? profile.settings.result_preview : $scope.result_preview;
+
                 drawTable(profile, $scope.result_view);
             });
         }
