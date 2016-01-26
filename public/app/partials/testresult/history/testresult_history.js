@@ -10,6 +10,11 @@ app.config(['$routeProvider', function ($routeProvider) {
         templateUrl: '/static/app/partials/testresult/history/testresult_history.html',
         controller: 'TestResultHistoryCtrl'
     });
+
+    $routeProvider.when('/testresult/:testResultId/history/:days', {
+        templateUrl: '/static/app/partials/testresult/history/testresult_history.html',
+        controller: 'TestResultHistoryCtrl'
+    });
 }]);
 
 app.controller('TestResultHistoryCtrl', ['$scope', '$routeParams', '$q', 'TestResult', 'ngTableParams', 'Launch', 'LaunchItem',
@@ -25,10 +30,16 @@ app.controller('TestResultHistoryCtrl', ['$scope', '$routeParams', '$q', 'TestRe
             $scope.suite = result.suite;
             $scope.name = result.name;
 
+            var days = 100;
+            if ($routeParams.days) {
+                days = $routeParams.days;
+            }
+
             TestResult.custom_list({
                 history: $routeParams.testResultId,
                 page: 1,
-                page_size: 50
+                page_size: 50,
+                days: days
             }, function(result) {
                 var results = result.results;
 
