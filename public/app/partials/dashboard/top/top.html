@@ -6,9 +6,9 @@
         <div class="panel panel-default">
             <div class="panel-heading">{{ testplan.name }}
                 <div class="btn-group btn-group-xs pull-right" role="group">
-                  <button ng-repeat="days in [3, 7, 14, 28]" type="button" class="btn btn-default"
+                  <button ng-repeat="days in [3, 7, 14]" type="button" class="btn btn-default"
                           ng-click="prepareResults(testplan, days)"
-                          ng-class="{active: days === 7}">{{days}} days
+                          ng-class="{active: days === 3}">{{days}} days
                   </button>
                 </div>
             </div>
@@ -27,8 +27,9 @@
                 <div ng-if="testplan.top.length !== 0">
                     <ul class="list-group">
                       <li class="list-group-item" ng-repeat="res in testplan.top">
-                        <span class="badge">{{ res.count }}</span>
-                        {{ res.name }}
+                        <span class="badge" ng-click="redirect($event, '/testresult/' + res.id + '/history/' + testplan.days)"
+                              style="cursor:pointer">{{ res.count }}</span>
+                          {{ res.name }}
                       </li>
                     </ul>
                 </div>
