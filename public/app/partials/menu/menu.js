@@ -53,8 +53,9 @@ app.controller('Menu', ['$rootScope', '$routeParams','$scope', '$location', 'Pro
 
             Project.query(function (result) {
                 deferred.resolve(result.results);
-            }, function () {
+            }, function (result) {
                 $rootScope.api_path = API_PATH;
+                deferred.reject(result);
             });
 
             return deferred.promise;
