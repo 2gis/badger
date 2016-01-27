@@ -48,12 +48,25 @@ app.controller('Menu', ['$rootScope', '$routeParams','$scope', '$location', 'Pro
             return deferred.promise;
         };
 
+        $rootScope.getProjects = function() {
+            var deferred = $q.defer();
+
+            Project.query(function (result) {
+                deferred.resolve(result.results);
+            }, function (result) {
+                $rootScope.api_path = API_PATH;
+                deferred.reject(result);
+            });
+
+            return deferred.promise;
+        };
+
         $rootScope.getProfile();
 
         $rootScope.reloadProjects = function () {
-            Project.query(function (result) {
 
-                $rootScope.projects = result.results;
+            $rootScope.getProjects().then(function(projects) {
+                $rootScope.projects = projects;
                 _.each($rootScope.projects, function(project) {
                     _.each(project.settings, function(setting) {
                         project[setting.key] = setting.value;
@@ -67,9 +80,6 @@ app.controller('Menu', ['$rootScope', '$routeParams','$scope', '$location', 'Pro
                             'name');
                     });
                 });
-            }, function() {
-                $rootScope.api_path = API_PATH;
-
             });
         };
 
