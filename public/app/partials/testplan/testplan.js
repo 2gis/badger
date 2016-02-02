@@ -11,6 +11,11 @@ var app = angular.module('testReport.testPlan', [
 
 app.config(['$routeProvider',
     function ($routeProvider) {
+        $routeProvider.when('/testplan/:testPlanId/?version=:version&hash=:hash&branch=:branch', {
+            templateUrl: '/static/app/partials/testplan/testplan.html',
+            controller: 'TestPlanCtrl',
+            redirectTo: '/testplan/:testPlanId/'
+        });
         $routeProvider.when('/testplan/:testPlanId', {
             templateUrl: '/static/app/partials/testplan/testplan.html',
             controller: 'TestPlanCtrl'
@@ -18,8 +23,8 @@ app.config(['$routeProvider',
     }
 ]);
 
-app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$window', '$location', '$routeParams', '$filter', 'ngTableParams', 'appConfig', 'TestPlan', 'Launch', 'LaunchItem', 'SortLaunchItems', 'Comment', 'ChartConfig', 'GetChartsData', 'SeriesStructure', 'Tooltips', 'LaunchHelpers', 'GetChartStructure',
-    function ($rootScope, $scope, $window, $location, $routeParams, $filter, ngTableParams, appConfig, TestPlan, Launch, LaunchItem, SortLaunchItems, Comment, ChartConfig, GetChartsData, SeriesStructure, Tooltips, LaunchHelpers, GetChartStructure) {
+app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$q', '$window', '$location', '$routeParams', '$filter', 'ngTableParams', 'appConfig', 'TestPlan', 'Launch', 'LaunchItem', 'SortLaunchItems', 'Comment', 'ChartConfig', 'GetChartsData', 'SeriesStructure', 'Tooltips', 'LaunchHelpers', 'GetChartStructure',
+    function ($rootScope, $scope, $q, $window, $location, $routeParams, $filter, ngTableParams, appConfig, TestPlan, Launch, LaunchItem, SortLaunchItems, Comment, ChartConfig, GetChartsData, SeriesStructure, Tooltips, LaunchHelpers, GetChartStructure) {
         $scope.chartPercentType = 'failed';
         $scope.maxSymbolsForBranch = 8;
         var options = {
@@ -181,66 +186,150 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$window', '$location', 
                         break;
                     }
 
-                    Launch.get({
-                        testPlanId: $routeParams.testPlanId,
-                        page: params.page(),
-                        pageSize: params.count(),
-                        ordering: ordering,
-                        search: params.$params.filter.started_by
-                    }, function (result) {
-                        params.total(result.count);
-                        tableData = result.results.map(updateStats);
-                        markSuccessLaunch(tableData);
-                        $defer.resolve(tableData);
+                    if ($routeParams.version) {
+                        params.$params.filter.version = $routeParams.version;
+                        delete($routeParams.version);
+                    }
+                    if ($routeParams.branch) {
+                        params.$params.filter.branch = $routeParams.branch;
+                        delete($routeParams.branch);
+                    }
+                    if ($routeParams.hash) {
+                        params.$params.filter.hash = $routeParams.hash;
+                        delete($routeParams.hash);
+                    }
 
-                        $scope.charts = [];
+                    if (_.isEmpty(params.$params.filter)) {
+                        $scope.url = $location.path();
+                    }
+                    if (params.$params.filter.version || params.$params.filter.hash || params.$params.filter.branch) {
+                        getCustomLaunches(ordering, params).then(function(result) {
+                            params.total(result.count);
+                            tableData = result.results.map(updateStats);
+                            markSuccessLaunch(tableData);
+                            $defer.resolve(tableData);
+                            formLink(params.$params.filter);
 
-                        tableData = LaunchHelpers.cutDate(tableData, options);
-                        tableData = LaunchHelpers.addDuration(tableData);
-                        tableData = LaunchHelpers.addStatisticData(tableData);
-                        tableData = _.sortBy(tableData, 'id');
-                        var seriesData = GetChartsData.series(tableData);
-                        var labels = GetChartsData.labels(tableData);
+                            createCharts(tableData);
+                        });
+                    } else {
+                        getLaunches(ordering, params).then(function(result) {
+                            params.total(result.count);
+                            tableData = result.results.map(updateStats);
+                            markSuccessLaunch(tableData);
+                            $defer.resolve(tableData);
 
-                        $scope.charts.push(
-                            GetChartStructure(
-                                'column',
-                                labels,
-                                SeriesStructure.getDuration(seriesData.duration),
-                                Tooltips.duration()
-                            ));
-                        $scope.charts[0].yAxis.tickInterval = 5;
-                        $scope.charts[0].yAxis.title.text = 'min';
-
-                        if ($scope.chartsType === appConfig.CHART_TYPE_COLUMN) {
-                            $scope.charts.push(
-                                GetChartStructure(
-                                    'column',
-                                    labels,
-                                    SeriesStructure.getFailedAndSkipped(seriesData.percents.failed, seriesData.percents.skipped)
-                                ));
-                        }
-
-                        if ($scope.chartsType === appConfig.CHART_TYPE_AREA) {
-                            $scope.charts.push(
-                                GetChartStructure(
-                                    'area_percent',
-                                    labels,
-                                    SeriesStructure.getPercent(seriesData.percents.failed, seriesData.percents.skipped, seriesData.percents.passed),
-                                    Tooltips.areaPercent()
-                                ));
-
-                            $scope.charts.push(
-                                GetChartStructure(
-                                    'area_absolute',
-                                    labels,
-                                    SeriesStructure.getAbsolute(seriesData.absolute.failed, seriesData.absolute.skipped, seriesData.absolute.passed),
-                                    Tooltips.areaAbsolute()
-                                ));
-                        }
-                    });
+                            createCharts(tableData);
+                        });
+                    }
                 }
             });
+        }
+
+        function formLink(filter) {
+            $scope.url = $location.path();
+            var params = [];
+            if (filter.version) {
+                params.push('version=' + filter.version);
+            }
+            if (filter.hash) {
+                params.push('hash=' + filter.hash);
+            }
+            if (filter.branch) {
+                params.push('branch=' + filter.branch);
+            }
+            if (params.length !== 0) {
+                $scope.url += '?' + params.join('&');
+            }
+        }
+
+        function createCharts(tableData) {
+            $scope.charts = [];
+
+            tableData = LaunchHelpers.cutDate(tableData, options);
+            tableData = LaunchHelpers.addDuration(tableData);
+            tableData = LaunchHelpers.addStatisticData(tableData);
+            tableData = _.sortBy(tableData, 'id');
+            var seriesData = GetChartsData.series(tableData);
+            var labels = GetChartsData.labels(tableData);
+
+            $scope.charts.push(
+                GetChartStructure(
+                    'column',
+                    labels,
+                    SeriesStructure.getDuration(seriesData.duration),
+                    Tooltips.duration()
+                ));
+            $scope.charts[0].yAxis.tickInterval = 5;
+            $scope.charts[0].yAxis.title.text = 'min';
+
+            if ($scope.chartsType === appConfig.CHART_TYPE_COLUMN) {
+                $scope.charts.push(
+                    GetChartStructure(
+                        'column',
+                        labels,
+                        SeriesStructure.getFailedAndSkipped(seriesData.percents.failed, seriesData.percents.skipped)
+                    ));
+            }
+
+            if ($scope.chartsType === appConfig.CHART_TYPE_AREA) {
+                $scope.charts.push(
+                    GetChartStructure(
+                        'area_percent',
+                        labels,
+                        SeriesStructure.getPercent(seriesData.percents.failed, seriesData.percents.skipped, seriesData.percents.passed),
+                        Tooltips.areaPercent()
+                    ));
+
+                $scope.charts.push(
+                    GetChartStructure(
+                        'area_absolute',
+                        labels,
+                        SeriesStructure.getAbsolute(seriesData.absolute.failed, seriesData.absolute.skipped, seriesData.absolute.passed),
+                        Tooltips.areaAbsolute()
+                    ));
+            }
+        }
+
+        function getLaunches(ordering, params) {
+            var deferred = $q.defer();
+
+            Launch.get({
+                testPlanId: $routeParams.testPlanId,
+                page: params.page(),
+                pageSize: params.count(),
+                ordering: ordering,
+                search: params.$params.filter.started_by
+            }, function (result) {
+                deferred.resolve(result);
+            });
+
+            return deferred.promise;
+        }
+
+        function getCustomLaunches(ordering, params) {
+            var deferred = $q.defer();
+            var data = {
+                testPlanId: $routeParams.testPlanId,
+                page: params.page(),
+                pageSize: params.count(),
+                ordering: ordering
+            };
+            if (params.$params.filter.version && params.$params.filter.version !== '') {
+                data.version = params.$params.filter.version;
+            }
+            if (params.$params.filter.hash && params.$params.filter.hash !== '') {
+                data.hash = params.$params.filter.hash;
+            }
+            if (params.$params.filter.branch && params.$params.filter.branch !== '') {
+                data.branch = params.$params.filter.branch;
+            }
+
+            Launch.custom_list(data, function (result) {
+                deferred.resolve(result);
+            });
+
+            return deferred.promise;
         }
 
         $scope.updateTestPlan = function (testplan) {
