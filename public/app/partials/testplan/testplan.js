@@ -23,8 +23,8 @@ app.config(['$routeProvider',
     }
 ]);
 
-app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$q', '$window', '$location', '$routeParams', '$filter', 'ngTableParams', 'appConfig', 'TestPlan', 'Launch', 'LaunchItem', 'SortLaunchItems', 'Comment', 'ChartConfig', 'GetChartsData', 'SeriesStructure', 'Tooltips', 'LaunchHelpers', 'GetChartStructure',
-    function ($rootScope, $scope, $q, $window, $location, $routeParams, $filter, ngTableParams, appConfig, TestPlan, Launch, LaunchItem, SortLaunchItems, Comment, ChartConfig, GetChartsData, SeriesStructure, Tooltips, LaunchHelpers, GetChartStructure) {
+app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$window', '$location', '$routeParams', '$filter', 'ngTableParams', 'appConfig', 'TestPlan', 'Launch', 'LaunchItem', 'SortLaunchItems', 'Comment', 'ChartConfig', 'GetChartsData', 'SeriesStructure', 'Tooltips', 'LaunchHelpers', 'GetChartStructure',
+    function ($rootScope, $scope, $window, $location, $routeParams, $filter, ngTableParams, appConfig, TestPlan, Launch, LaunchItem, SortLaunchItems, Comment, ChartConfig, GetChartsData, SeriesStructure, Tooltips, LaunchHelpers, GetChartStructure) {
         $scope.chartPercentType = 'failed';
         $scope.maxSymbolsForBranch = 8;
         var options = {
@@ -203,15 +203,68 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$q', '$window', '$locat
                         $scope.linkToFilter = $location.path();
                     }
 
-                    getLaunches(ordering, params).then(function(result) {
-                        params.total(result.count);
-                        tableData = result.results.map(updateStats);
-                        markSuccessLaunch(tableData);
-                        $defer.resolve(tableData);
+                    Launch.get({
+                            testPlanId: $routeParams.testPlanId,
+                            page: params.page(),
+                            pageSize: params.count(),
+                            ordering: ordering,
+                            search: params.$params.filter.started_by,
+                            build__version: params.$params.filter.version,
+                            build__hash: params.$params.filter.hash,
+                            build__branch: params.$params.filter.branch
+                        }, function (result) {
+                            params.total(result.count);
+                            tableData = result.results.map(updateStats);
+                            markSuccessLaunch(tableData);
+                            $defer.resolve(tableData);
 
-                        formLink(params.$params.filter);
+                            formLink(params.$params.filter);
 
-                        createCharts(tableData);
+                            $scope.charts = [];
+
+                            tableData = LaunchHelpers.cutDate(tableData, options);
+                            tableData = LaunchHelpers.addDuration(tableData);
+                            tableData = LaunchHelpers.addStatisticData(tableData);
+                            tableData = _.sortBy(tableData, 'id');
+                            var seriesData = GetChartsData.series(tableData);
+                            var labels = GetChartsData.labels(tableData);
+
+                            $scope.charts.push(
+                                GetChartStructure(
+                                    'column',
+                                    labels,
+                                    SeriesStructure.getDuration(seriesData.duration),
+                                    Tooltips.duration()
+                                ));
+                            $scope.charts[0].yAxis.tickInterval = 5;
+                            $scope.charts[0].yAxis.title.text = 'min';
+
+                            if ($scope.chartsType === appConfig.CHART_TYPE_COLUMN) {
+                                $scope.charts.push(
+                                    GetChartStructure(
+                                        'column',
+                                        labels,
+                                        SeriesStructure.getFailedAndSkipped(seriesData.percents.failed, seriesData.percents.skipped)
+                                    ));
+                            }
+
+                            if ($scope.chartsType === appConfig.CHART_TYPE_AREA) {
+                                $scope.charts.push(
+                                    GetChartStructure(
+                                        'area_percent',
+                                        labels,
+                                        SeriesStructure.getPercent(seriesData.percents.failed, seriesData.percents.skipped, seriesData.percents.passed),
+                                        Tooltips.areaPercent()
+                                    ));
+
+                                $scope.charts.push(
+                                    GetChartStructure(
+                                        'area_absolute',
+                                        labels,
+                                        SeriesStructure.getAbsolute(seriesData.absolute.failed, seriesData.absolute.skipped, seriesData.absolute.passed),
+                                        Tooltips.areaAbsolute()
+                                    ));
+                            }
                     });
                 }
             });
@@ -232,82 +285,6 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$q', '$window', '$locat
             if (params.length !== 0) {
                 $scope.linkToFilter += '?' + params.join('&');
             }
-        }
-
-        function createCharts(tableData) {
-            $scope.charts = [];
-
-            tableData = LaunchHelpers.cutDate(tableData, options);
-            tableData = LaunchHelpers.addDuration(tableData);
-            tableData = LaunchHelpers.addStatisticData(tableData);
-            tableData = _.sortBy(tableData, 'id');
-            var seriesData = GetChartsData.series(tableData);
-            var labels = GetChartsData.labels(tableData);
-
-            $scope.charts.push(
-                GetChartStructure(
-                    'column',
-                    labels,
-                    SeriesStructure.getDuration(seriesData.duration),
-                    Tooltips.duration()
-                ));
-            $scope.charts[0].yAxis.tickInterval = 5;
-            $scope.charts[0].yAxis.title.text = 'min';
-
-            if ($scope.chartsType === appConfig.CHART_TYPE_COLUMN) {
-                $scope.charts.push(
-                    GetChartStructure(
-                        'column',
-                        labels,
-                        SeriesStructure.getFailedAndSkipped(seriesData.percents.failed, seriesData.percents.skipped)
-                    ));
-            }
-
-            if ($scope.chartsType === appConfig.CHART_TYPE_AREA) {
-                $scope.charts.push(
-                    GetChartStructure(
-                        'area_percent',
-                        labels,
-                        SeriesStructure.getPercent(seriesData.percents.failed, seriesData.percents.skipped, seriesData.percents.passed),
-                        Tooltips.areaPercent()
-                    ));
-
-                $scope.charts.push(
-                    GetChartStructure(
-                        'area_absolute',
-                        labels,
-                        SeriesStructure.getAbsolute(seriesData.absolute.failed, seriesData.absolute.skipped, seriesData.absolute.passed),
-                        Tooltips.areaAbsolute()
-                    ));
-            }
-        }
-
-        function getLaunches(ordering, params) {
-            var deferred = $q.defer();
-
-            var data = {
-                testPlanId: $routeParams.testPlanId,
-                page: params.page(),
-                pageSize: params.count(),
-                ordering: ordering,
-                search: params.$params.filter.started_by
-            };
-
-            if (params.$params.filter.version && params.$params.filter.version !== '') {
-                data.build__version = params.$params.filter.version;
-            }
-            if (params.$params.filter.hash && params.$params.filter.hash !== '') {
-                data.build__hash = params.$params.filter.hash;
-            }
-            if (params.$params.filter.branch && params.$params.filter.branch !== '') {
-                data.build__branch = params.$params.filter.branch;
-            }
-
-            Launch.get(data, function (result) {
-                deferred.resolve(result);
-            });
-
-            return deferred.promise;
         }
 
         $scope.updateTestPlan = function (testplan) {
