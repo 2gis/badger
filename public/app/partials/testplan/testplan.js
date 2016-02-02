@@ -200,34 +200,25 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$q', '$window', '$locat
                     }
 
                     if (_.isEmpty(params.$params.filter)) {
-                        $scope.url = $location.path();
+                        $scope.linkToFilter = $location.path();
                     }
-                    if (params.$params.filter.version || params.$params.filter.hash || params.$params.filter.branch) {
-                        getCustomLaunches(ordering, params).then(function(result) {
-                            params.total(result.count);
-                            tableData = result.results.map(updateStats);
-                            markSuccessLaunch(tableData);
-                            $defer.resolve(tableData);
-                            formLink(params.$params.filter);
 
-                            createCharts(tableData);
-                        });
-                    } else {
-                        getLaunches(ordering, params).then(function(result) {
-                            params.total(result.count);
-                            tableData = result.results.map(updateStats);
-                            markSuccessLaunch(tableData);
-                            $defer.resolve(tableData);
+                    getLaunches(ordering, params).then(function(result) {
+                        params.total(result.count);
+                        tableData = result.results.map(updateStats);
+                        markSuccessLaunch(tableData);
+                        $defer.resolve(tableData);
 
-                            createCharts(tableData);
-                        });
-                    }
+                        formLink(params.$params.filter);
+
+                        createCharts(tableData);
+                    });
                 }
             });
         }
 
         function formLink(filter) {
-            $scope.url = $location.path();
+            $scope.linkToFilter = $location.path();
             var params = [];
             if (filter.version) {
                 params.push('version=' + filter.version);
@@ -239,7 +230,7 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$q', '$window', '$locat
                 params.push('branch=' + filter.branch);
             }
             if (params.length !== 0) {
-                $scope.url += '?' + params.join('&');
+                $scope.linkToFilter += '?' + params.join('&');
             }
         }
 
@@ -294,38 +285,25 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$q', '$window', '$locat
         function getLaunches(ordering, params) {
             var deferred = $q.defer();
 
-            Launch.get({
+            var data = {
                 testPlanId: $routeParams.testPlanId,
                 page: params.page(),
                 pageSize: params.count(),
                 ordering: ordering,
                 search: params.$params.filter.started_by
-            }, function (result) {
-                deferred.resolve(result);
-            });
-
-            return deferred.promise;
-        }
-
-        function getCustomLaunches(ordering, params) {
-            var deferred = $q.defer();
-            var data = {
-                testPlanId: $routeParams.testPlanId,
-                page: params.page(),
-                pageSize: params.count(),
-                ordering: ordering
             };
+
             if (params.$params.filter.version && params.$params.filter.version !== '') {
-                data.version = params.$params.filter.version;
+                data.build__version = params.$params.filter.version;
             }
             if (params.$params.filter.hash && params.$params.filter.hash !== '') {
-                data.hash = params.$params.filter.hash;
+                data.build__hash = params.$params.filter.hash;
             }
             if (params.$params.filter.branch && params.$params.filter.branch !== '') {
-                data.branch = params.$params.filter.branch;
+                data.build__branch = params.$params.filter.branch;
             }
 
-            Launch.custom_list(data, function (result) {
+            Launch.get(data, function (result) {
                 deferred.resolve(result);
             });
 

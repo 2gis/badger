@@ -44,11 +44,12 @@
 
     <div class="tab-content">
         <div role="tabpanel" class="tab-pane" ng-class="{'active': activeTab === 'history'}">
-            <a ng-href="#{{ url }}" ng-show="chartsType === 1"><span class="glyphicon glyphicon-link"
-                    style="margin-top: 10px; margin-bottom: 10px; margin-left: 10px; cursor: pointer;" title="Share link">
+            <a ng-href="#{{ linkToFilter }}" ng-show="chartsType === 1"><span class="glyphicon glyphicon-link"
+                    style="margin-top: 10px; margin-bottom: 10px; margin-left: 10px;" title="Share link">
             </span> Link filters</a>
-            <a ng-show="chartsType === 1"><span class="glyphicon glyphicon-ban-circle" style="margin-top: 10px; margin-bottom: 10px; margin-left: 10px; cursor: pointer;" title="Clear filters"
-                    ng-click="tableParams.filter({})"></span> Clear filters</a>
+            <a ng-show="chartsType === 1" ng-click="tableParams.filter({})" style="cursor:pointer;"><span class="glyphicon glyphicon-ban-circle"
+                    style="margin-top: 10px; margin-bottom: 10px; margin-left: 10px;" title="Clear filters">
+            </span> Clear filters</a>
             <a ng-href="#testplan/{{ testPlanId }}/execute" style="margin-top: 10px; margin-bottom: 10px;" class="pull-right">
                 <span class="glyphicon glyphicon-repeat"></span>
                 Launch
