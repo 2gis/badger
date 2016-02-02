@@ -11,6 +11,11 @@ var app = angular.module('testReport.testPlan', [
 
 app.config(['$routeProvider',
     function ($routeProvider) {
+        $routeProvider.when('/testplan/:testPlanId/?version=:version&hash=:hash&branch=:branch', {
+            templateUrl: '/static/app/partials/testplan/testplan.html',
+            controller: 'TestPlanCtrl',
+            redirectTo: '/testplan/:testPlanId/'
+        });
         $routeProvider.when('/testplan/:testPlanId', {
             templateUrl: '/static/app/partials/testplan/testplan.html',
             controller: 'TestPlanCtrl'
@@ -181,66 +186,105 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$window', '$location', 
                         break;
                     }
 
+                    if ($routeParams.version) {
+                        params.$params.filter.version = $routeParams.version;
+                        delete($routeParams.version);
+                    }
+                    if ($routeParams.branch) {
+                        params.$params.filter.branch = $routeParams.branch;
+                        delete($routeParams.branch);
+                    }
+                    if ($routeParams.hash) {
+                        params.$params.filter.hash = $routeParams.hash;
+                        delete($routeParams.hash);
+                    }
+
+                    if (_.isEmpty(params.$params.filter)) {
+                        $scope.linkToFilter = $location.path();
+                    }
+
                     Launch.get({
-                        testPlanId: $routeParams.testPlanId,
-                        page: params.page(),
-                        pageSize: params.count(),
-                        ordering: ordering,
-                        search: params.$params.filter.started_by
-                    }, function (result) {
-                        params.total(result.count);
-                        tableData = result.results.map(updateStats);
-                        markSuccessLaunch(tableData);
-                        $defer.resolve(tableData);
+                            testPlanId: $routeParams.testPlanId,
+                            page: params.page(),
+                            pageSize: params.count(),
+                            ordering: ordering,
+                            search: params.$params.filter.started_by,
+                            build__version: params.$params.filter.version,
+                            build__hash: params.$params.filter.hash,
+                            build__branch: params.$params.filter.branch
+                        }, function (result) {
+                            params.total(result.count);
+                            tableData = result.results.map(updateStats);
+                            markSuccessLaunch(tableData);
+                            $defer.resolve(tableData);
 
-                        $scope.charts = [];
+                            formLink(params.$params.filter);
 
-                        tableData = LaunchHelpers.cutDate(tableData, options);
-                        tableData = LaunchHelpers.addDuration(tableData);
-                        tableData = LaunchHelpers.addStatisticData(tableData);
-                        tableData = _.sortBy(tableData, 'id');
-                        var seriesData = GetChartsData.series(tableData);
-                        var labels = GetChartsData.labels(tableData);
+                            $scope.charts = [];
 
-                        $scope.charts.push(
-                            GetChartStructure(
-                                'column',
-                                labels,
-                                SeriesStructure.getDuration(seriesData.duration),
-                                Tooltips.duration()
-                            ));
-                        $scope.charts[0].yAxis.tickInterval = 5;
-                        $scope.charts[0].yAxis.title.text = 'min';
+                            tableData = LaunchHelpers.cutDate(tableData, options);
+                            tableData = LaunchHelpers.addDuration(tableData);
+                            tableData = LaunchHelpers.addStatisticData(tableData);
+                            tableData = _.sortBy(tableData, 'id');
+                            var seriesData = GetChartsData.series(tableData);
+                            var labels = GetChartsData.labels(tableData);
 
-                        if ($scope.chartsType === appConfig.CHART_TYPE_COLUMN) {
                             $scope.charts.push(
                                 GetChartStructure(
                                     'column',
                                     labels,
-                                    SeriesStructure.getFailedAndSkipped(seriesData.percents.failed, seriesData.percents.skipped)
+                                    SeriesStructure.getDuration(seriesData.duration),
+                                    Tooltips.duration()
                                 ));
-                        }
+                            $scope.charts[0].yAxis.tickInterval = 5;
+                            $scope.charts[0].yAxis.title.text = 'min';
 
-                        if ($scope.chartsType === appConfig.CHART_TYPE_AREA) {
-                            $scope.charts.push(
-                                GetChartStructure(
-                                    'area_percent',
-                                    labels,
-                                    SeriesStructure.getPercent(seriesData.percents.failed, seriesData.percents.skipped, seriesData.percents.passed),
-                                    Tooltips.areaPercent()
-                                ));
+                            if ($scope.chartsType === appConfig.CHART_TYPE_COLUMN) {
+                                $scope.charts.push(
+                                    GetChartStructure(
+                                        'column',
+                                        labels,
+                                        SeriesStructure.getFailedAndSkipped(seriesData.percents.failed, seriesData.percents.skipped)
+                                    ));
+                            }
 
-                            $scope.charts.push(
-                                GetChartStructure(
-                                    'area_absolute',
-                                    labels,
-                                    SeriesStructure.getAbsolute(seriesData.absolute.failed, seriesData.absolute.skipped, seriesData.absolute.passed),
-                                    Tooltips.areaAbsolute()
-                                ));
-                        }
+                            if ($scope.chartsType === appConfig.CHART_TYPE_AREA) {
+                                $scope.charts.push(
+                                    GetChartStructure(
+                                        'area_percent',
+                                        labels,
+                                        SeriesStructure.getPercent(seriesData.percents.failed, seriesData.percents.skipped, seriesData.percents.passed),
+                                        Tooltips.areaPercent()
+                                    ));
+
+                                $scope.charts.push(
+                                    GetChartStructure(
+                                        'area_absolute',
+                                        labels,
+                                        SeriesStructure.getAbsolute(seriesData.absolute.failed, seriesData.absolute.skipped, seriesData.absolute.passed),
+                                        Tooltips.areaAbsolute()
+                                    ));
+                            }
                     });
                 }
             });
+        }
+
+        function formLink(filter) {
+            $scope.linkToFilter = $location.path();
+            var params = [];
+            if (filter.version) {
+                params.push('version=' + filter.version);
+            }
+            if (filter.hash) {
+                params.push('hash=' + filter.hash);
+            }
+            if (filter.branch) {
+                params.push('branch=' + filter.branch);
+            }
+            if (params.length !== 0) {
+                $scope.linkToFilter += '?' + params.join('&');
+            }
         }
 
         $scope.updateTestPlan = function (testplan) {
