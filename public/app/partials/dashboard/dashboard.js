@@ -17,6 +17,7 @@ app.config(['$routeProvider', function ($routeProvider) {
 app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$window', '$location', 'appConfig', 'ngTableParams', 'TestPlan', 'Launch', 'Stage', 'Filters', 'LaunchHelpers', 'LaunchFilters', 'GetChartsData', 'SeriesStructure', 'Tooltips', 'GetChartStructure',
     function ($q, $scope, $rootScope, $routeParams, $window, $location, appConfig, ngTableParams, TestPlan, Launch, Stage, Filters, LaunchHelpers, LaunchFilters, GetChartsData, SeriesStructure, Tooltips, GetChartStructure) {
         $rootScope.selectProject($routeParams.projectId);
+        $scope.projectId = $routeParams.projectId;
         $rootScope.isMainDashboard = false;
 
         TestPlan.get({ projectId: $routeParams.projectId }, function (response) {
@@ -207,9 +208,9 @@ app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '
 
         function addLastTwoDaysCounts(testplan, launches) {
             var d = new Date();
-            $scope.today = d.toLocaleDateString(LANG);
+            $scope.today = d.toISOString().substring(0, 10);
             d.setDate(d.getDate() - 1);
-            $scope.yesterday = d.toLocaleDateString(LANG);
+            $scope.yesterday = d.toISOString().substring(0, 10);
 
             testplan.twodays = [{},{}];
             _.each(launches, function(launch) {
@@ -239,5 +240,12 @@ app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '
                 $scope.redirect(evt, '/launch/' + testplan.twodays[1].launch_id);
             }
         };
+
+        $scope.redirectToTotalStatistics = function(evt, day) {
+            var d = new Date(day);
+            d.setDate(d.getDate() + 1);
+            $scope.redirect(evt, '/dashboard/' + $scope.projectId +
+                '/launches/from=' + day + '&to=' + d.toISOString().substring(0, 10));
+        }
     }
 ]);

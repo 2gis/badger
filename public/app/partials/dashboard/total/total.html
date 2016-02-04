@@ -1,0 +1,86 @@
+<h3>Total statistic
+    <a><span class="glyphicon glyphicon-question-sign small pull-right" ng-click="open('dashboard/total')"></span></a>
+</h3>
+
+<div class="text-center" ng-class="{ 'disabled': !formErrors, 'alert alert-warning': formErrors}"
+     role="alert">{{ formErrors }}
+</div>
+
+<div>
+  <table ng-show="tableParams" ng-table="tableParams" show-filter="true"
+         class="table table-condensed table-bordered table-hover table-striped"
+          template-pagination="removePageRow.html">
+    <tbody ng-repeat="group in $groups">
+      <tr class="ng-table-group" >
+        <td colspan="{{ $columns.length }}">
+            <a href="" ng-click="group.$hideRows = !group.$hideRows" style="text-decoration: none;">
+                <span class="glyphicon" ng-class="{ 'glyphicon-chevron-right': !group.$hideRows, 'glyphicon-chevron-down': group.$hideRows }"></span>
+                <b>{{ group.value }} </b>
+                <div class="pull-right">
+                    <span class="label label-danger label-balanced">
+                        {{ group.data.length }}
+                    </span>
+                </div>
+            </a>
+        </td>
+      </tr>
+        <tr ng-hide="!group.$hideRows" ng-repeat="test in group.data"
+            ng-click="openResults(test)" style="cursor:pointer" ng-class="{'hidden': test.hidden }">
+            <td data-title="'Date'" class="text-center" style="width: 7em;" sortable="'launch'">
+                {{ test.created | date:"dd.MM HH:mm" }}
+            </td>
+            <td data-title="'Version'" class="text-center" style="width: 7em;">
+                {{ test.version }}
+            </td>
+            <td data-title="'Testplan'" style="width: 12em;">
+                <div class="panel-tree-view">{{ test.testplan }}</div>
+            </td>
+            <!--<td data-title="'Suite'" sortable="'suite'">-->
+                <!--<div class="panel-tree-view"> {{ test.suite | cut:true:24:'..'}}</div>-->
+            <!--</td>-->
+            <td data-title="'Test name'" filter="{'failure_reason': 'text'}" style="padding-bottom: 1px;">
+                <div class="panel panel-default panel-tree-view" style="margin-bottom: 5px;">
+                    <div class="panel-body" style="background-color: whitesmoke; padding: 10px; padding-bottom: 5px;">
+                        {{ test.name }}
+                    </div>
+                </div>
+            </td>
+            <!--<td data-title="'state'" style="width: 4em;">-->
+                <!--<span class="{{ test.state | testStatesClass }}">{{ test.state | testStates }}</span>-->
+            <!--</td>-->
+            <td data-title="'sec.'" style="width: 2em;" sortable="'duration'">{{ test.duration | toFixed }}</td>
+            <td data-title="'Bugs'" style="width: 4em;">
+                <div ng-repeat="bug in test.bugs">
+                    <a class="label label-{{ bug.status | bugStatusClass }}"
+                       href="https://jira.2gis.ru/browse/{{ bug.externalId }}"
+                       title="{{ bug.name }}">{{ bug.externalId }}</a>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="modal modal-wide" id="TestDetailsModal" tabindex="-1" role="dialog"
+         aria-labelledby="TestDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" style="width: 70%;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="TestDetailsModalLabel">
+                    {{ modalSuite }}
+                    <br/>
+                    <b>{{ modalName }}</b>
+                </h4>
+            </div>
+            <div class="modal-body" style="overflow-y: auto;">
+                <pre ng-bind-html="modalBody | linky:'_blank'"></pre>
+            </div>
+            <div class="modal-footer">
+                <a  class="btn" ng-href="#testresult/{{ modalId }}/">Open detailed view <i class="glyphicon glyphicon-share"></i></a>
+            </div>
+        </div>
+    </div>
+</div>
