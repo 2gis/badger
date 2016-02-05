@@ -22,6 +22,22 @@ app.controller('DashboardTotalCtrl', ['$scope', '$rootScope', '$filter', '$route
         $rootScope.isMainDashboard = false;
         $scope.initGroupBy = 'suite';
 
+        $scope.columns = [
+            { title: 'Version', visible: true },
+            { title: 'Hash', visible: false },
+            { title: 'Branch', visible: false },
+            { title: 'Testplan', visible: true },
+            { title: 'Suite', visible: true },
+            { title: 'sec.', visible: true },
+            { title: 'Bugs', visible: true }
+        ];
+
+        $scope.getColumnVisibility = function(title) {
+            return (_.find($scope.columns, function(column) {
+                return column.title === title;
+            })).visible;
+        };
+
         var delta = new Date($routeParams.to) - new Date($routeParams.from);
         if (delta / 1000 / 60 / 60/ 24 > 7) {
             $scope.formErrors = 'Period can\'t be more than 7 days.';
@@ -100,6 +116,8 @@ app.controller('DashboardTotalCtrl', ['$scope', '$rootScope', '$filter', '$route
                         var launch = launchesByIds[testResult.launch][0];
                         testResult.created = launch.created;
                         testResult.version = _.isObject(launch.build) ? launch.build.version : '';
+                        testResult.hash = _.isObject(launch.build) ? launch.build.hash : '';
+                        testResult.branch = _.isObject(launch.build) ? launch.build.branch : '';
                         testResult.testplan = $scope.names[launch.test_plan];
                     });
 
