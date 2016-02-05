@@ -208,19 +208,21 @@ app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '
 
         function addLastTwoDaysCounts(testplan, launches) {
             var d = new Date();
+            var today = d.toLocaleDateString(LANG);
             $scope.today = d.toISOString().substring(0, 10);
             d.setDate(d.getDate() - 1);
+            var yesterday = d.toLocaleDateString(LANG);
             $scope.yesterday = d.toISOString().substring(0, 10);
 
             testplan.twodays = [{},{}];
             _.each(launches, function(launch) {
-                if (launch.groupDate === $scope.today) {
+                if (launch.groupDate === today) {
                     testplan.twodays[0] = launch.counts;
                     testplan.twodays[0].launch_id = launch.id;
                     testplan.percent_of_failed = launch.percents.failed + launch.percents.blocked;
                     testplan.percent_of_skipped = launch.percents.skipped;
                 }
-                if (launch.groupDate === $scope.yesterday) {
+                if (launch.groupDate === yesterday) {
                     testplan.twodays[1] = launch.counts;
                     testplan.twodays[1].launch_id = launch.id;
                 }
