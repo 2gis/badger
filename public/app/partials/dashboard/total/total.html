@@ -1,11 +1,19 @@
 <h3>Total statistic
     <a><span class="glyphicon glyphicon-question-sign small pull-right" ng-click="open('dashboard/total')"></span></a>
 </h3>
-
+<hr>
 <div class="text-center" ng-class="{ 'disabled': !formErrors, 'alert alert-warning': formErrors}"
      role="alert">{{ formErrors }}
 </div>
-
+<div ng-show="tableParams"><b>Group by:</b>
+    <div class="btn-group btn-group-xs" role="group" aria-label="...">
+        <button type="button" class="btn btn-default" ng-click="initGroupBy='version'">version</button>
+        <button type="button" class="btn btn-default" ng-click="initGroupBy='testplan'">testplan</button>
+        <button type="button" class="btn btn-default active" ng-click="initGroupBy='suite'">suite</button>
+        <button type="button" class="btn btn-default" ng-click="initGroupBy='name'">test name</button>
+    </div>
+    <p>
+</div>
 <div>
   <table ng-show="tableParams" ng-table="tableParams" show-filter="true"
          class="table table-condensed table-bordered table-hover table-striped"
@@ -29,16 +37,16 @@
             <td data-title="'Date'" class="text-center" style="width: 7em;" sortable="'launch'">
                 {{ test.created | date:"dd.MM HH:mm" }}
             </td>
-            <td data-title="'Version'" class="text-center" style="width: 7em;">
+            <td data-title="'Version'" class="text-center" style="width: 7em;" filter="{'version': 'text'}" sortable="'version'">
                 {{ test.version }}
             </td>
-            <td data-title="'Testplan'" style="width: 12em;">
+            <td data-title="'Testplan'" style="width: 12em;" filter="{'testplan': 'text'}" sortable="'testplan'">
                 <div class="panel-tree-view">{{ test.testplan }}</div>
             </td>
-            <!--<td data-title="'Suite'" sortable="'suite'">-->
-                <!--<div class="panel-tree-view"> {{ test.suite | cut:true:24:'..'}}</div>-->
-            <!--</td>-->
-            <td data-title="'Test name'" filter="{'failure_reason': 'text'}" style="padding-bottom: 1px;">
+            <td data-title="'Suite'" sortable="'suite'" filter="{'suite': 'text'}">
+                <div class="panel-tree-view"> {{ test.suite | cut:true:24:'..'}}</div>
+            </td>
+            <td data-title="'Test name'" filter="{'name': 'text'}" style="padding-bottom: 1px;" sortable="'name'">
                 <div class="panel panel-default panel-tree-view" style="margin-bottom: 5px;">
                     <div class="panel-body" style="background-color: whitesmoke; padding: 10px; padding-bottom: 5px;">
                         {{ test.name }}

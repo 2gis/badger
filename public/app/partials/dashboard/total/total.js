@@ -63,15 +63,24 @@ app.controller('DashboardTotalCtrl', ['$scope', '$rootScope', '$filter', '$route
                     $scope.formErrors = 'No launches for this period.';
                     return;
                 }
-                drawTable(launches.results);
+                $scope.launches = launches.results;
+
+                TestResult.custom_list({
+                    launch_id__in: _.map($scope.launches, getId).join(),
+                    page: 1,
+                    pageSize: 9999,
+                    state__in: ([appConfig.TESTRESULT_FAILED, appConfig.TESTRESULT_BLOCKED]).join()
+                }, function (result) {
+                    drawTable(result);
+                });
             });
         });
 
-        function drawTable(launches) {
-            $scope.tableParams = treeTable(launches);
+        function drawTable(results) {
+            $scope.tableParams = treeTable(results);
         }
 
-        function treeTable(results) {
+        function treeTable(result) {
             return new ngTableParams({
                 count: 99999,
                 sorting: {
@@ -81,38 +90,33 @@ app.controller('DashboardTotalCtrl', ['$scope', '$rootScope', '$filter', '$route
                 total: 0,
                 groupBy: $scope.initGroupBy,
                 getData: function ($defer, params) {
-                    TestResult.custom_list({
-                        launch_id__in: _.map(results, getId).join(),
-                        page: 1,
-                        pageSize: 9999,
-                        state__in: ([appConfig.TESTRESULT_FAILED, appConfig.TESTRESULT_BLOCKED]).join(),
-                        search: params.$params.filter.failure_reason
-                    }, function (result) {
-                        params.total(result.count);
-                        $scope.data = result.results;
-                        $scope.data = params.sorting() ? $filter('orderBy')($scope.data, params.orderBy()) : $scope.data;
+                    params.total(result.count);
+                    $scope.data = result.results;
+                    $scope.data = params.sorting() ? $filter('orderBy')($scope.data, params.orderBy()) : $scope.data;
+                    $scope.data = params.filter() ? $filter('filter')($scope.data, params.filter()) : $scope.data;
 
-                        var launchesByIds = _.groupBy(results, 'id');
-                        _.each($scope.data, function(testResult) {
-                            console.log(testResult);
-                            var launch = launchesByIds[testResult.launch][0];
-                            testResult.created = launch.created;
-                            testResult.version = _.isObject(launch.build) ? launch.build.version : '';
-                            testResult.testplan = $scope.names[launch.test_plan];
-                        });
-
-                        $defer.resolve($scope.data);
-                        $scope.tableParams.settings({counts: []});
+                    var launchesByIds = _.groupBy($scope.launches, 'id');
+                    _.each($scope.data, function(testResult) {
+                        var launch = launchesByIds[testResult.launch][0];
+                        testResult.created = launch.created;
+                        testResult.version = _.isObject(launch.build) ? launch.build.version : '';
+                        testResult.testplan = $scope.names[launch.test_plan];
                     });
+
+                    $defer.resolve($scope.data);
+                    $scope.tableParams.settings({counts: []});
                 }
             });
         }
 
+        $scope.$watch('initGroupBy', function(value){
+            $scope.tableParams.settings().groupBy = value;
+            $scope.tableParams.reload();
+        });
+
         $scope.openResults = function (item) {
             var modal = $('#TestDetailsModal');
-
             modal.modal('hide');
-
             $scope.modalSuite = item.suite;
             $scope.modalName = item.name;
             $scope.modalState = item.state;
