@@ -56,7 +56,7 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
                 $scope.result_preview =
                     $rootScope.getProjectSettings($rootScope.getActiveProject(), 'result_preview') === 0 ? 'head' : 'tail';
 
-                $scope.result_preview = profile.settings.result_preview ? profile.settings.result_preview : $scope.result_preview;
+                $scope.result_preview = profile && profile.settings.result_preview ? profile.settings.result_preview : $scope.result_preview;
 
                 drawTable(profile, $scope.result_view);
             });
