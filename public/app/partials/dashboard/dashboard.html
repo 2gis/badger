@@ -9,7 +9,7 @@
     <h3>Short statistics
         <a><span class="glyphicon glyphicon-question-sign small pull-right" ng-click="open('dashboard/short_statistics')"></span></a>
     </h3>
-    <div class="row" ng-show="testplans.length === 0">
+    <div class="row" ng-show="testplans.length === 0 && summaryTestplans.length === 0 && twodaysTestplans.length === 0">
         <div class="alert alert-warning text-center" role="alert" style="margin-top: 40px">
             Your project doesn't have any testplans to show in 'Short Statistics'.
             Please, configure testplans.
