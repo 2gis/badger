@@ -48,7 +48,7 @@
         </td>
       </tr>
         <tr ng-hide="group.$hideRows" ng-repeat="test in group.data"
-            ng-click="openResults(test)" style="cursor:pointer" ng-class="{'hidden': test.hidden }">
+            ng-click="redirect($event, '/testresult/' + test.id)" style="cursor:pointer" ng-class="{'hidden': test.hidden }">
             <td data-title="'Date'" class="text-center" style="width: 7em;" sortable="'launch'">
                 {{ test.created | date:"dd.MM HH:mm" }}
             </td>

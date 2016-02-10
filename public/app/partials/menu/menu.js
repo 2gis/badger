@@ -1,7 +1,7 @@
 'use strict';
 
-app.controller('Menu', ['$rootScope', '$routeParams','$scope', '$location', 'Project', 'TestPlan', 'Auth', 'isSafari','$q', 'appConfig',
-    function ($rootScope, $routeParams, $scope, $location, Project, TestPlan, Auth, isSafari, $q, appConfig) {
+app.controller('Menu', ['$rootScope', '$routeParams','$scope', '$location', '$window', 'Project', 'TestPlan', 'Auth', 'isSafari','$q',
+    function ($rootScope, $routeParams, $scope, $location, $window, Project, TestPlan, Auth, isSafari, $q) {
         $scope.isSafari = isSafari;
         $scope.jira = JIRA_INTEGRATION;
         $scope.xmasTree = showXmasTree();
@@ -137,5 +137,10 @@ app.controller('Menu', ['$rootScope', '$routeParams','$scope', '$location', 'Pro
             }
             return false;
         }
+
+        $rootScope.redirect = function(evt, url) {
+            (evt.button === 1 || evt.ctrlKey === true) ?
+                $window.open('#' + url, '_blank') : $location.path(url);
+        };
     }
 ]);

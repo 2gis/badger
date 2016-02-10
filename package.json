@@ -9,6 +9,7 @@
     "bower": "1.4.1",
     "express": "3.1.x",
     "jade": "1.9.2",
+    "lightbox2": "2.8.2",
     "request": "^2.55.0"
   },
   "devDependencies": {
