@@ -16,11 +16,12 @@ app.config(['$routeProvider', function ($routeProvider) {
     });
 }]);
 
-app.controller('DashboardTotalCtrl', ['$scope', '$rootScope', '$filter', '$routeParams', 'ngTableParams', 'appConfig', 'Filters', 'TestPlan', 'Launch', 'TestResult',
-    function ($scope, $rootScope, $filter, $routeParams, ngTableParams, appConfig, Filters, TestPlan, Launch, TestResult) {
+app.controller('DashboardTotalCtrl', ['$scope', '$rootScope', '$filter', '$routeParams', 'ngTableParams', 'appConfig', 'Filters', 'TestPlan', 'Launch', 'TestResult', 'GetChartStructure',
+    function ($scope, $rootScope, $filter, $routeParams, ngTableParams, appConfig, Filters, TestPlan, Launch, TestResult, GetChartStructure) {
         $rootScope.selectProject($routeParams.projectId);
         $rootScope.isMainDashboard = false;
         $scope.initGroupBy = 'suite';
+        $scope.currentResult = null;
 
         $scope.columns = [
             { title: 'Version', visible: true },
@@ -132,21 +133,51 @@ app.controller('DashboardTotalCtrl', ['$scope', '$rootScope', '$filter', '$route
             $scope.tableParams.reload();
         });
 
-        $scope.openResults = function (item) {
-            var modal = $('#TestDetailsModal');
-            modal.modal('hide');
-            $scope.modalSuite = item.suite;
-            $scope.modalName = item.name;
-            $scope.modalState = item.state;
-            $scope.modalBody = item.failure_reason;
-            $scope.modalId = item.id;
-            modal.modal('show');
-        };
-
         $(".modal-wide").on("show.bs.modal", function() {
           var height = $(window).height() - 250;
           $(this).find(".modal-body").css("max-height", height);
         });
+
+        var options = {
+            month: 'numeric',
+            day: 'numeric',
+            minute: 'numeric',
+            second: 'numeric'
+        };
+
+        $scope.openResult = function(result) {
+            $scope.activeTab = 'message';
+            $scope.setActiveTab = function(tabName) {
+                $scope.activeTab = tabName;
+            };
+
+            $scope.currentResult = result;
+            try {
+                $scope.currentResult.failure_reason = JSON.parse(result.failure_reason);
+                $scope.currentResult.json = true;
+                $scope.currentResult.charts = [];
+                _.each($scope.currentResult.failure_reason.series, function(serie) {
+                    serie.y = _.map(serie.y, function(label) {
+                        var d = new Date(label);
+                        return d.toLocaleDateString(LANG, options);
+                    });
+                    var chart = GetChartStructure(
+                        'area_absolute',
+                        serie.y,
+                        [{name: serie.name, data: serie.x, color: '#a5aad9'}]
+                    );
+                    chart.options.plotOptions.series.point.events = {};
+                    chart.size.width = 550;
+                    $scope.currentResult.charts.push(chart);
+                });
+            } catch (error) {
+                $scope.currentResult.failure_reason = result.failure_reason;
+            }
+        };
+
+        $scope.closeResult = function() {
+            $scope.currentResult = null;
+        };
 
     }
 ]);

@@ -1,127 +1,118 @@
-<div ng-show="failureReason">
-    <div class="page-header">
-        <h3>{{ suite }} <strong>{{ name }}</strong></h3>
+<h3>{{ testResult.suite }} <strong>{{ testResult.name }}</strong></h3>
+<p class="text-left"><small>Duration: {{ testResult.duration }}</small></p>
+<br>
+<div class="tabpanel">
+    <ul class="nav nav-tabs" role="tablist">
+        <li>
+            <a ng-href="#/launch/{{ testResult.launch }}" style="cursor: pointer;">
+                <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                Back to launch
+            </a>
+        </li>
+        <li role="presentation" ng-class="{ 'active': activeTab === 'message' }">
+            <a ng-click="setActiveTab('message')" aria-controls="message"
+               role="tab" data-toggle="tab" style="cursor: pointer;">Message</a>
+        </li>
+        <li role="presentation" ng-class="{ 'active': activeTab === 'trace' }" ng-show="testResult.json"><a
+                ng-click="setActiveTab('trace')" aria-controls="trace"
+                role="tab" data-toggle="tab" style="cursor: pointer;">Stack trace</a></li>
+        <li role="presentation" ng-class="{ 'active': activeTab === 'steps' }" ng-show="testResult.json">
+            <a ng-click="setActiveTab('steps')" aria-controls="steps"
+               role="tab" data-toggle="tab" style="cursor: pointer;">Steps</a>
+        </li>
+        <li role="presentation" ng-class="{ 'active': activeTab === 'series' }" ng-show="testResult.json"><a
+                ng-click="setActiveTab('series')" aria-controls="series"
+                role="tab" data-toggle="tab" style="cursor: pointer;">Series</a></li>
+        <li role="presentation" ng-class="{ 'active': activeTab === 'attach' }" ng-show="testResult.json">
+            <a ng-click="setActiveTab('attach')" aria-controls="attach"
+               role="tab" data-toggle="tab" style="cursor: pointer;">Attachments</a>
+        </li>
+    </ul>
 
-    <p class="text-right">
-        <small>Duration: {{ duration }}</small>
-    </p>
-
-    <a class="btn btn-primary" ng-href="#/launch/{{ launch }}">To Launch (#{{ launch }})</a>
-    </div>
-
-
-    <div class="container-fluid">
-        <div class="row-fluid">
-            <div class="span9">
-                <div class="hero-unit">
-                    <pre ng-bind-html="failureReason | linky:'_blank'"></pre>
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane" id="message" ng-class="{ 'active': activeTab === 'message' }">
+            <br/>
+            <div class="row">
+                <div class="col-md-12">
+                    <pre ng-show="testResult.json">{{ testResult.failure_reason.message }}</pre>
+                    <pre ng-show="!testResult.json" ng-bind-html="testResult.failure_reason | linky:'_blank'"></pre>
                 </div>
             </div>
         </div>
-    </div>
-</div>
-
-<div ng-show="testResult">
-    <div class="page-header">
-        <h3>{{ suite }} <strong>{{ name }}</strong></h3>
-    </div>
-    <div class="tabpanel">
-        <ul class="nav nav-tabs" role="tablist">
-            <li>
-                <a ng-href="#/launch/{{ launch }}" style="cursor: pointer;">
-                    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-                    Back to launch
-                </a>
-            </li>
-            <li role="presentation" ng-class="{ 'active': activeTab === 'steps' }">
-                <a ng-click="setActiveTab('steps')" aria-controls="steps"
-                   role="tab" data-toggle="tab" style="cursor: pointer;">Steps</a>
-            </li>
-            <li role="presentation" ng-class="{ 'active': activeTab === 'trace' }"><a
-                    ng-click="setActiveTab('trace')" aria-controls="trace"
-                    role="tab" data-toggle="tab" style="cursor: pointer;">Trace</a></li>
-            <li role="presentation" ng-class="{ 'active': activeTab === 'series' }"><a
-                    ng-click="setActiveTab('series')" aria-controls="series"
-                    role="tab" data-toggle="tab" style="cursor: pointer;">Series</a></li>
-            <li role="presentation" ng-class="{ 'active': activeTab === 'attach' }">
-                <a ng-click="setActiveTab('attach')" aria-controls="attach"
-                   role="tab" data-toggle="tab" style="cursor: pointer;">Attachments</a>
-            </li>
-        </ul>
-
-        <div class="tab-content">
-            <div role="tabpanel" class="tab-pane" id="steps" ng-class="{ 'active': activeTab === 'steps' }">
-                <br/>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div ng-repeat="step in testResult.steps">
-                            <div class="panel panel-default">
-                                <div class="panel-heading">{{ step.name }}</div>
-                                <div class="panel-body" ng-if="step.attachments">
-                                    <div class="container-fluid">
-                                        <div class="row">
-                                            <div class="col-md-2" ng-repeat="attach in step.attachments">
-                                                <div class="thumbnail_container" ng-if="attach['mime-type'] === 'image/png'">
-                                                    <a class="example-image-link" ng-href="{{ attach.url }}" data-lightbox="example-set">
-                                                        <div class="thumbnail thumbnail-square" ng-style="{'background-image': 'url({{ attach.url }})'}"></div>
+        <div role="tabpanel" class="tab-pane" id="trace" ng-class="{ 'active': activeTab === 'trace' }">
+            <br/>
+            <div class="row">
+                <div class="col-md-12">
+                    <pre>{{ testResult.failure_reason.stack_trace }}</pre>
+                </div>
+            </div>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="steps" ng-class="{ 'active': activeTab === 'steps' }">
+            <br/>
+            <div class="row">
+                <div class="col-md-12">
+                    <div ng-repeat="step in testResult.failure_reason.steps">
+                        <div class="panel panel-default" style="margin-bottom: 5px;">
+                            <div class="panel-heading" style="border-bottom: 0px;">{{ step.name }}</div>
+                            <div class="panel-body" ng-if="step.attachments">
+                                <div class="container-fluid">
+                                    <div class="row">
+                                        <div ng-repeat="attach in step.attachments">
+                                            <div class="col-md-2" ng-if="attach['mime-type'] === 'image/png'">
+                                                <div class="thumbnail_container">
+                                                    <a class="example-image-link" ng-href="{{ attach.url }}" data-lightbox="steps">
+                                                        <div class="thumbnail thumbnail-square"
+                                                             ng-style="{'background-image': 'url({{ attach.url }})'}">
+                                                        </div>
                                                     </a>
-                                                    <!--<div class="thumbnail">-->
-                                                        <!--<a class="example-image-link" ng-href="{{ attach.url }}" data-lightbox="example-set">-->
-                                                            <!--<img class="img-rounded" src="{{ attach.url }}" />-->
-                                                        <!--</a>-->
-                                                    <!--</div>-->
                                                 </div>
+                                                <p class="text-center" ng-if="attach['mime-type'] === 'image/png'">{{ attach.name | cut:true:18}}</p>
                                             </div>
                                         </div>
-                                        <div ng-repeat="attach in step.attachments">
-                                            <pre ng-show="attach['mime-type'] === 'text/plain'" ng-bind-html="attach.url | linky:'_blank'"></pre>
-                                        </div>
+                                    </div>
+                                    <div ng-repeat="attach in step.attachments">
+                                        <pre ng-show="attach['mime-type'] === 'text/plain'" ng-bind-html="attach.name + ': ' + attach.url | linky:'_blank'"></pre>
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
-                        </div>
                     </div>
                 </div>
             </div>
-            <div role="tabpanel" class="tab-pane" id="trace" ng-class="{ 'active': activeTab === 'trace' }">
-                <br/>
-                <div class="row">
-                    <div class="col-md-12">
-                        <pre>{{ testResult.stack_trace }}</pre>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="series" ng-class="{ 'active': activeTab === 'series' }">
+            <br/>
+            <div ng-if="testResult.charts && testResult.charts.length !== 0">
+                <div ng-repeat="chart in testResult.charts">
+                    <div class="col-md-6">
+                        <highchart config="chart"></highchart>
                     </div>
                 </div>
             </div>
-            <div role="tabpanel" class="tab-pane" id="series" ng-class="{ 'active': activeTab === 'series' }">
-                <br/>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div ng-if="charts.length !== 0">
-                            <div class="row col-md-5" ng-repeat="chart in charts">
-                                <highchart config="chart"></highchart>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div role="tabpanel" class="tab-pane" id="attach" ng-class="{ 'active': activeTab === 'attach' }">
-                <br/>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div ng-if="testResult.attachments && testResult.attachments.length !== 0">
-                            <div class="container-fluid">
-                                <div class="row">
-                                    <div class="col-md-2" ng-repeat="attach in testResult.attachments">
-                                        <div class="thumbnail_container" ng-if="attach['mime-type'] === 'image/png'">
-                                            <a class="example-image-link" ng-href="{{ attach.url }}" data-lightbox="example-set">
+            <div class="clearfix"></div>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="attach" ng-class="{ 'active': activeTab === 'attach' }">
+            <br/>
+            <div class="row">
+                <div class="col-md-12">
+                    <div ng-if="testResult.failure_reason.attachments && testResult.failure_reason.attachments.length !== 0">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div ng-repeat="attach in testResult.failure_reason.attachments">
+                                    <div class="col-md-2" ng-if="attach['mime-type'] === 'image/png'">
+                                        <div class="thumbnail_container">
+                                            <a class="example-image-link" ng-href="{{ attach.url }}" data-lightbox="attachments">
                                                 <div class="thumbnail thumbnail-square" ng-style="{'background-image': 'url({{ attach.url }})'}"></div>
                                             </a>
                                         </div>
+                                        <p class="text-center" ng-if="attach['mime-type'] === 'image/png'">{{ attach.name | cut:true:18 }}</p>
                                     </div>
                                 </div>
-                                <div ng-repeat="attach in testResult.attachments">
-                                    <pre ng-show="attach['mime-type'] === 'text/plain'" ng-bind-html="attach.url | linky:'_blank'"></pre>
-                                </div>
+                            </div>
+                            <div ng-repeat="attach in testResult.failure_reason.attachments">
+                                <pre ng-show="attach['mime-type'] === 'text/plain'" ng-bind-html="attach.name + ': ' + attach.url | linky:'_blank'">
+                                </pre>
                             </div>
                         </div>
                     </div>
