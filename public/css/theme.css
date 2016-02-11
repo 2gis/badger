@@ -87,3 +87,18 @@ body {
     font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
     font-size: 13px;
 }
+
+.thumbnail_container {
+     position: relative;
+     width: 100%;
+     padding-bottom: 100%;
+}
+
+.thumbnail-square {
+    position:absolute;
+    width: 100%;
+    height: 100%;
+    border-color: white;
+    background-size: cover;
+    background-position: 50% 50%;
+}

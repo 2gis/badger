@@ -12,8 +12,8 @@ app.config(['$routeProvider', function ($routeProvider) {
     });
 }]);
 
-app.controller('TestResultCtrl', ['$scope', '$routeParams', 'TestResult',
-    function ($scope, $routeParams, TestResult) {
+app.controller('TestResultCtrl', ['$scope', '$routeParams', 'TestResult', 'GetChartStructure',
+    function ($scope, $routeParams, TestResult, GetChartStructure) {
         // Fix absent scrollbar
         var $body = angular.element('body');
         if ($body.hasClass('modal-open')) {
@@ -21,12 +21,41 @@ app.controller('TestResultCtrl', ['$scope', '$routeParams', 'TestResult',
             $('.modal-backdrop').remove();
         }
 
+        $scope.activeTab = 'message';
+        $scope.setActiveTab = function(tabName) {
+            $scope.activeTab = tabName;
+        };
+
+        var options = {
+            month: 'numeric',
+            day: 'numeric',
+            minute: 'numeric',
+            second: 'numeric'
+        };
+
         TestResult.get({ testResultId: $routeParams.testResultId}, function (result) {
-            $scope.suite = result.suite;
-            $scope.name = result.name;
-            $scope.duration = result.duration;
-            $scope.failureReason = result.failure_reason;
-            $scope.launch = result.launch;
+            $scope.testResult = result;
+            try {
+                $scope.testResult.failure_reason = JSON.parse(result.failure_reason);
+                $scope.testResult.json = true;
+                $scope.testResult.charts = [];
+                _.each($scope.testResult.failure_reason.series, function(serie) {
+                    serie.y = _.map(serie.y, function(label) {
+                        var d = new Date(label);
+                        return d.toLocaleDateString(LANG, options);
+                    });
+                    var chart = GetChartStructure(
+                        'area_absolute',
+                        serie.y,
+                        [{name: serie.name, data: serie.x, color: '#a5aad9'}]
+                    );
+                    chart.options.plotOptions.series.point.events = {};
+                    chart.size.width = 550;
+                    $scope.testResult.charts.push(chart);
+                });
+            } catch (error) {
+                $scope.testResult.failure_reason = result.failure_reason;
+            }
         });
     }
 ]);
