@@ -165,12 +165,16 @@
                                                             </div>
                                                         </a>
                                                     </div>
-                                                    <p class="text-center" ng-if="attach['mime-type'] === 'image/png'">{{ attach.name | cut:true:18}}</p>
+                                                    <p class="text-center" ng-if="attach['mime-type'] === 'image/png'" title="{{ attach.name }}">{{ attach.name | cut:true:18}}</p>
                                                 </div>
                                             </div>
                                         </div>
+                                        <br>
                                         <div ng-repeat="attach in step.attachments">
-                                            <pre ng-show="attach['mime-type'] === 'text/plain'" ng-bind-html="attach.name + ': ' + attach.url | linky:'_blank'"></pre>
+                                            <div ng-show="attach['mime-type'] === 'text/plain'" >
+                                                <p>{{ attach.name }}:</p>
+                                                <pre ng-bind-html="attach.url | linky:'_blank'"></pre>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -205,13 +209,17 @@
                                                     <div class="thumbnail thumbnail-square" ng-style="{'background-image': 'url({{ attach.url }})'}"></div>
                                                 </a>
                                             </div>
-                                            <p class="text-center" ng-if="attach['mime-type'] === 'image/png'">{{ attach.name | cut:true:18 }}</p>
+                                            <p class="text-center" ng-if="attach['mime-type'] === 'image/png'" title="{{ attach.name }}">{{ attach.name | cut:true:18 }}</p>
                                         </div>
                                     </div>
                                 </div>
+                                <br>
                                 <div ng-repeat="attach in currentResult.failure_reason.attachments">
-                                    <pre ng-show="attach['mime-type'] === 'text/plain'" ng-bind-html="attach.name + ': ' + attach.url | linky:'_blank'">
-                                    </pre>
+                                    <div ng-show="attach['mime-type'] === 'text/plain'">
+                                        <p>{{ attach.name }}: </p>
+                                        <pre ng-bind-html="attach.url | linky:'_blank'">
+                                        </pre>
+                                    </div>
                                 </div>
                             </div>
                         </div>
