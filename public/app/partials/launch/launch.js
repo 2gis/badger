@@ -444,6 +444,14 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
                         search: params.$params.filter.failure_reason
                     }, function (result) {
                         params.total(result.count);
+                        $scope.data = result.results;
+                        _.each($scope.data, function (res) {
+                            try {
+                                res.failure_reason = JSON.parse(res.failure_reason).message;
+                            } catch (error) {
+                                res.failure_reason = res.failure_reason;
+                            }
+                        });
                         $scope.data = _.groupBy(result.results, function (item) {
                             return item.suite;
                         });
