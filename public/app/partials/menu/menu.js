@@ -74,7 +74,7 @@ app.controller('Menu', ['$rootScope', '$routeParams','$scope', '$location', '$wi
                 });
 
                 TestPlan.custom_list({
-                    page_size: 200,
+                    page_size: 1000,
                     projectsIds: _.map($rootScope.projects, function (item) { return item.id})
                 }, function (result) {
                     _.each($rootScope.projects, function (project) {
