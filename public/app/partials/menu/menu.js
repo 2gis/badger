@@ -73,11 +73,13 @@ app.controller('Menu', ['$rootScope', '$routeParams','$scope', '$location', '$wi
                     });
                 });
 
-                TestPlan.custom_list({ projectsIds: _.map($rootScope.projects, function (item) { return item.id})}, function (result) {
+                TestPlan.custom_list({
+                    page_size: 1000,
+                    projectsIds: _.map($rootScope.projects, function (item) { return item.id})
+                }, function (result) {
                     _.each($rootScope.projects, function (project) {
-                        project.testplans = _.sortBy(
-                            _.filter(result.results, function (testplan) { return testplan.project === project.id }),
-                            'name');
+                        project.testplans = _.filter(result.results, function (testplan) { return testplan.project === project.id });
+                        project.testplans = _.sortBy(project.testplans, 'name');
                     });
                 });
             });
