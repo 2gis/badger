@@ -179,7 +179,7 @@ module.exports.launchMock = function () {
                 "type": 1,
                 "$edit": false,
                 "command": "ECHO 2",
-                "timeout": "3600"
+                "timeout": 3600
             }).respond(function () {
                 return [200, {
                     "id": 1,
