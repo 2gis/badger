@@ -155,11 +155,16 @@
                     </td>
                     <td data-title="'Timeout'">
                         <span ng-if="!launchItem.$edit">{{ launchItem.timeout }}</span>
-                        <div ng-if="launchItem.$edit"><input class="form-control" type="text" ng-model="launchItem.timeout" /></div>
+                        <form role="form" name="launchItemForm">
+                            <div ng-if="launchItem.$edit" ng-class="{'has-error': launchItemForm.timeout.$invalid && launchItemForm.timeout.$dirty}">
+                                <input class="form-control" name="timeout" type="number" min="0" ng-model="launchItem.timeout" />
+                            </div>
+                        </form>
                     </td>
                     <td data-title="'Actions'" nowrap>
                         <button id="launch-item-edit-button" ng-if="!launchItem.$edit" href="" class="btn btn-default btn-xs" ng-click="launchItem.$edit = true" ng-disabled="profile === null">Edit</button>
-                        <button id="launch-item-save-button" ng-if="launchItem.$edit" href="" class="btn btn-primary btn-xs" ng-click="launchItem.$edit = false; saveLaunchItem(launchItem)">Save</button>
+                        <button id="launch-item-save-button" ng-if="launchItem.$edit" href="" class="btn btn-primary btn-xs"
+                                ng-click="launchItem.$edit = false; saveLaunchItem(launchItem)" ng-disabled="launchItemForm.$invalid">Save</button>
                         <button id="launch-item-delete-button" ng-if="!launchItem.$edit" href="" class="btn btn-danger btn-xs" ng-click="deleteLaunchItem(launchItem)" ng-disabled="profile === null" ng-hide="launchItem.type === 1">
                             <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                         </button>
