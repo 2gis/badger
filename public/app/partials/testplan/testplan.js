@@ -75,6 +75,7 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$window', '$location', 
         }
 
         TestPlan.get({'testPlanId': $routeParams.testPlanId}, function (result) {
+            $scope.projectId = result.project;
             $rootScope.selectProject(result.project);
             $scope.testplan = result;
             $scope.name = result.name;
@@ -270,7 +271,23 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$window', '$location', 
             });
         }
 
+        function checkTestPlanExistent(testplan) {
+            var exist = false;
+            _.each($rootScope.findProjectById($scope.projectId).testplans, function(tp) {
+                if (testplan.name === tp.name && testplan.id !== tp.id) {
+                    exist = true;
+                }
+            });
+            return exist;
+        }
+
         $scope.updateTestPlan = function (testplan) {
+            $scope.formUpdate = null;
+            if (checkTestPlanExistent(testplan)) {
+                $scope.formErrors = 'Testplan "'+ testplan.name + '" already exists. ' +
+                        'Please, choose another name.';
+                return;
+            }
             TestPlan.update({testPlanId: testplan.id}, testplan,
                 function (result) {
                     $rootScope.reloadProjects();

@@ -95,7 +95,7 @@ app.controller('Menu', ['$rootScope', '$routeParams','$scope', '$location', '$wi
             $scope.activeProject = $scope.findProjectById($scope.activeProjectId);
         });
 
-        $scope.findProjectById = function (id) {
+        $rootScope.findProjectById = function (id) {
             var data = _.filter($rootScope.projects, function (project) { return project.id === parseInt(id)});
             return data[0];
         };
@@ -112,7 +112,7 @@ app.controller('Menu', ['$rootScope', '$routeParams','$scope', '$location', '$wi
         };
 
         $rootScope.getProjectSettings = function(id, setting_name) {
-            var project = $scope.findProjectById(id);
+            var project = $rootScope.findProjectById(id);
             var res = _.filter(project.settings, function (item) {
                 return item.key && item.key === setting_name;
             });
