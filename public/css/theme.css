@@ -102,3 +102,7 @@ body {
     background-size: cover;
     background-position: 50% 50%;
 }
+
+.table-striped tbody tr.selected {
+    background-color: #e8e8e8;
+}

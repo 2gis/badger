@@ -236,6 +236,7 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
 
             modal.modal('hide');
 
+            setSelected(item.id);
             $scope.modalSuite = item.suite;
             $scope.modalName = item.name;
             $scope.modalState = item.state;
@@ -593,6 +594,11 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
 
         function isNotEmptyArray(array) {
             return array.length > 0;
+        }
+
+        $scope.selectedItemId = null;
+        function setSelected(selectedItemId) {
+           $scope.selectedItemId = selectedItemId;
         }
     }
 ]);
