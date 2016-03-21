@@ -46,8 +46,8 @@ app.filter('toArray', function() { return function(obj) {
     });
 }});
 
-app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter', '$timeout', '$window', 'ngTableParams', 'hotkeys', 'appConfig', 'TestResult', 'Launch', 'Task', 'Comment', 'Bug', 'SortLaunchItems', 'TestPlan',
-    function ($scope, $rootScope, $routeParams, $filter, $timeout, $window, ngTableParams, hotkeys, appConfig, TestResult, Launch, Task, Comment, Bug, SortLaunchItems, TestPlan) {
+app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter', '$timeout', '$window', 'NgTableParams', 'hotkeys', 'appConfig', 'TestResult', 'Launch', 'Task', 'Comment', 'Bug', 'SortLaunchItems', 'TestPlan',
+    function ($scope, $rootScope, $routeParams, $filter, $timeout, $window, NgTableParams, hotkeys, appConfig, TestResult, Launch, Task, Comment, Bug, SortLaunchItems, TestPlan) {
         var initialized = false;
 
         function getProfileAndDrawTable() {
@@ -364,8 +364,6 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
         hotkeys.add({ combo: 'k', callback: $scope.prevItem });
         hotkeys.add({ combo: 'left', callback: $scope.prevItem });
 
-        var create_table_attempt = 0;
-
         function drawTable(profile, type) {
             if (type === appConfig.RESULT_VIEW_DEFAULT) {
                 $scope.tableParams = defaultTable(profile);
@@ -376,20 +374,15 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
         }
 
         function defaultTable (profile) {
-            return new ngTableParams({
+            return new NgTableParams({
                 page: 1,
-                count: 25,
+                count: profile && profile.settings ? profile.settings.testresults_on_page : 25,
                 sorting: {
                     duration: 'desc'
                 }
             }, {
                 total: 0,
                 getData: function ($defer, params) {
-                    create_table_attempt += 1;
-                    if (profile && create_table_attempt === 1) {
-                        $scope.tableParams.$params.count =
-                            profile.settings ? profile.settings.testresults_on_page : 25;
-                    }
                     var ordering;
 
                     for (var prop in params.sorting()) {
@@ -405,7 +398,7 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
                         pageSize: params.count(),
                         ordering: ordering,
                         state: $scope.state,
-                        search: params.$params.filter.failure_reason
+                        search: params.filter().failure_reason
                     }, function (result) {
                         params.total(result.count);
                         $scope.data = _.groupBy(result.results, function (item) {
@@ -432,7 +425,7 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
         }
 
         function treeTable() {
-            return new ngTableParams({
+            return new NgTableParams({
                 count: 99999
             }, {
                 total: 0,
@@ -442,7 +435,7 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
                         page: 1,
                         pageSize: 9999,
                         state: $routeParams.state,
-                        search: params.$params.filter.failure_reason
+                        search: params.filter().failure_reason
                     }, function (result) {
                         params.total(result.count);
                         $scope.data = result.results;
@@ -526,7 +519,7 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
             return group;
         }
 
-        $scope.comments = new ngTableParams({
+        $scope.comments = new NgTableParams({
             page: 1,
             count: 3,
             sorting: {

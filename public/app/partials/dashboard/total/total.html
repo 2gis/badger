@@ -54,33 +54,35 @@
                 {{ test.created | date:"dd.MM HH:mm" }}
             </td>
             <td data-title="'Version'" class="text-center" style="width: 7em;" filter="{'version': 'text'}"
-                sortable="'version'" ng-show="getColumnVisibility('Version')">
+                sortable="'version'" ng-if="getColumnVisibility('Version')">
                 {{ test.version | cut:true:12:'..'  }}
             </td>
             <td data-title="'Hash'" class="text-center" style="width: 7em;" filter="{'hash': 'text'}"
-                sortable="'hash'" ng-show="getColumnVisibility('Hash')">
+                sortable="'hash'" ng-if="getColumnVisibility('Hash')">
                 {{ test.hash | cut:true:12:'..' }}
             </td>
             <td data-title="'Branch'" class="text-center" style="width: 7em;" filter="{'branch': 'text'}"
-                sortable="'branch'" ng-show="getColumnVisibility('Branch')">
+                sortable="'branch'" ng-if="getColumnVisibility('Branch')">
                 {{ test.branch | cut:true:12:'..' }}
             </td>
-            <td data-title="'Testplan'" style="width: 12em;" filter="{'testplan': 'text'}" sortable="'testplan'"
-                    ng-show="getColumnVisibility('Testplan')">
+            <td data-title="'Testplan'" style="width: 12em;" filter="{'testplan': 'text'}"
+                sortable="'testplan'" ng-if="getColumnVisibility('Testplan')">
                 <div class="panel-tree-view">{{ test.testplan }}</div>
             </td>
-            <td data-title="'Suite'" sortable="'suite'" filter="{'suite': 'text'}" ng-show="getColumnVisibility('Suite')">
+            <td data-title="'Suite'" sortable="'suite'" filter="{'suite': 'text'}"
+                ng-if="getColumnVisibility('Suite')">
                 <div class="panel-tree-view"> {{ test.suite | cut:true:24:'..'}}</div>
             </td>
-            <td data-title="'Test name'" filter="{'name': 'text'}" style="padding-bottom: 1px;" sortable="'name'">
+            <td data-title="'Test name'" filter="{'name': 'text'}" style="padding-bottom: 1px;"
+                sortable="'name'">
                 <div class="panel panel-default panel-tree-view" style="margin-bottom: 5px;">
                     <div class="panel-body" style="background-color: whitesmoke; padding: 10px; padding-bottom: 5px;">
                         {{ test.name }}
                     </div>
                 </div>
             </td>
-            <td data-title="'sec.'" style="width: 2em;" sortable="'duration'" ng-show="getColumnVisibility('sec.')">{{ test.duration | toFixed }}</td>
-            <td data-title="'Bugs'" style="width: 4em;" ng-show="getColumnVisibility('Bugs')">
+            <td data-title="'sec.'" style="width: 2em;" sortable="'duration'" ng-if="getColumnVisibility('sec.')">{{ test.duration | toFixed }}</td>
+            <td data-title="'Bugs'" style="width: 4em;" ng-if="getColumnVisibility('Bugs')">
                 <div ng-repeat="bug in test.bugs">
                     <a class="label label-{{ bug.status | bugStatusClass }}"
                        href="https://jira.2gis.ru/browse/{{ bug.externalId }}"

@@ -25,8 +25,8 @@ app.run(function($http, $cookies) {
     $http.defaults.xsrfHeaderName = 'X-CSRFToken';
 });
 
-app.controller('TestPlanExecuteCtrl', ['$rootScope', '$scope', '$routeParams', '$location', 'appConfig', 'TestPlan', 'LaunchItem', 'Launch', 'SortLaunchItems', 'ngTableParams',
-    function ($rootScope, $scope, $routeParams, $location, appConfig, TestPlan, LaunchItem, Launch, SortLaunchItems, ngTableParams) {
+app.controller('TestPlanExecuteCtrl', ['$rootScope', '$scope', '$q', '$routeParams', '$location', 'appConfig', 'TestPlan', 'LaunchItem', 'Launch', 'SortLaunchItems', 'NgTableParams',
+    function ($rootScope, $scope, $q, $routeParams, $location, appConfig, TestPlan, LaunchItem, Launch, SortLaunchItems, NgTableParams) {
         TestPlan.get({ 'testPlanId': $routeParams.testPlanId }, function (result) {
             $rootScope.selectProject(result.project);
             $scope.name = result.name;
@@ -100,7 +100,7 @@ app.controller('TestPlanExecuteCtrl', ['$rootScope', '$scope', '$routeParams', '
         }
 
         function drawTable() {
-            $scope.launchItemsTable = new ngTableParams({
+            $scope.launchItemsTable = new NgTableParams({
                 page: 1,
                 count: 10000,
                 sorting: {
@@ -109,22 +109,28 @@ app.controller('TestPlanExecuteCtrl', ['$rootScope', '$scope', '$routeParams', '
             }, {
                 counts: [],
                 total: 1,
-                getData: function ($defer) {
-                    LaunchItem.get({
-                        'testPlanId': $routeParams.testPlanId,
-                        'ordering': '-type' // deploy script always first
-                    }, function (result) {
-                        $defer.resolve(SortLaunchItems.byType(_.each(result.results, function (item) {
-                            if (item.type === appConfig.TASK_TYPE_DEPLOY) {
-                                item.$selected = true;
-                            }
-                            if ($scope.relaunchItems.indexOf(item.id) > -1) {
-                                item.$selected = true;
-                            }
-                        })));
-                    });
-                }
+                getData: getLaunchItems
             });
+        }
+
+        function getLaunchItems() {
+            var deferred = $q.defer();
+
+            LaunchItem.get({
+                'testPlanId': $routeParams.testPlanId,
+                'ordering': '-type' // deploy script always first
+            }, function (result) {
+                deferred.resolve(SortLaunchItems.byType(_.each(result.results, function (item) {
+                    if (item.type === appConfig.TASK_TYPE_DEPLOY) {
+                        item.$selected = true;
+                    }
+                    if ($scope.relaunchItems.indexOf(item.id) > -1) {
+                        item.$selected = true;
+                    }
+                })));
+            });
+
+            return deferred.promise;
         }
 
         $scope.execute = function (formData) {

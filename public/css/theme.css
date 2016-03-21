@@ -106,3 +106,7 @@ body {
 .table-striped tbody tr.selected {
     background-color: #e8e8e8;
 }
+
+.ng-table-group-header {
+    display: none;
+}

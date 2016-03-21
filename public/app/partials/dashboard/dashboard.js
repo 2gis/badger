@@ -14,8 +14,8 @@ app.config(['$routeProvider', function ($routeProvider) {
     });
 }]);
 
-app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$window', '$location', 'appConfig', 'ngTableParams', 'TestPlan', 'Launch', 'Stage', 'Filters', 'LaunchHelpers', 'LaunchFilters', 'GetChartsData', 'SeriesStructure', 'Tooltips', 'GetChartStructure',
-    function ($q, $scope, $rootScope, $routeParams, $window, $location, appConfig, ngTableParams, TestPlan, Launch, Stage, Filters, LaunchHelpers, LaunchFilters, GetChartsData, SeriesStructure, Tooltips, GetChartStructure) {
+app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$window', '$location', 'appConfig', 'NgTableParams', 'TestPlan', 'Launch', 'Stage', 'Filters', 'LaunchHelpers', 'LaunchFilters', 'GetChartsData', 'SeriesStructure', 'Tooltips', 'GetChartStructure',
+    function ($q, $scope, $rootScope, $routeParams, $window, $location, appConfig, NgTableParams, TestPlan, Launch, Stage, Filters, LaunchHelpers, LaunchFilters, GetChartsData, SeriesStructure, Tooltips, GetChartStructure) {
         $rootScope.selectProject($routeParams.projectId);
         $scope.projectId = $routeParams.projectId;
         $rootScope.isMainDashboard = false;
@@ -195,14 +195,11 @@ app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '
         }
 
         function drawTable(testplans) {
-
-            $scope.tableParams = new ngTableParams({
+            $scope.tableParams = new NgTableParams({
                 count: 999
             }, {
                 total: 0,
-                getData: function ($defer) {
-                    $defer.resolve(testplans);
-                }
+                dataset: testplans
             });
         }
 

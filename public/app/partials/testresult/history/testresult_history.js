@@ -17,8 +17,8 @@ app.config(['$routeProvider', function ($routeProvider) {
     });
 }]);
 
-app.controller('TestResultHistoryCtrl', ['$scope', '$routeParams', '$q', 'TestResult', 'ngTableParams', 'Launch', 'LaunchItem',
-    function ($scope, $routeParams, $q, TestResult, ngTableParams, Launch, LaunchItem) {
+app.controller('TestResultHistoryCtrl', ['$scope', '$routeParams', '$q', 'TestResult', 'NgTableParams', 'Launch',
+    function ($scope, $routeParams, $q, TestResult, NgTableParams, Launch) {
         // Fix absent scrollbar
         var $body = angular.element('body');
         if ($body.hasClass('modal-open')) {
@@ -59,15 +59,13 @@ app.controller('TestResultHistoryCtrl', ['$scope', '$routeParams', '$q', 'TestRe
 
 
         function drawTable(data) {
-            $scope.tableParams = new ngTableParams({
+            $scope.tableParams = new NgTableParams({
                     page: 1,
                     count: 50,
                 },{
                     total: data.length,
                     counts: [],
-                    getData: function($defer) {
-                        $defer.resolve(data);
-                }
+                    dataset: data
             });
         }
 

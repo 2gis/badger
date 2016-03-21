@@ -16,8 +16,8 @@ app.config(['$routeProvider', function ($routeProvider) {
     });
 }]);
 
-app.controller('DashboardTotalCtrl', ['$scope', '$rootScope', '$filter', '$routeParams', 'ngTableParams', 'appConfig', 'Filters', 'TestPlan', 'Launch', 'TestResult', 'GetChartStructure',
-    function ($scope, $rootScope, $filter, $routeParams, ngTableParams, appConfig, Filters, TestPlan, Launch, TestResult, GetChartStructure) {
+app.controller('DashboardTotalCtrl', ['$scope', '$rootScope', '$filter', '$routeParams', 'NgTableParams', 'appConfig', 'Filters', 'TestPlan', 'Launch', 'TestResult', 'GetChartStructure',
+    function ($scope, $rootScope, $filter, $routeParams, NgTableParams, appConfig, Filters, TestPlan, Launch, TestResult, GetChartStructure) {
         $rootScope.selectProject($routeParams.projectId);
         $rootScope.isMainDashboard = false;
         $scope.initGroupBy = 'suite';
@@ -94,42 +94,44 @@ app.controller('DashboardTotalCtrl', ['$scope', '$rootScope', '$filter', '$route
         });
 
         function drawTable(results) {
-            $scope.tableParams = treeTable(results);
+            $scope.dataForTable = results;
+            $scope.tableParams = treeTable();
         }
 
-        function treeTable(result) {
-            return new ngTableParams({
+        function treeTable() {
+            return new NgTableParams({
                 count: 99999,
+                group: $scope.initGroupBy,
                 sorting: {
                     launch: 'desc'
                 }
             }, {
                 total: 0,
-                groupBy: $scope.initGroupBy,
-                getData: function ($defer, params) {
-                    params.total(result.count);
-                    $scope.data = result.results;
-                    $scope.data = params.sorting() ? $filter('orderBy')($scope.data, params.orderBy()) : $scope.data;
-                    $scope.data = params.filter() ? $filter('filter')($scope.data, params.filter()) : $scope.data;
-
-                    var launchesByIds = _.groupBy($scope.launches, 'id');
-                    _.each($scope.data, function(testResult) {
-                        var launch = launchesByIds[testResult.launch][0];
-                        testResult.created = launch.created;
-                        testResult.version = _.isObject(launch.build) ? launch.build.version : '';
-                        testResult.hash = _.isObject(launch.build) ? launch.build.hash : '';
-                        testResult.branch = _.isObject(launch.build) ? launch.build.branch : '';
-                        testResult.testplan = $scope.names[launch.test_plan];
-                    });
-
-                    $defer.resolve($scope.data);
-                    $scope.tableParams.settings({counts: []});
-                }
+                getData: getData
             });
         }
 
+        function getData(params) {
+            $scope.data = $scope.dataForTable.results;
+            $scope.data = params.sorting() ? $filter('orderBy')($scope.data, params.orderBy()) : $scope.data;
+            $scope.data = params.filter() ? $filter('filter')($scope.data, params.filter()) : $scope.data;
+
+            var launchesByIds = _.groupBy($scope.launches, 'id');
+            _.each($scope.data, function(testResult) {
+                var launch = launchesByIds[testResult.launch][0];
+                testResult.created = launch.created;
+                testResult.version = _.isObject(launch.build) ? launch.build.version : '';
+                testResult.hash = _.isObject(launch.build) ? launch.build.hash : '';
+                testResult.branch = _.isObject(launch.build) ? launch.build.branch : '';
+                testResult.testplan = $scope.names[launch.test_plan];
+            });
+
+            $scope.tableParams.settings({ counts: [] });
+            return $scope.data;
+        }
+
         $scope.$watch('initGroupBy', function(value){
-            $scope.tableParams.settings().groupBy = value;
+            $scope.tableParams.parameters({'group': value});
             $scope.tableParams.reload();
         });
 

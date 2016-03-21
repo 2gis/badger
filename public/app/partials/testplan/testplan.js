@@ -23,8 +23,8 @@ app.config(['$routeProvider',
     }
 ]);
 
-app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$window', '$location', '$routeParams', '$filter', 'ngTableParams', 'appConfig', 'TestPlan', 'Launch', 'LaunchItem', 'SortLaunchItems', 'Comment', 'ChartConfig', 'GetChartsData', 'SeriesStructure', 'Tooltips', 'LaunchHelpers', 'GetChartStructure',
-    function ($rootScope, $scope, $window, $location, $routeParams, $filter, ngTableParams, appConfig, TestPlan, Launch, LaunchItem, SortLaunchItems, Comment, ChartConfig, GetChartsData, SeriesStructure, Tooltips, LaunchHelpers, GetChartStructure) {
+app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$window', '$location', '$routeParams', '$filter', 'NgTableParams', 'appConfig', 'TestPlan', 'Launch', 'LaunchItem', 'SortLaunchItems', 'Comment', 'ChartConfig', 'GetChartsData', 'SeriesStructure', 'Tooltips', 'LaunchHelpers', 'GetChartStructure',
+    function ($rootScope, $scope, $window, $location, $routeParams, $filter, NgTableParams, appConfig, TestPlan, Launch, LaunchItem, SortLaunchItems, Comment, ChartConfig, GetChartsData, SeriesStructure, Tooltips, LaunchHelpers, GetChartStructure) {
         $scope.chartPercentType = 'failed';
         $scope.maxSymbolsForBranch = 8;
         var options = {
@@ -90,7 +90,7 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$window', '$location', 
 
         $scope.activeTab = 'history';
 
-        $scope.launchItems = new ngTableParams({
+        $scope.launchItems = new NgTableParams({
                 page: 1,
                 count: 100,
                 sorting: { created: 'desc' }
@@ -157,25 +157,18 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$window', '$location', 
             modal.modal('show');
         };
 
-        var create_table_attempt = 0;
-
         $rootScope.getProfile().then(function(profile){
             drawTable(profile);
         });
 
         function drawTable(profile) {
-            $scope.tableParams = new ngTableParams({
+            $scope.tableParams = new NgTableParams({
                 page: 1,
-                count: 10,
+                count: profile && profile.settings ? profile.settings.launches_on_page : 10,
                 sorting: { created: 'desc' }
             }, {
                 total: 0,
                 getData: function ($defer, params) {
-                    create_table_attempt += 1;
-                    if (profile && create_table_attempt === 1) {
-                        $scope.tableParams.$params.count = profile.settings
-                            ? profile.settings.launches_on_page : 10;
-                    }
                     $scope.tableParams.settings({ counts: [10, 25, 50] });
                     var tableData, ordering;
 
@@ -188,19 +181,19 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$window', '$location', 
                     }
 
                     if ($routeParams.version) {
-                        params.$params.filter.version = $routeParams.version;
+                        params.filter().version = $routeParams.version;
                         delete($routeParams.version);
                     }
                     if ($routeParams.branch) {
-                        params.$params.filter.branch = $routeParams.branch;
+                        params.filter().branch = $routeParams.branch;
                         delete($routeParams.branch);
                     }
                     if ($routeParams.hash) {
-                        params.$params.filter.hash = $routeParams.hash;
+                        params.filter().hash = $routeParams.hash;
                         delete($routeParams.hash);
                     }
 
-                    if (_.isEmpty(params.$params.filter)) {
+                    if (_.isEmpty(params.filter())) {
                         $scope.linkToFilter = $location.path();
                     }
 
@@ -209,17 +202,17 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$window', '$location', 
                         page: params.page(),
                         pageSize: params.count(),
                         ordering: ordering,
-                        search: params.$params.filter.started_by,
-                        build__version: params.$params.filter.version,
-                        build__hash: params.$params.filter.hash,
-                        build__branch: params.$params.filter.branch
+                        search: params.filter().started_by,
+                        build__version: params.filter().version,
+                        build__hash: params.filter().hash,
+                        build__branch: params.filter().branch
                     }, function (result) {
                         params.total(result.count);
                         tableData = result.results.map(updateStats);
                         markSuccessLaunch(tableData);
                         $defer.resolve(tableData);
 
-                        formLink(params.$params.filter);
+                        formLink(params.filter());
 
                         $scope.charts = [];
 

@@ -68,25 +68,25 @@
                             <span class="info" ng-show="chartsType === 0">{{ launch.started_by }}</span>
                             <span class="info" ng-show="chartsType === 1" title="{{ launch.started_by }}">{{ launch.started_by | cut:true:45:'..'}}</span>
                         </td>
-                        <td data-title="'Version'" ng-show="chartsType === 1" filter="{'version': 'text'}"
+                        <td data-title="'Version'" ng-if="chartsType === 1" filter="{'version': 'text'}"
                             style="width: 8em;" ng-attr-title="{{ launch.build.version }}">
                             <div class="text-center">
                                 {{launch.build.version | cut:true:12:'..'}}
                             </div>
                         </td>
-                        <td data-title="'Hash'" ng-show="chartsType === 1" filter="{'hash': 'text'}"
+                        <td data-title="'Hash'" ng-if="chartsType === 1" filter="{'hash': 'text'}"
                             style="width: 8em;" ng-attr-title="{{ launch.build.hash }}">
                             <div class="text-center">
                                 {{launch.build.hash | cut:true:12:'..'}}
                             </div>
                         </td>
-                        <td data-title="'Branch'" ng-show="chartsType === 1" filter="{'branch': 'text'}"
+                        <td data-title="'Branch'" ng-if="chartsType === 1" filter="{'branch': 'text'}"
                             style="width: 8em;" ng-attr-title="{{ launch.build.branch }}">
                             <div class="text-center">
                                 {{ launch.build.branch | cut:true:12:'..'}}
                             </div>
                         </td>
-                        <td data-title="'Branch'" ng-show="chartsType === 0">
+                        <td data-title="'Branch'" ng-if="chartsType === 0">
                             <div ng-if="launch.parameters.env.BRANCH.length <= maxSymbolsForBranch
                                             || launch.parameters.env.branch.length <= maxSymbolsForBranch
                                             || launch.parameters.env.CORE_APP.length <=maxSymbolsForBranch" class="text-center">
