@@ -21,6 +21,7 @@ Clone repository:
 ```
 
 Install [npm] (https://www.npmjs.com/) packages (also you need nodejs-legacy package):
+*don't work with 5.x node currently, please use lts version of [node] (https://nodejs.org/)*
 ```bash
    npm install
 ```
@@ -47,4 +48,3 @@ Run tests:
 ### User guide
 Your Badger and <a href="https://github.com/2gis/badger-api">Badger-api</a> deployed.
 If you want to try them and run tests, follow this <a href="README_GUIDE.md">guide</a>.
-
