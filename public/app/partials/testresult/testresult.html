@@ -27,6 +27,12 @@
             <a ng-click="setActiveTab('attach')" aria-controls="attach"
                role="tab" data-toggle="tab" style="cursor: pointer;">Attachments</a>
         </li>
+        <li role="presentation" ng-class="{ 'active': activeTab === 'stdout' }" ng-show="testResult.json"><a
+                ng-click="setActiveTab('stdout')" aria-controls="stdout"
+                role="tab" data-toggle="tab" style="cursor: pointer;">System out</a></li>
+        <li role="presentation" ng-class="{ 'active': activeTab === 'stderr' }" ng-show="testResult.json"><a
+                ng-click="setActiveTab('stderr')" aria-controls="stderr"
+                role="tab" data-toggle="tab" style="cursor: pointer;">System err</a></li>
     </ul>
 
     <div class="tab-content">
@@ -123,6 +129,22 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="stdout" ng-class="{ 'active': activeTab === 'stdout' }">
+            <br/>
+            <div class="row">
+                <div class="col-md-12">
+                    <pre ng-show="testResult.json">{{ testResult.failure_reason.system_out }}</pre>
+                </div>
+            </div>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="stderr" ng-class="{ 'active': activeTab === 'stderr' }">
+            <br/>
+            <div class="row">
+                <div class="col-md-12">
+                    <pre ng-show="testResult.json">{{ testResult.failure_reason.system_err }}</pre>
                 </div>
             </div>
         </div>
