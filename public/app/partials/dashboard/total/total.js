@@ -33,6 +33,14 @@ app.controller('DashboardTotalCtrl', ['$scope', '$rootScope', '$filter', '$route
             { title: 'Bugs', visible: true }
         ];
 
+        var videoMimeTypes = ['video/mpeg', 'video/mp4', 'video/ogg',
+                              'video/quicktime', 'video/webm', 'video/x-ms-wmv',
+                              'video/x-flv', 'video/3gpp', 'video/3gpp2'];
+
+        $scope.isVideoMimeType = function(type) {
+            return videoMimeTypes.indexOf(type) !== -1;
+        };
+
         $scope.getColumnVisibility = function(title) {
             return (_.find($scope.columns, function(column) {
                 return column.title === title;

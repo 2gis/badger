@@ -13,24 +13,30 @@
             <a ng-click="setActiveTab('message')" aria-controls="message"
                role="tab" data-toggle="tab" style="cursor: pointer;">Message</a>
         </li>
-        <li role="presentation" ng-class="{ 'active': activeTab === 'trace' }" ng-show="testResult.json"><a
-                ng-click="setActiveTab('trace')" aria-controls="trace"
+        <li role="presentation" ng-class="{ 'active': activeTab === 'trace' }"
+            ng-show="testResult.json && testReport.failure_reason.stack_trace">
+            <a ng-click="setActiveTab('trace')" aria-controls="trace"
                 role="tab" data-toggle="tab" style="cursor: pointer;">Stack trace</a></li>
-        <li role="presentation" ng-class="{ 'active': activeTab === 'steps' }" ng-show="testResult.json">
+        <li role="presentation" ng-class="{ 'active': activeTab === 'steps' }"
+            ng-show="testResult.json && testResult.failure_reason.steps.length !== 0">
             <a ng-click="setActiveTab('steps')" aria-controls="steps"
                role="tab" data-toggle="tab" style="cursor: pointer;">Steps</a>
         </li>
-        <li role="presentation" ng-class="{ 'active': activeTab === 'series' }" ng-show="testResult.json"><a
+        <li role="presentation" ng-class="{ 'active': activeTab === 'series' }"
+            ng-show="testResult.json && testResult.charts.length !== 0"><a
                 ng-click="setActiveTab('series')" aria-controls="series"
                 role="tab" data-toggle="tab" style="cursor: pointer;">Series</a></li>
-        <li role="presentation" ng-class="{ 'active': activeTab === 'attach' }" ng-show="testResult.json">
+        <li role="presentation" ng-class="{ 'active': activeTab === 'attach' }"
+            ng-show="testResult.json && testResult.failure_reason.attachments.length !== 0">
             <a ng-click="setActiveTab('attach')" aria-controls="attach"
                role="tab" data-toggle="tab" style="cursor: pointer;">Attachments</a>
         </li>
-        <li role="presentation" ng-class="{ 'active': activeTab === 'stdout' }" ng-show="testResult.json"><a
+        <li role="presentation" ng-class="{ 'active': activeTab === 'stdout' }"
+            ng-show="testResult.json && testResult.failure_reason.system_out"><a
                 ng-click="setActiveTab('stdout')" aria-controls="stdout"
                 role="tab" data-toggle="tab" style="cursor: pointer;">System out</a></li>
-        <li role="presentation" ng-class="{ 'active': activeTab === 'stderr' }" ng-show="testResult.json"><a
+        <li role="presentation" ng-class="{ 'active': activeTab === 'stderr' }"
+            ng-show="testResult.json && testResult.failure_reason.system_err"><a
                 ng-click="setActiveTab('stderr')" aria-controls="stderr"
                 role="tab" data-toggle="tab" style="cursor: pointer;">System err</a></li>
     </ul>
@@ -79,7 +85,14 @@
                                     <br>
                                     <div ng-repeat="attach in step.attachments">
                                         <div ng-show="attach['mime-type'] === 'text/plain'">
-                                            <p>{{ attach.name }}:</p>
+                                            <p><span class="glyphicon glyphicon-file"></span>
+                                                {{ attach.name }}:</p>
+                                            <pre ng-bind-html="attach.url | linky:'_blank'"></pre>
+                                        </div>
+                                        <div ng-show="isVideoMimeType(attach['mime-type'])">
+                                            <br>
+                                            <p><span class="glyphicon glyphicon-film"></span>
+                                                {{ attach.name }}:</p>
                                             <pre ng-bind-html="attach.url | linky:'_blank'"></pre>
                                         </div>
                                     </div>
@@ -123,7 +136,14 @@
                             <div ng-repeat="attach in testResult.failure_reason.attachments">
                                 <div ng-show="attach['mime-type'] === 'text/plain'">
                                     <br>
-                                    <p>{{ attach.name }}:</p>
+                                    <p><span class="glyphicon glyphicon-file"></span>
+                                        {{ attach.name }}:</p>
+                                    <pre ng-bind-html="attach.url | linky:'_blank'"></pre>
+                                </div>
+                                <div ng-show="isVideoMimeType(attach['mime-type'])">
+                                    <br>
+                                    <p><span class="glyphicon glyphicon-film"></span>
+                                        {{ attach.name }}:</p>
                                     <pre ng-bind-html="attach.url | linky:'_blank'"></pre>
                                 </div>
                             </div>

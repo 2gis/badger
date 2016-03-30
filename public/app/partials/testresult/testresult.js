@@ -21,6 +21,14 @@ app.controller('TestResultCtrl', ['$scope', '$routeParams', 'TestResult', 'GetCh
             $('.modal-backdrop').remove();
         }
 
+        var videoMimeTypes = ['video/mpeg', 'video/mp4', 'video/ogg',
+                                 'video/quicktime', 'video/webm', 'video/x-ms-wmv',
+                                 'video/x-flv', 'video/3gpp', 'video/3gpp2'];
+
+        $scope.isVideoMimeType = function(type) {
+            return videoMimeTypes.indexOf(type) !== -1;
+        };
+
         $scope.activeTab = 'message';
         $scope.setActiveTab = function(tabName) {
             $scope.activeTab = tabName;
