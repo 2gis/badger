@@ -112,19 +112,33 @@
                 <a ng-click="setActiveTab('message')" aria-controls="message"
                    role="tab" data-toggle="tab" style="cursor: pointer;">Message</a>
             </li>
-            <li role="presentation" ng-class="{ 'active': activeTab === 'trace' }" ng-show="currentResult.json"><a
+            <li role="presentation" ng-class="{ 'active': activeTab === 'trace' }"
+                ng-show="currentResult.json && currentResult.failure_reason.stack_trace"><a
                     ng-click="setActiveTab('trace')" aria-controls="trace"
                     role="tab" data-toggle="tab" style="cursor: pointer;">Stack trace</a></li>
-            <li role="presentation" ng-class="{ 'active': activeTab === 'steps' }" ng-show="currentResult.json">
+            <li role="presentation" ng-class="{ 'active': activeTab === 'steps' }"
+                ng-show="currentResult.json && currentResult.failure_reason.steps.length !== 0">
                 <a ng-click="setActiveTab('steps')" aria-controls="steps"
                    role="tab" data-toggle="tab" style="cursor: pointer;">Steps</a>
             </li>
-            <li role="presentation" ng-class="{ 'active': activeTab === 'series' }" ng-show="currentResult.json"><a
+            <li role="presentation" ng-class="{ 'active': activeTab === 'series' }"
+                ng-show="currentResult.json && currentResult.charts.length !== 0"><a
                     ng-click="setActiveTab('series')" aria-controls="series"
                     role="tab" data-toggle="tab" style="cursor: pointer;">Series</a></li>
-            <li role="presentation" ng-class="{ 'active': activeTab === 'attach' }" ng-show="currentResult.json">
+            <li role="presentation" ng-class="{ 'active': activeTab === 'attach' }"
+                ng-show="currentResult.json && currentResult.failure_reason.attachments.length !== 0">
                 <a ng-click="setActiveTab('attach')" aria-controls="attach"
                    role="tab" data-toggle="tab" style="cursor: pointer;">Attachments</a>
+            </li>
+            <li role="presentation" ng-class="{ 'active': activeTab === 'stdout' }"
+                ng-show="currentResult.json && currentResult.failure_reason.system_out">
+                <a ng-click="setActiveTab('stdout')" aria-controls="stdout"
+                    role="tab" data-toggle="tab" style="cursor: pointer;">System out</a>
+            </li>
+            <li role="presentation" ng-class="{ 'active': activeTab === 'stderr' }"
+                ng-show="currentResult.json && currentResult.failure_reason.system_err">
+                <a ng-click="setActiveTab('stderr')" aria-controls="stderr"
+                    role="tab" data-toggle="tab" style="cursor: pointer;">System err</a>
             </li>
         </ul>
 
@@ -172,9 +186,16 @@
                                         <br>
                                         <div ng-repeat="attach in step.attachments">
                                             <div ng-show="attach['mime-type'] === 'text/plain'" >
-                                                <p>{{ attach.name }}:</p>
+                                                <p><span class="glyphicon glyphicon-file"></span>
+                                                    {{ attach.name }}:</p>
                                                 <pre ng-bind-html="attach.url | linky:'_blank'"></pre>
                                             </div>
+                                        </div>
+                                        <div ng-show="isVideoMimeType(attach['mime-type'])">
+                                            <br>
+                                            <p><span class="glyphicon glyphicon-film"></span>
+                                                {{ attach.name }}:</p>
+                                            <pre ng-bind-html="attach.url | linky:'_blank'"></pre>
                                         </div>
                                     </div>
                                 </div>
@@ -216,13 +237,36 @@
                                 <br>
                                 <div ng-repeat="attach in currentResult.failure_reason.attachments">
                                     <div ng-show="attach['mime-type'] === 'text/plain'">
-                                        <p>{{ attach.name }}: </p>
+                                        <p><span class="glyphicon glyphicon-file"></span>
+                                            {{ attach.name }}: </p>
                                         <pre ng-bind-html="attach.url | linky:'_blank'">
                                         </pre>
+                                    </div>
+                                    <div ng-show="isVideoMimeType(attach['mime-type'])">
+                                        <br>
+                                        <p><span class="glyphicon glyphicon-film"></span>
+                                            {{ attach.name }}:</p>
+                                        <pre ng-bind-html="attach.url | linky:'_blank'"></pre>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="stdout" ng-class="{ 'active': activeTab === 'stdout' }">
+                <br/>
+                <div class="row">
+                    <div class="col-md-12">
+                        <pre ng-show="currentResult.json">{{ currentResult.failure_reason.system_out }}</pre>
+                    </div>
+                </div>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="stderr" ng-class="{ 'active': activeTab === 'stderr' }">
+                <br/>
+                <div class="row">
+                    <div class="col-md-12">
+                        <pre ng-show="currentResult.json">{{ currentResult.failure_reason.system_err }}</pre>
                     </div>
                 </div>
             </div>
