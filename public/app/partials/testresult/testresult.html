@@ -14,7 +14,7 @@
                role="tab" data-toggle="tab" style="cursor: pointer;">Message</a>
         </li>
         <li role="presentation" ng-class="{ 'active': activeTab === 'trace' }"
-            ng-show="testResult.json && testReport.failure_reason.stack_trace">
+            ng-show="testResult.json && testResult.failure_reason.stack_trace">
             <a ng-click="setActiveTab('trace')" aria-controls="trace"
                 role="tab" data-toggle="tab" style="cursor: pointer;">Stack trace</a></li>
         <li role="presentation" ng-class="{ 'active': activeTab === 'steps' }"
