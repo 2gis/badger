@@ -289,7 +289,8 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
     function metricStruct(data, name) {
         return {
             name: name,
-            data: data
+            data: data,
+            visible: false
         };
     }
 
@@ -325,8 +326,8 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
             res.push(metricStruct(metric, name));
         });
 
-        for (var i=1; i < res.length; i++) {
-            res[i].visible = false;
+        if (res.length !== 0) {
+            res[0].visible = true;
         }
 
         return res;
