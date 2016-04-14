@@ -240,6 +240,13 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$window', '$location', 
                         $scope.charts[0].yAxis.tickInterval = 5;
                         $scope.charts[0].yAxis.title.text = 'min';
 
+                        $scope.charts.push(
+                            GetChartStructure(
+                                'line',
+                                labels,
+                                SeriesStructure.getMetrics(seriesData.metrics)
+                            ));
+
                         if ($scope.chartsType === appConfig.CHART_TYPE_COLUMN) {
                             $scope.charts.push(
                                 GetChartStructure(

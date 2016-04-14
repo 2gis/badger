@@ -161,6 +161,7 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
         var passed = [];
         var total = [];
         var duration = [];
+        var metrics = {};
 
         function clearArrays() {
             failed = [];
@@ -174,6 +175,26 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
             skipped.push({ y: object.skipped, id: id });
             passed.push({ y: object.passed, id: id });
             total.push({ y: object.total, id: id });
+        }
+
+        function findUniqueMetrics() {
+            _.each(launches, function(launch) {
+                _.each(launch.parameters.metrics, function(metric, name) {
+                    metrics[name] = [];
+                });
+            });
+        }
+
+        function fillMetricsArray() {
+            _.each(metrics, function(metric, name) {
+                _.each(launches, function(launch) {
+                    if (('metrics' in launch.parameters) && (name in launch.parameters.metrics)) {
+                        metrics[name].push({ y: launch.parameters.metrics[name], id: launch.id });
+                    } else {
+                        metrics[name].push({ y: 0, id: launch.id });
+                    }
+                });
+            });
         }
 
         var result = {};
@@ -192,6 +213,10 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
             duration.push({ y: launch.duration, id: launch.id });
         });
         result.duration = duration;
+
+        findUniqueMetrics()
+        fillMetricsArray()
+        result.metrics = metrics;
 
         return result;
     }
@@ -217,7 +242,8 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
         getAbsolute: getAbsolute,
         getTotal: getTotal,
         getDuration: getDuration,
-        getAll: getAll
+        getAll: getAll,
+        getMetrics: getMetrics
     };
 
     function failedStruct(data) {
@@ -260,6 +286,13 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
         };
     }
 
+    function metricStruct(data, name) {
+        return {
+            name: name,
+            data: data
+        };
+    }
+
     function getFailedAndSkipped(array_of_failed, array_of_skipped) {
         return [ failedStruct(array_of_failed), skippedStruct(array_of_skipped)];
     }
@@ -284,6 +317,19 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
 
     function getDuration(array_of_duration) {
         return [ durationStruct(array_of_duration) ];
+    }
+
+    function getMetrics(metrics) {
+        var res = [];
+        _.each(metrics, function(metric, name) {
+            res.push(metricStruct(metric, name));
+        });
+
+        for (var i=1; i < res.length; i++) {
+            res[i].visible = false;
+        }
+
+        return res;
     }
 
     function getAll(array_of_failed, array_of_skipped, array_of_total) {
@@ -369,6 +415,9 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
             case 'area_absolute':
                 chart = ChartConfig.area();
                 chart.options.plotOptions.area.stacking = 'normal';
+                break;
+            case 'line':
+                chart = ChartConfig.line();
                 break;
             default:
                 chart = ChartConfig.column();
