@@ -431,6 +431,60 @@ services.factory('Project', ['$resource',
                 },
                 series: []
             };
+        },
+        line: function () {
+            return {
+                options: {
+                    chart: {
+                        type: 'line'
+                    },
+                    plotOptions: {
+                        line: {
+                            animation: false,
+                            marker: {
+                                radius: 2,
+                                symbol: 'circle',
+                            }
+                        },
+                        series: {
+                            point: {
+                                events: {
+                                    click: function () {
+                                        $rootScope.$apply($location.path('/launch/' + this.id));
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    legend: {
+                            layout: 'vertical',
+                            align: 'right',
+                            verticalAlign: 'middle',
+                            borderWidth: 0
+                        },
+                },
+                credits: {
+                    enabled: false
+                },
+                title: {
+                    text: ''
+                },
+                size: {
+                    height: 240
+                },
+                xAxis: {
+                    gridLineWidth: 1
+                },
+                yAxis: {
+                    min: 0,
+                    minRange : 0.01,
+                    title: {
+                        text: ''
+                    }
+                },
+
+                series: []
+            };
         }
     }
 }]);

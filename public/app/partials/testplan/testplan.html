@@ -1,13 +1,14 @@
 <h3 id="statistic_header">"{{ name }}" statistics</h3>
 <div ng-if="charts">
     <highchart config="charts[0]" ng-if="chartPercentType === 'duration'"></highchart>
-    <highchart config="charts[1]" ng-if="chartPercentType === 'failed'"></highchart>
+    <highchart config="charts[2]" ng-if="chartPercentType === 'failed'"></highchart>
+    <highchart config="charts[1]" ng-if="chartPercentType === 'metrics'"></highchart>
     <div ng-if="chartPercentType === 'number'">
         <div class="col-md-6">
-            <highchart config="charts[1]"></highchart>
+            <highchart config="charts[2]"></highchart>
         </div>
         <div class="col-md-6">
-            <highchart config="charts[2]"></highchart>
+            <highchart config="charts[3]"></highchart>
         </div>
     </div>
     <div class="text-center">
@@ -18,6 +19,7 @@
                     title="Duration is a sum of all tests execution time (can differ from testplan execution time)">
                 duration
             </button>
+            <button type="button" class="btn btn-default" ng-click="chartPercentType = 'metrics'" ng-show="charts[1].series.length !== 0">metrics</button>
         </div>
     </div>
 </div>
