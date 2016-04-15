@@ -159,8 +159,8 @@
                             <div class="panel panel-default panel-tree-view" style="margin-bottom: 5px;">
                                 <div class="panel-body" style="background-color: whitesmoke; padding: 10px; padding-bottom: 5px;">
                                     {{ test.name }}
-                                    <pre ng-if="test.state !== 0 && result_preview==='head'" style="background-color: white; font-size: 12px;">{{ test.failure_reason | cut:true:256:' ... '  }}</pre>
-                                    <pre ng-if="test.state !== 0 && result_preview==='tail'" style="background-color: white; font-size: 12px;">{{ test.failure_reason | cut:true:256:'... ':true  }}</pre>
+                                    <pre ng-if="test.state !== 0 && test.failure_reason!=='' && result_preview==='head'" style="background-color: white; font-size: 12px;">{{ test.failure_reason | cut:true:256:' ... '  }}</pre>
+                                    <pre ng-if="test.state !== 0 && test.failure_reason!=='' && result_preview==='tail'" style="background-color: white; font-size: 12px;">{{ test.failure_reason | cut:true:256:'... ':true  }}</pre>
                                 </div>
                             </div>
                         </td>
