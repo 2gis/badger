@@ -106,3 +106,15 @@ body {
 .table-striped tbody tr.selected {
     background-color: #e8e8e8;
 }
+
+.tab-content > .tab-pane,
+.pill-content > .pill-pane {
+    display: block;
+    height: 0;
+    overflow-y: hidden;
+}
+
+.tab-content > .active,
+.pill-content > .active {
+    height: auto;
+}

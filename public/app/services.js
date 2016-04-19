@@ -375,6 +375,64 @@ services.factory('Project', ['$resource',
                 series: []
             };
         },
+        stacking: function() {
+            return {
+                options: {
+                    chart: {
+                        type: 'column'
+                    },
+                    plotOptions: {
+                        column: {
+                            stacking: 'normal',
+                            dataLabels: {
+                                enabled: true,
+                                color: 'white',
+                                style: {
+                                    textShadow: '0 0 3px black'
+                                },
+                                formatter: function () {
+                                    var previousPoint = this.point.x === 0 ? null : this.series.data[this.point.x - 1];
+                                    var columnValue = '';
+                                    if (previousPoint) {
+                                        var previousValue = this.y - previousPoint.y;
+
+                                        if (previousValue < 0) {
+                                            columnValue = previousValue;
+                                        } else if (previousValue >= 0) {
+                                            columnValue = '+' + previousValue;
+                                        } else {
+                                            columnValue = previousValue;
+                                        }
+                                    }
+                                    return columnValue;
+                                }
+                            },
+                            animation: false
+                        }
+                    }
+                },
+                credits: {
+                    enabled: false
+                },
+                title: {
+                    text: ''
+                },
+                size: {
+                    height: 340
+                },
+                xAxis: {
+                    gridLineWidth: 1
+                },
+                yAxis: {
+                    min: 0,
+                    minRange : 0.01,
+                    title: {
+                        text: ''
+                    }
+                },
+                series: []
+            };
+        },
         area: function () {
             return {
                 options: {
