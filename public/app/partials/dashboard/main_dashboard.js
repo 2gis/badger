@@ -36,7 +36,7 @@ app.controller('MainDashboardCtrl', ['$scope', '$rootScope', 'appConfig', 'Proje
                     dashboard.testplans = response.results;
                     _.each(dashboard.testplans, function (testplan) {
                         updateName(testplan);
-                        testplan.chartsType = $rootScope.getProjectSettings(testplan.project, 'chart_type');
+                        testplan.chartsType = parseInt($rootScope.getProjectSettings(testplan.project, 'chart_type'));
                         $scope.addChartsToTestplan(testplan, appConfig.DEFAULT_DAYS);
                     });
                     dashboard.testplans = _.sortBy(dashboard.testplans, 'name');
