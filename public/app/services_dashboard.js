@@ -34,6 +34,7 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
         addDuration: addDuration,
         addEnvVariable: addEnvVariable,
         addStatisticData: addStatisticData,
+        addCommitOrder: addCommitOrder,
         getLaunchesForTotalStatistic: getLaunchesForTotalStatistic
     };
 
@@ -85,6 +86,13 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
             });
         });
 
+        return launches;
+    }
+
+    function addCommitOrder(last_commits, launches) {
+        _.each(launches, function(launch) {
+            launch.commit_order = _.indexOf(last_commits, launch.build.hash);
+        });
         return launches;
     }
 
@@ -226,7 +234,11 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
 
         _.each(launches, function(launch) {
             if (extended) {
-                labels.push(launch.env_var + ' (' + launch.groupDate + ')');
+                if ('env_var' in launch) {
+                    labels.push(launch.env_var + ' (' + launch.groupDate + ')');
+                } else {
+                    labels.push(launch.build.hash + ' (' + launch.groupDate + ')');
+                }
             } else {
                 labels.push(launch.groupDate);
             }
@@ -419,6 +431,9 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
                 break;
             case 'line':
                 chart = ChartConfig.line();
+                break;
+            case 'stacking':
+                chart = ChartConfig.stacking();
                 break;
             default:
                 chart = ChartConfig.column();

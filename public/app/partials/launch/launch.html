@@ -4,11 +4,11 @@
         <li>
             <a ng-href="#/testplan/{{ launch.test_plan }}" style="cursor: pointer;"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> Back to testplan</a>
         </li>
-        <li role="presentation"  ng-class="{ 'active': finished }">
-            <a ng-click="finished = true; closeTask()" aria-controls="counters" role="tab" data-toggle="tab" style="cursor: pointer;">Counters</a>
+        <li role="presentation"  ng-class="{ 'active': activeTab === 'counters' }">
+            <a ng-click="setActiveTab('counters')" aria-controls="counters" role="tab" data-toggle="tab" style="cursor: pointer;">Counters</a>
         </li>
-        <li role="presentation" ng-class="{ 'active': !finished }">
-            <a ng-click="finished = false" aria-controls="tasks" role="tab" data-toggle="tab" style="cursor: pointer;">
+        <li role="presentation" ng-class="{ 'active': activeTab === 'tasks' }">
+            <a ng-click="setActiveTab('tasks')" aria-controls="tasks" role="tab" data-toggle="tab" style="cursor: pointer;">
                 <div ng-if="launch.state === 0">
                     <span class="glyphicon glyphicon-exclamation-sign"></span>
                     Tasks in progress...
@@ -16,15 +16,18 @@
                 <div ng-if="launch.state === 2 || launch.state === 3">Tasks</div>
             </a>
         </li>
+        <li role="presentation" ng-class="{ 'active': activeTab === 'diff' }" ng-show="showDiffByCommits">
+            <a ng-click="activeTab='diff'" aria-controls="diff" role="tab" data-toggle="tab" style="cursor: pointer;">Diff</a>
+        </li>
         <li role="presentation" class="pull-right">
             <a><span class="glyphicon glyphicon-question-sign" ng-click="open('launch/results')"></span></a>
         </li>
     </ul>
 
+    <!--<div class="clearfix"></div>-->
     <div class="tab-content">
-        <div role="tabpanel" class="tab-pane" id="counters" ng-class="{ 'active': finished }">
-            <div class="row">
-                <div class="col-md-6">
+        <div role="tabpanel" class="tab-pane" id="counters" ng-class="{ 'active': activeTab === 'counters' }">
+            <div class="row col-md-6">
                 <table class="table table-striped table-condensed">
                     <thead>
                         <tr><th>Param</th><th>Value</th></tr>
@@ -53,28 +56,28 @@
                             </td>
                         </tr>
                         <tr ng-repeat="(key, value) in launch.parameters.options">
-                            <td>{{ key }}</td>
-                            <td>
-                                <span ng-if="key!=='started_by'">{{ value }}</span>
+                            <td ng-if="key !== 'last_commits'">{{ key }}</td>
+                            <td ng-if="key !== 'last_commits'">
+                                <span ng-if="key !== 'started_by'">{{ value }}</span>
                                 <!-- Not ng-href, because we open link in new tab -->
                                 <a ng-if="key==='started_by'" href="{{ launch.started_by }}" target="_blank">{{ launch.started_by }}</a>
                             </td>
                         </tr>
                     </tbody>
                 </table>
-                </div>
-                <div class="col-md-6">
-                    <table ng-table="comments" class="table table-condensed table-striped">
-                        <tr ng-repeat="comment in $data">
-                            <td class="col-md-3" data-title="'User & date'">{{ comment.user_data.username }}<br />{{ comment.submit_date | date: "d/M/y H:mm" }}</td>
-                            <td class="col-md-9" data-title="'Comment'"><pre>{{ comment.comment }}</pre></td>
-                        </tr>
-                    </table>
-                    <button class="btn btn-default" ng-click="openAddCommentModal()">Add comment</button>
-                </div>
+            </div>
+            <div class="col-md-6">
+                <table ng-table="comments" class="table table-condensed table-striped">
+                    <tr ng-repeat="comment in $data">
+                        <td class="col-md-3" data-title="'User & date'">{{ comment.user_data.username }}<br />{{ comment.submit_date | date: "d/M/y H:mm" }}</td>
+                        <td class="col-md-9" data-title="'Comment'"><pre>{{ comment.comment }}</pre></td>
+                    </tr>
+                </table>
+                <button class="btn btn-default" ng-click="openAddCommentModal()">Add comment</button>
             </div>
 
-            <div class="well">
+
+            <div class="well col-md-12">
                 <div ng-class="{ 'disabled': !apiErrors, 'alert alert-danger': apiErrors}" role="alert">{{ apiErrors }}</div>
                 <form class="form-inline" ng-submit="addBug()">
                     <a ng-show="result_view === 0" ng-click="state = 0" class="btn btn-sm btn-success" ng-class="{ 'active': state == 0 }">Passed {{ launch.counts.passed }}</a>
@@ -149,7 +152,6 @@
                                     <span class="label label-success label-balanced" ng-if="group.passed !== 0">{{ group.passed }}</span>
                                     / <span class="label label-primary label-balanced">{{ group.passed + group.failed + group.blocked + group.skipped}}</span>
                                 </div>
-
                             </a>
                         </td>
                     </tr>
@@ -180,8 +182,10 @@
                 </table>
             </div>
         </div>
-        <div role="tabpanel" class="tab-pane" id="tasks" ng-class="{ 'active': !finished }">
+
+        <div role="tabpanel" class="tab-pane" id="tasks" ng-class="{ 'active': activeTab === 'tasks' }">
             <br />
+            <div class="col-md-12">
             <div class="row" ng-if="currentTask === null">
                 <table class="table table-condensed table-hover table-striped">
                     <thead>
@@ -218,6 +222,20 @@
                         </tr>
                     </tbody>
                 </table>
+            </div>
+            </div>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="diff" ng-class="{ 'active': activeTab === 'diff' }">
+            <br/>
+            <div class="panel-body">
+                <div class="row" ng-show="launch.charts[0].xAxis.categories.length === 0">
+                    <div class="alert alert-warning text-center" role="alert" style="margin-top: 40px">
+                        There are no launches connected with history commits.
+                    </div>
+                </div>
+                <div class="col-md-12" ng-if="launch.charts[0].xAxis.categories.length !== 0">
+                    <highchart config="launch.charts[0]"></highchart>
+                </div>
             </div>
         </div>
         <div class="row" ng-if="currentTask !== null">

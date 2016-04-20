@@ -46,9 +46,18 @@ app.filter('toArray', function() { return function(obj) {
     });
 }});
 
-app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter', '$timeout', '$window', 'ngTableParams', 'hotkeys', 'appConfig', 'TestResult', 'Launch', 'Task', 'Comment', 'Bug', 'SortLaunchItems', 'TestPlan',
-    function ($scope, $rootScope, $routeParams, $filter, $timeout, $window, ngTableParams, hotkeys, appConfig, TestResult, Launch, Task, Comment, Bug, SortLaunchItems, TestPlan) {
+app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$filter', '$timeout', '$window', 'ngTableParams',
+                'hotkeys', 'appConfig', 'TestResult', 'Launch', 'Task', 'Comment', 'Bug', 'SortLaunchItems', 'TestPlan',
+                'LaunchHelpers', 'LaunchFilters', 'GetChartStructure', 'SeriesStructure', 'GetChartsData',
+    function ($q, $scope, $rootScope, $routeParams, $filter, $timeout, $window, ngTableParams,
+              hotkeys, appConfig, TestResult, Launch, Task, Comment, Bug, SortLaunchItems, TestPlan,
+              LaunchHelpers, LaunchFilters, GetChartStructure, SeriesStructure, GetChartsData) {
         var initialized = false;
+
+        $scope.activeTab = 'counters';
+        $scope.setActiveTab = function(tabName) {
+            $scope.activeTab = tabName;
+        };
 
         function getProfileAndDrawTable() {
             $rootScope.getProfile().then(function(profile) {
@@ -72,6 +81,12 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
                 getProfileAndDrawTable();
             }
             $scope.launch = launch;
+
+            if ('last_commits' in $scope.launch.parameters.options) {
+                $scope.showDiffByCommits = true;
+                $scope.drawDiffChart();
+            }
+
             if (!$scope.launch.duration) {
                 $scope.launch.duration = parseInt((Date.parse(launch.finished) - Date.parse(launch.created)) / (1000 * 60));
             } else {
@@ -599,6 +614,56 @@ app.controller('LaunchCtrl', ['$scope', '$rootScope', '$routeParams', '$filter',
         $scope.selectedItemId = null;
         function setSelected(selectedItemId) {
            $scope.selectedItemId = selectedItemId;
+        }
+
+        function getLaunches (testplan_id, last_commits) {
+            var deferred = $q.defer();
+            Launch.custom_list({
+                testPlanId: testplan_id,
+                state: appConfig.LAUNCH_STATE_FINISHED,
+                build_hash__in: last_commits.join()
+            }, function (response) {
+                var launches = LaunchHelpers.cutDate(response.results);
+                launches = _.groupBy(launches, function(launch) {
+                    return launch.build.hash;
+                });
+                deferred.resolve(launches);
+            });
+            return deferred.promise;
+        }
+
+        function pushColumnCharts(charts, labels, series) {
+            charts.push(
+                GetChartStructure(
+                    'stacking',
+                    sliceArray(labels),
+                    SeriesStructure.getAbsolute(sliceArray(series.absolute.failed),
+                        sliceArray(series.absolute.skipped), sliceArray(series.absolute.passed))
+                ));
+        }
+
+        function sliceArray(array) {
+            return array.slice(array.length - 10, array.length);
+        }
+
+        $scope.drawDiffChart = function() {
+            getLaunches($scope.launch.test_plan,
+                        $scope.launch.parameters.options.last_commits).then(function(launches) {
+                $scope.launch.charts = [];
+
+                launches = LaunchHelpers.cutDate(launches);
+                launches = LaunchFilters.getMax(launches);
+                launches = _.filter(launches, LaunchFilters.isEmptyResults);
+                launches = LaunchHelpers.addStatisticData(launches);
+                launches = LaunchHelpers.addCommitOrder($scope.launch.parameters.options.last_commits, launches);
+                launches = _.sortBy(launches, 'commit_order');
+                launches.reverse();
+
+                var seriesData = GetChartsData.series(launches);
+                var labels = GetChartsData.labels(launches, true);
+
+                pushColumnCharts($scope.launch.charts, labels, seriesData);
+            });
         }
     }
 ]);
