@@ -44,62 +44,55 @@
     <div class="tab-content">
         <div role="tabpanel" class="tab-pane" id="message" ng-class="{ 'active': activeTab === 'message' }">
             <br/>
-            <div class="row">
-                <div class="col-md-12">
-                    <pre ng-show="testResult.json">{{ testResult.failure_reason.message }}</pre>
-                    <pre ng-show="!testResult.json" ng-bind-html="testResult.failure_reason | linky:'_blank'"></pre>
-                </div>
+            <div class="col-md-12">
+                <pre ng-show="testResult.json">{{ testResult.failure_reason.message }}</pre>
+                <pre ng-show="!testResult.json" ng-bind-html="testResult.failure_reason | linky:'_blank'"></pre>
             </div>
         </div>
         <div role="tabpanel" class="tab-pane" id="trace" ng-class="{ 'active': activeTab === 'trace' }">
             <br/>
-            <div class="row">
-                <div class="col-md-12">
-                    <pre>{{ testResult.failure_reason.stack_trace }}</pre>
-                </div>
+            <div class="col-md-12">
+                <pre>{{ testResult.failure_reason.stack_trace }}</pre>
             </div>
         </div>
         <div role="tabpanel" class="tab-pane" id="steps" ng-class="{ 'active': activeTab === 'steps' }">
             <br/>
-            <div class="row">
-                <div class="col-md-12">
-                    <div ng-repeat="step in testResult.failure_reason.steps">
-                        <div class="panel panel-default" style="margin-bottom: 5px;">
-                            <div class="panel-heading" style="border-bottom: 0px;">{{ step.name }}</div>
-                            <div class="panel-body" ng-if="step.attachments">
-                                <div class="container-fluid">
-                                    <div class="row">
-                                        <div ng-repeat="attach in step.attachments">
-                                            <div class="col-md-2" ng-if="attach['mime-type'] === 'image/png'">
-                                                <div class="thumbnail_container">
-                                                    <a class="example-image-link" ng-href="{{ attach.url }}" data-lightbox="steps">
-                                                        <div class="thumbnail thumbnail-square"
-                                                             ng-style="{'background-image': 'url({{ attach.url }})'}">
-                                                        </div>
-                                                    </a>
-                                                </div>
-                                                <p class="text-center" ng-if="attach['mime-type'] === 'image/png'" title="{{attach.name}}">{{ attach.name | cut:true:18}}</p>
+            <div class="col-md-12">
+                <div ng-repeat="step in testResult.failure_reason.steps">
+                    <div class="panel panel-default" style="margin-bottom: 5px;">
+                        <div class="panel-heading" style="border-bottom: 0px;">{{ step.name }}</div>
+                        <div class="panel-body" ng-if="step.attachments">
+                            <div class="container-fluid">
+                                <div class="row">
+                                    <div ng-repeat="attach in step.attachments">
+                                        <div class="col-md-2" ng-if="attach['mime-type'] === 'image/png'">
+                                            <div class="thumbnail_container">
+                                                <a class="example-image-link" ng-href="{{ attach.url }}" data-lightbox="steps">
+                                                    <div class="thumbnail thumbnail-square"
+                                                         ng-style="{'background-image': 'url({{ attach.url }})'}">
+                                                    </div>
+                                                </a>
                                             </div>
+                                            <p class="text-center" ng-if="attach['mime-type'] === 'image/png'" title="{{attach.name}}">{{ attach.name | cut:true:18}}</p>
                                         </div>
                                     </div>
-                                    <br>
-                                    <div ng-repeat="attach in step.attachments">
-                                        <div ng-show="attach['mime-type'] === 'text/plain'">
-                                            <p><span class="glyphicon glyphicon-file"></span>
-                                                {{ attach.name }}:</p>
-                                            <pre ng-bind-html="attach.url | linky:'_blank'"></pre>
-                                        </div>
-                                        <div ng-show="isVideoMimeType(attach['mime-type'])">
-                                            <br>
-                                            <p><span class="glyphicon glyphicon-film"></span>
-                                                {{ attach.name }}:</p>
-                                            <pre ng-bind-html="attach.url | linky:'_blank'"></pre>
-                                        </div>
+                                </div>
+                                <br>
+                                <div ng-repeat="attach in step.attachments">
+                                    <div ng-show="attach['mime-type'] === 'text/plain'">
+                                        <p><span class="glyphicon glyphicon-file"></span>
+                                            {{ attach.name }}:</p>
+                                        <pre ng-bind-html="attach.url | linky:'_blank'"></pre>
+                                    </div>
+                                    <div ng-show="isVideoMimeType(attach['mime-type'])">
+                                        <br>
+                                        <p><span class="glyphicon glyphicon-film"></span>
+                                            {{ attach.name }}:</p>
+                                        <pre ng-bind-html="attach.url | linky:'_blank'"></pre>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -117,35 +110,33 @@
         </div>
         <div role="tabpanel" class="tab-pane" id="attach" ng-class="{ 'active': activeTab === 'attach' }">
             <br/>
-            <div class="row">
-                <div class="col-md-12">
-                    <div ng-if="testResult.failure_reason.attachments && testResult.failure_reason.attachments.length !== 0">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div ng-repeat="attach in testResult.failure_reason.attachments">
-                                    <div class="col-md-2" ng-if="attach['mime-type'] === 'image/png'">
-                                        <div class="thumbnail_container">
-                                            <a class="example-image-link" ng-href="{{ attach.url }}" data-lightbox="attachments">
-                                                <div class="thumbnail thumbnail-square" ng-style="{'background-image': 'url({{ attach.url }})'}"></div>
-                                            </a>
-                                        </div>
-                                        <p class="text-center" ng-if="attach['mime-type'] === 'image/png'" title="{{attach.name}}">{{ attach.name | cut:true:18 }}</p>
+            <div class="col-md-12">
+                <div ng-if="testResult.failure_reason.attachments && testResult.failure_reason.attachments.length !== 0">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div ng-repeat="attach in testResult.failure_reason.attachments">
+                                <div class="col-md-2" ng-if="attach['mime-type'] === 'image/png'">
+                                    <div class="thumbnail_container">
+                                        <a class="example-image-link" ng-href="{{ attach.url }}" data-lightbox="attachments">
+                                            <div class="thumbnail thumbnail-square" ng-style="{'background-image': 'url({{ attach.url }})'}"></div>
+                                        </a>
                                     </div>
+                                    <p class="text-center" ng-if="attach['mime-type'] === 'image/png'" title="{{attach.name}}">{{ attach.name | cut:true:18 }}</p>
                                 </div>
                             </div>
-                            <div ng-repeat="attach in testResult.failure_reason.attachments">
-                                <div ng-show="attach['mime-type'] === 'text/plain'">
-                                    <br>
-                                    <p><span class="glyphicon glyphicon-file"></span>
-                                        {{ attach.name }}:</p>
-                                    <pre ng-bind-html="attach.url | linky:'_blank'"></pre>
-                                </div>
-                                <div ng-show="isVideoMimeType(attach['mime-type'])">
-                                    <br>
-                                    <p><span class="glyphicon glyphicon-film"></span>
-                                        {{ attach.name }}:</p>
-                                    <pre ng-bind-html="attach.url | linky:'_blank'"></pre>
-                                </div>
+                        </div>
+                        <div ng-repeat="attach in testResult.failure_reason.attachments">
+                            <div ng-show="attach['mime-type'] === 'text/plain'">
+                                <br>
+                                <p><span class="glyphicon glyphicon-file"></span>
+                                    {{ attach.name }}:</p>
+                                <pre ng-bind-html="attach.url | linky:'_blank'"></pre>
+                            </div>
+                            <div ng-show="isVideoMimeType(attach['mime-type'])">
+                                <br>
+                                <p><span class="glyphicon glyphicon-film"></span>
+                                    {{ attach.name }}:</p>
+                                <pre ng-bind-html="attach.url | linky:'_blank'"></pre>
                             </div>
                         </div>
                     </div>
@@ -154,18 +145,14 @@
         </div>
         <div role="tabpanel" class="tab-pane" id="stdout" ng-class="{ 'active': activeTab === 'stdout' }">
             <br/>
-            <div class="row">
-                <div class="col-md-12">
-                    <pre ng-show="testResult.json">{{ testResult.failure_reason.system_out }}</pre>
-                </div>
+            <div class="col-md-12">
+                <pre ng-show="testResult.json">{{ testResult.failure_reason.system_out }}</pre>
             </div>
         </div>
         <div role="tabpanel" class="tab-pane" id="stderr" ng-class="{ 'active': activeTab === 'stderr' }">
             <br/>
-            <div class="row">
-                <div class="col-md-12">
-                    <pre ng-show="testResult.json">{{ testResult.failure_reason.system_err }}</pre>
-                </div>
+            <div class="col-md-12">
+                <pre ng-show="testResult.json">{{ testResult.failure_reason.system_err }}</pre>
             </div>
         </div>
     </div>

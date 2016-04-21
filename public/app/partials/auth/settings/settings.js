@@ -14,8 +14,8 @@ app.config(['$routeProvider', function ($routeProvider) {
     });
 }]);
 
-app.controller('ProfileSettingsCtrl', ['$rootScope', '$scope', '$routeParams', '$q', '$location', 'Auth', 'Project', 'TestPlan', 'Filters',
-    function ($rootScope, $scope, $routeParams, $q, $location, Auth, Project, TestPlan, Filters) {
+app.controller('ProfileSettingsCtrl', ['$rootScope', '$scope', '$routeParams', '$q', '$filter', '$location', 'Auth', 'Project', 'TestPlan', 'Filters',
+    function ($rootScope, $scope, $routeParams, $q, $filter, $location, Auth, Project, TestPlan, Filters) {
         $scope.launchesOnPage = [10, 25, 50];
         $scope.resultsOnPage = [10, 25, 50, 100];
         $scope.addNew = false;
@@ -28,29 +28,31 @@ app.controller('ProfileSettingsCtrl', ['$rootScope', '$scope', '$routeParams', '
             {name: 'Show tail of test result', code: 'tail'}
         ];
 
-        function getProjectsAndTestplansData() {
+        function getTestplans(project) {
             var deferred = $q.defer();
 
-            var multiData = [];
-            _.each($scope.projects, function (project) {
-                TestPlan.get({ projectId: project.id }, function (response) {
-                    project.testplans = _.filter(response.results, Filters.isMain);
-                    project.testplans = _.filter(project.testplans, Filters.removeHidden);
-                    project.testplans = _.sortBy(project.testplans, 'name');
-
-                    if (project.testplans.length !== 0) {
-                        multiData.push({name: project.name, sub: project.testplans});
-                    }
-                });
+            TestPlan.get({ projectId: project.id }, function (response) {
+                var testplans = _.filter(response.results, Filters.removeHidden);
+                testplans = _.sortBy(testplans, 'name');
+                deferred.resolve({name: project.name, sub: testplans,
+                    weight: $rootScope.getProjectSettings(project.id, 'weight')});
             });
-
-            deferred.resolve(multiData);
             return deferred.promise;
-        };
+        }
+
+        function getProjectsAndTestplansData() {
+            var promises = [];
+            _.each($scope.projects, function(project) {
+                var promise = getTestplans(project);
+                promises.push(promise);
+            });
+            return $q.all(promises);
+        }
 
         Project.query(function (response) {
             $scope.projects = response.results;
             getProjectsAndTestplansData().then(function(data) {
+                data =  $filter('orderBy')(data, ['weight', 'name']);
                 $scope.multiData = data;
             });
         });
