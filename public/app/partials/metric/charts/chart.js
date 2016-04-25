@@ -23,6 +23,7 @@ app.controller('MetricChartCtrl', ['$scope', '$rootScope', '$filter', '$routePar
         $scope.dateList = Periods.period_list();
 
         if ($routeParams.projectId) {
+            $scope.projectId = $routeParams.projectId;
             Project.get({projectId: $routeParams.projectId}, function (response) {
                 $scope.project = response;
                 $scope.dates = _.map($scope.dateList, function (num, key) {
@@ -66,7 +67,7 @@ app.controller('MetricChartCtrl', ['$scope', '$rootScope', '$filter', '$routePar
                 _.each(metricValues, function (metricValue) {
                     var d = new Date(metricValue.created);
                     dates.push(d.toLocaleString(LANG, { month: 'numeric', day: 'numeric'}));
-                    values.push(metricValue.value)
+                    values.push(metricValue.value);
                 });
 
                 // temporarily comment this lines, because highcharts can group points

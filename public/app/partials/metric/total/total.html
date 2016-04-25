@@ -1,0 +1,34 @@
+<div class="page-header">
+    <h4></h4>
+</div>
+<div class="col-md-12 text-center">
+    <p>
+        <div class="span9" ng-if="chart.length === 0 || !chart">
+            <div class="alert alert-warning text-center" role="alert"
+                    style="margin-bottom: 60px; margin-top: 60px;">
+                No results for this period
+            </div>
+        </div>
+    </p>
+</div>
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span9" ng-if="chart && chart.length !== 0">
+            <highchart config="chart"></highchart>
+        </div>
+    </div>
+</div>
+<div class="text-center">
+    <div class="btn-group btn-group btn-group-xs" role="group">
+        <button ng-repeat="date in dates" type="button" class="btn btn-default"
+            ng-click="drawChart(date)"
+            ng-class="{active: date === '1 month'}">{{date}}
+        </button>
+    </div>
+</div>
+<div class="page-header">
+</div>
+<a class="btn btn-primary btn-sm" ng-href="#/project/{{ activeProjectId }}/metric/charts">
+    <small><span class="glyphicon glyphicon-chevron-left"></span></small>
+    back to charts
+</a>

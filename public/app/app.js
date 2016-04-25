@@ -20,6 +20,7 @@ var app = angular.module('testReport', [
     'testReport.dashboard.total',
     'testReport.metric.add',
     'testReport.metric.charts',
+    'testReport.metric.total',
     'testReport.metric.zoom',
     'testReport.metric'
 ]);
