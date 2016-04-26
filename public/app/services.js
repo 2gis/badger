@@ -240,16 +240,27 @@ services.factory('Project', ['$resource',
         default_period: function() {
             return '1 month';
         },
-        period_list: function() {
-            return {
-                '1 week' : 7,
-                '2 weeks' : 14,
+        period_list: function(extended) {
+            var list = {
+                '1 week': 7,
+                '2 weeks': 14,
                 '3 weeks' : 21,
                 '1 month' : 30,
-                '2 months' : 61,
+                '2 months': 61,
                 '3 months' : 91
+            };
+            if (extended) {
+                return {
+                    '1 week': 7,
+                    '3 weeks' : 21,
+                    '1 month' : 30,
+                    '3 months' : 91,
+                    '4 months': 122,
+                    '6 months': 183
+                }
             }
-        }
+            return list;
+        },
     }
 }).factory('ChartConfig', ['$rootScope', '$location', function($rootScope, $location) {
     return {
