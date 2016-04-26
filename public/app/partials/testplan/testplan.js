@@ -27,6 +27,8 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$window', '$location', 
     function ($rootScope, $scope, $window, $location, $routeParams, $filter, ngTableParams, appConfig, TestPlan, Launch, LaunchItem, SortLaunchItems, Comment, ChartConfig, GetChartsData, SeriesStructure, Tooltips, LaunchHelpers, GetChartStructure) {
         $scope.chartPercentType = 'failed';
         $scope.maxSymbolsForBranch = 8;
+        $rootScope.isMainDashboard = false;
+
         var options = {
             month: 'numeric',
             day: 'numeric',

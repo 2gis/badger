@@ -27,7 +27,7 @@
             <div class="panel-body">
                 <div ng-if="testplan.charts[0].xAxis.categories.length === 0">
                     <div class="alert alert-warning text-center" role="alert">
-                        Testplan have not been launched for last {{ default_days }} days
+                        Testplan have not been launched for chosen period
                     </div>
                 </div>
                 <div class="row" ng-if="testplan.charts[0].xAxis.categories.length !== 0">
@@ -36,6 +36,14 @@
                     </div>
                     <div class="col-md-6" ng-if="testplan.charts">
                         <highchart config="testplan.charts[1]"></highchart>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <div class="btn-group btn-group-xs" role="group">
+                        <button ng-repeat="date in dates" type="button" class="btn btn-default"
+                              ng-click="addChartsToTestplan(testplan, date)"
+                              ng-class="{active: date === '1 week'}">{{ date }}
+                        </button>
                     </div>
                 </div>
             </div>

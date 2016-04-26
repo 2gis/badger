@@ -14,14 +14,18 @@ app.config(['$routeProvider', function ($routeProvider) {
     });
 }]);
 
-app.controller('MainDashboardCtrl', ['$scope', '$rootScope', 'appConfig', 'Project', 'TestPlan', 'Launch', 'Filters', 'LaunchHelpers', 'LaunchFilters', 'GetChartsData', 'SeriesStructure', 'Tooltips', 'GetChartStructure',
-    function ($scope, $rootScope, appConfig, Project, TestPlan, Launch, Filters, LaunchHelpers, LaunchFilters, GetChartsData, SeriesStructure, Tooltips, GetChartStructure) {
-        $scope.default_days = appConfig.DEFAULT_DAYS;
+app.controller('MainDashboardCtrl', ['$scope', '$rootScope', 'appConfig', 'Project', 'TestPlan', 'Launch', 'Filters', 'LaunchHelpers', 'LaunchFilters', 'GetChartsData', 'SeriesStructure', 'Tooltips', 'GetChartStructure', 'Periods',
+    function ($scope, $rootScope, appConfig, Project, TestPlan, Launch, Filters, LaunchHelpers, LaunchFilters, GetChartsData, SeriesStructure, Tooltips, GetChartStructure, Periods) {
+        $scope.dateList = Periods.period_list(true);
+        $scope.defaultPeriod = '1 week';
         $rootScope.isMainDashboard = true;
 
         Project.query(function (response) {
             $scope.projects = response.results;
             $rootScope.getProfile().then(function(profile) {
+                $scope.dates = _.map($scope.dateList, function (num, key) {
+                    return key;
+                });
                 if (profile) {
                     fetchData(profile);
                 }
@@ -37,7 +41,7 @@ app.controller('MainDashboardCtrl', ['$scope', '$rootScope', 'appConfig', 'Proje
                     _.each(dashboard.testplans, function (testplan) {
                         updateName(testplan);
                         testplan.chartsType = parseInt($rootScope.getProjectSettings(testplan.project, 'chart_type'));
-                        $scope.addChartsToTestplan(testplan, appConfig.DEFAULT_DAYS);
+                        $scope.addChartsToTestplan(testplan, $scope.defaultPeriod);
                     });
                     dashboard.testplans = _.sortBy(dashboard.testplans, 'name');
                 });
@@ -45,11 +49,11 @@ app.controller('MainDashboardCtrl', ['$scope', '$rootScope', 'appConfig', 'Proje
         }
 
         $scope.addChartsToTestplan = function(testplan, days) {
-            testplan.days = days;
+            testplan.days = $scope.dateList[days];
             Launch.custom_list({
                 testPlanId: testplan.id,
                 state: appConfig.LAUNCH_STATE_FINISHED,
-                days: days,
+                days: testplan.days,
                 search: testplan.filter
             }, function (response) {
                 testplan.charts = [];
