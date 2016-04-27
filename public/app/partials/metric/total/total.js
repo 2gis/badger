@@ -121,8 +121,6 @@ app.controller('MetricsTotalCtrl', ['$q', '$scope', '$rootScope', '$routeParams'
                 } else {
                     $scope.chart = [];
                 }
-
-
         };
 
         function createMetricData(labels, metricValues) {
