@@ -16,6 +16,7 @@ app.config(['$routeProvider', function ($routeProvider) {
 
 app.controller('ProfileSettingsCtrl', ['$rootScope', '$scope', '$routeParams', '$q', '$filter', '$location', 'Auth', 'Project', 'TestPlan', 'Filters',
     function ($rootScope, $scope, $routeParams, $q, $filter, $location, Auth, Project, TestPlan, Filters) {
+        $rootScope.isMainDashboard = false;
         $scope.launchesOnPage = [10, 25, 50];
         $scope.resultsOnPage = [10, 25, 50, 100];
         $scope.addNew = false;
