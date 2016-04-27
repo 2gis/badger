@@ -197,7 +197,9 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
             _.each(metrics, function(metric, name) {
                 _.each(launches, function(launch) {
                     if (('metrics' in launch.parameters) && (name in launch.parameters.metrics)) {
-                        metrics[name].push({ y: launch.parameters.metrics[name], id: launch.id });
+                        var value = launch.parameters.metrics[name];
+                        value = isNaN(Number(value)) ? 0 : Number(value);
+                        metrics[name].push({ y: value, id: launch.id });
                     } else {
                         metrics[name].push({ y: 0, id: launch.id });
                     }
