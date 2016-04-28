@@ -476,12 +476,18 @@ services.factory('Project', ['$resource',
                                 }
                             }
                         }
+                    },
+                    legend: {
+                        enabled: true
                     }
                 },
                 credits: {
                     enabled: false
                 },
                 title: {
+                    text: ''
+                },
+                subtitle: {
                     text: ''
                 },
                 size: {
