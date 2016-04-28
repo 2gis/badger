@@ -23,8 +23,12 @@ app.config(['$routeProvider',
     }
 ]);
 
-app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$window', '$location', '$routeParams', '$filter', 'ngTableParams', 'appConfig', 'TestPlan', 'Launch', 'LaunchItem', 'SortLaunchItems', 'Comment', 'ChartConfig', 'GetChartsData', 'SeriesStructure', 'Tooltips', 'LaunchHelpers', 'GetChartStructure',
-    function ($rootScope, $scope, $window, $location, $routeParams, $filter, ngTableParams, appConfig, TestPlan, Launch, LaunchItem, SortLaunchItems, Comment, ChartConfig, GetChartsData, SeriesStructure, Tooltips, LaunchHelpers, GetChartStructure) {
+app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$q', '$window', '$location', '$routeParams', '$filter',
+    'ngTableParams', 'appConfig', 'TestPlan', 'Launch', 'LaunchItem', 'SortLaunchItems', 'Comment', 'ChartConfig',
+    'GetChartsData', 'SeriesStructure', 'Tooltips', 'LaunchHelpers', 'GetChartStructure', 'LaunchFilters', 'Periods',
+    function ($rootScope, $scope, $q, $window, $location, $routeParams, $filter,
+              ngTableParams, appConfig, TestPlan, Launch, LaunchItem, SortLaunchItems, Comment, ChartConfig,
+              GetChartsData, SeriesStructure, Tooltips, LaunchHelpers, GetChartStructure, LaunchFilters, Periods) {
         $scope.chartPercentType = 'failed';
         $scope.maxSymbolsForBranch = 8;
         $rootScope.isMainDashboard = false;
@@ -84,6 +88,7 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$window', '$location', 
             $scope.chartsType = parseInt($rootScope.getProjectSettings(result.project, 'chart_type'));
             if ($scope.chartsType === appConfig.CHART_TYPE_AREA) {
                 $scope.chartPercentType = 'number';
+                $scope.addChartsToTestplan();
             }
         });
 
@@ -356,6 +361,68 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$window', '$location', 
         $scope.redirect = function(evt, url) {
             (evt.button === 1 || evt.ctrlKey === true) ?
                 $window.open('#' + url, '_blank') : $location.path(url);
+        }
+
+
+        //code for dynamics chart
+        function getLaunches (testplan, days) {
+            var deferred = $q.defer();
+            Launch.custom_list({
+                testPlanId: testplan.id,
+                state: appConfig.LAUNCH_STATE_FINISHED,
+                days: days,
+                search: testplan.filter
+            }, function (response) {
+                var launches = LaunchHelpers.cutDate(response.results);
+                launches = _.groupBy(launches, 'groupDate');
+                deferred.resolve(launches);
+            });
+            return deferred.promise;
+        }
+
+        function getLaunchesForPeriods(testplan) {
+            var promises = [];
+            var dateList = Periods.period_list(true);
+            _.each([dateList['1 month'], dateList['6 months']], function(days) {
+                var promise = getLaunches(testplan, days);
+                promises.push(promise);
+            });
+            return $q.all(promises);
+        }
+
+        $scope.dynamics = [];
+        $scope.addChartsToTestplan = function() {
+            getLaunchesForPeriods($scope.testplan).then(function(periodLaunches) {
+                _.each(periodLaunches, function(launches) {
+                    launches = LaunchHelpers.cutDate(launches);
+                    launches = LaunchFilters.getMax(launches);
+                    launches = _.filter(launches, LaunchFilters.isEmptyResults);
+                    launches = LaunchHelpers.addStatisticData(launches);
+                    launches = _.sortBy(launches, 'id');
+
+                    var seriesData = GetChartsData.series(launches);
+                    var labels = GetChartsData.labels(launches);
+
+                    if ($scope.chartsType === appConfig.CHART_TYPE_AREA) {
+                        pushAreaCharts(labels, seriesData);
+                    }
+                });
+                $scope.dynamics[0].subtitle.text = '1 month';
+                $scope.dynamics[1].subtitle.text = '6 months';
+                $scope.dynamics[0].options.legend.enabled = false;
+                $scope.dynamics[1].options.legend.enabled = false;
+            });
+        };
+
+        function pushAreaCharts(labels, series) {
+            $scope.dynamics.push(GetChartStructure(
+                    'area_absolute',
+                    labels,
+                    SeriesStructure.getAbsolute(series.absolute.failed, series.absolute.skipped,
+                        series.absolute.passed),
+                    //SeriesStructure.getTotal(series.absolute.total),
+                    Tooltips.areaAbsolute()
+                ));
         }
     }
 ]);
