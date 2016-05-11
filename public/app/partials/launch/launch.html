@@ -5,7 +5,7 @@
             <a ng-href="#/testplan/{{ launch.test_plan }}" style="cursor: pointer;"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> Back to testplan</a>
         </li>
         <li role="presentation"  ng-class="{ 'active': activeTab === 'counters' }">
-            <a ng-click="setActiveTab('counters')" aria-controls="counters" role="tab" data-toggle="tab" style="cursor: pointer;">Counters</a>
+            <a ng-click="setActiveTab('counters'); closeTask();" aria-controls="counters" role="tab" data-toggle="tab" style="cursor: pointer;">Counters</a>
         </li>
         <li role="presentation" ng-class="{ 'active': activeTab === 'tasks' }">
             <a ng-click="setActiveTab('tasks')" aria-controls="tasks" role="tab" data-toggle="tab" style="cursor: pointer;">
@@ -17,7 +17,7 @@
             </a>
         </li>
         <li role="presentation" ng-class="{ 'active': activeTab === 'diff' }" ng-show="showDiffByCommits">
-            <a ng-click="activeTab='diff'" aria-controls="diff" role="tab" data-toggle="tab" style="cursor: pointer;">Diff</a>
+            <a ng-click="setActiveTab('diff'); closeTask();" aria-controls="diff" role="tab" data-toggle="tab" style="cursor: pointer;">Diff</a>
         </li>
         <li role="presentation" class="pull-right">
             <a><span class="glyphicon glyphicon-question-sign" ng-click="open('launch/results')"></span></a>
@@ -197,7 +197,7 @@
                             <td ng-class="{'danger': task.result.result.return_code != 0 && task.result.status !== 'PENDING' }"
                                 ng-click="openTask(task)"
                                 style="cursor: pointer;">
-                                {{ task.result.result.stdout|cut:true:256:' ...' }}
+                                {{ task.result.result.stdout | cut:true:256:' ...' }}
                                 <div ng-if="task.result.result.stderr && task.result.result.stderr!=='Soft timeout limit exceeded. SoftTimeLimitExceeded()'">
                                     <span class="label label-warning"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>&nbsp;stderr not empty</span>
                                 </div>
@@ -238,31 +238,33 @@
                 </div>
             </div>
         </div>
-        <div class="row" ng-if="currentTask !== null">
-            <a ng-click="closeTask()" class="btn btn-primary"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> Back</a>
-            <h3 ng-bind="currentTask.item.name"></h3>
-            <div ng-if="currentTask.result.result.start">
-                <h4>Time</h4>
-                <table class="table table-condensed table-striped">
-                    <tr><td>Start</td><td ng-bind="currentTask.result.result.start"></td></tr>
-                    <tr><td>End</td><td ng-bind="currentTask.result.result.end"></td></tr>
-                    <tr><td>Duration</td><td ng-bind="currentTask.result.result.delta"></td></tr>
-                </table>
+        <div class="col-md-12">
+            <div class="row" ng-if="currentTask !== null">
+                <a ng-click="closeTask()" class="btn btn-primary"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> Back</a>
+                <h3 ng-bind="currentTask.item.name"></h3>
+                <div ng-if="currentTask.result.result.start">
+                    <h4>Time</h4>
+                    <table class="table table-condensed table-striped">
+                        <tr><td>Start</td><td ng-bind="currentTask.result.result.start"></td></tr>
+                        <tr><td>End</td><td ng-bind="currentTask.result.result.end"></td></tr>
+                        <tr><td>Duration</td><td ng-bind="currentTask.result.result.delta"></td></tr>
+                    </table>
+                </div>
+                <div ng-if="currentTask.result.result.stdout">
+                    <h4>Stdout</h4>
+                    <pre ng-bind="currentTask.result.result.stdout"></pre>
+                </div>
+                <div ng-if="currentTask.result.result.stderr">
+                    <h4>Stderr</h4>
+                    <pre ng-bind="currentTask.result.result.stderr"></pre>
+                </div>
+                <div ng-if="currentTask.result.result.env">
+                    <h4>Env</h4>
+                    <pre ng-bind-html="currentTask.result.result.env | jsonToString | linky:'_blank'"></pre>
+                </div>
+                <a ng-click="closeTask()" class="btn btn-primary"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> Back</a>
             </div>
-            <div ng-if="currentTask.result.result.stdout">
-                <h4>Stdout</h4>
-                <pre ng-bind="currentTask.result.result.stdout"></pre>
-            </div>
-            <div ng-if="currentTask.result.result.stderr">
-                <h4>Stderr</h4>
-                <pre ng-bind="currentTask.result.result.stderr"></pre>
-            </div>
-            <div ng-if="currentTask.result.result.env">
-                <h4>Env</h4>
-                <pre ng-bind-html="currentTask.result.result.env | jsonToString | linky:'_blank'"></pre>
-            </div>
-            <a ng-click="closeTask()" class="btn btn-primary"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> Back</a>
-        </div>
+        <div class="col-md-12">
     </div>
 
     <div class="modal modal-wide" id="TestDetailsModal" tabindex="-1" role="dialog"
