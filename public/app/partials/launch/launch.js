@@ -61,13 +61,15 @@ app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$fi
 
         function getProfileAndDrawTable() {
             $rootScope.getProfile().then(function(profile) {
-                $scope.result_view = parseInt($rootScope.getProjectSettings($rootScope.getActiveProject(), 'results_view'));
-                $scope.result_preview =
-                    $rootScope.getProjectSettings($rootScope.getActiveProject(), 'result_preview') === 0 ? 'head' : 'tail';
+                $rootScope.getProjectSettings($rootScope.getActiveProject(), 'results_view').then(function(type){
+                    $scope.result_view = parseInt(type);
+                    $rootScope.getProjectSettings($rootScope.getActiveProject(), 'result_preview').then(function(type) {
+                        $scope.result_preview = type === 0 ? 'head' : 'tail';
+                        $scope.result_preview = profile && profile.settings.result_preview ? profile.settings.result_preview : $scope.result_preview;
 
-                $scope.result_preview = profile && profile.settings.result_preview ? profile.settings.result_preview : $scope.result_preview;
-
-                drawTable(profile, $scope.result_view);
+                        drawTable(profile, $scope.result_view);
+                    });
+                });
             });
         }
 

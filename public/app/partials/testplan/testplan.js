@@ -85,11 +85,16 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$q', '$window', '$locat
             $rootScope.selectProject(result.project);
             $scope.testplan = result;
             $scope.name = result.name;
-            $scope.chartsType = parseInt($rootScope.getProjectSettings(result.project, 'chart_type'));
-            if ($scope.chartsType === appConfig.CHART_TYPE_AREA) {
-                $scope.chartPercentType = 'number';
-                $scope.addChartsToTestplan();
-            }
+            $rootScope.getProjectSettings(result.project, 'chart_type').then(function(type) {
+                $scope.chartsType = parseInt(type);
+                if ($scope.chartsType === appConfig.CHART_TYPE_AREA) {
+                    $scope.chartPercentType = 'number';
+                    $scope.addChartsToTestplan();
+                }
+                $rootScope.getProfile().then(function(profile){
+                    drawTable(profile);
+                });
+            });
         });
 
         $scope.testPlanId = $routeParams.testPlanId;
@@ -165,10 +170,6 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$q', '$window', '$locat
         };
 
         var create_table_attempt = 0;
-
-        $rootScope.getProfile().then(function(profile){
-            drawTable(profile);
-        });
 
         function drawTable(profile) {
             $scope.tableParams = new ngTableParams({
