@@ -48,6 +48,19 @@ app.controller('Menu', ['$rootScope', '$routeParams','$scope', '$location', '$wi
             return deferred.promise;
         };
 
+        $scope.getProjectById = function(id) {
+            var deferred = $q.defer();
+
+            Project.query({projectId: id}, function (result) {
+                deferred.resolve(result);
+            }, function (result) {
+                $rootScope.api_path = API_PATH;
+                deferred.reject(result);
+            });
+
+            return deferred.promise;
+        };
+
         $rootScope.getProjects = function() {
             var deferred = $q.defer();
 
@@ -112,14 +125,15 @@ app.controller('Menu', ['$rootScope', '$routeParams','$scope', '$location', '$wi
         };
 
         $rootScope.getProjectSettings = function(id, setting_name) {
-            var project = $rootScope.findProjectById(id);
-            var res = _.filter(project.settings, function (item) {
-                return item.key && item.key === setting_name;
+            return $scope.getProjectById(id).then(function(project) {
+                var res = _.filter(project.settings, function (item) {
+                    return item.key && item.key === setting_name;
+                });
+                if (res.length === 1) {
+                    return res[0].value;
+                }
+                return 0;
             });
-            if (res.length === 1) {
-                return res[0].value;
-            }
-            return 0;
         };
 
         $scope.login = function () {

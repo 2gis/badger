@@ -32,9 +32,7 @@ app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '
             $scope.testplans = _.filter($scope.testplans, Filters.removeHidden);
             $scope.testplans = _.sortBy($scope.testplans, 'name');
 
-            _.each($scope.testplans, function (testplan) {
-                $scope.addChartsToTestplan(testplan, appConfig.DEFAULT_DAYS);
-            });
+
 
             _.each($scope.twodaysTestplans, function (testplan) {
                 $scope.twodaysStatistic = true;
@@ -43,8 +41,14 @@ app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '
 
             drawTable($scope.twodaysTestplans);
 
-            $scope.chartsType = parseInt($rootScope.getProjectSettings($routeParams.projectId, 'chart_type'));
-            $scope.createTotalChart(appConfig.DEFAULT_DAYS);
+            $rootScope.getProjectSettings($routeParams.projectId, 'chart_type').then(function(type) {
+                _.each($scope.testplans, function (testplan) {
+                    $scope.addChartsToTestplan(testplan, appConfig.DEFAULT_DAYS);
+                });
+
+                $scope.chartsType = parseInt(type);
+                $scope.createTotalChart(appConfig.DEFAULT_DAYS);
+            });
         });
 
         Stage.get({ projectId: $routeParams.projectId }, function (response) {

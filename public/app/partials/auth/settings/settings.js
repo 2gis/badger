@@ -35,8 +35,7 @@ app.controller('ProfileSettingsCtrl', ['$rootScope', '$scope', '$routeParams', '
             TestPlan.get({ projectId: project.id }, function (response) {
                 var testplans = _.filter(response.results, Filters.removeHidden);
                 testplans = _.sortBy(testplans, 'name');
-                deferred.resolve({name: project.name, sub: testplans,
-                    weight: $rootScope.getProjectSettings(project.id, 'weight')});
+                deferred.resolve({name: project.name, sub: testplans});
             });
             return deferred.promise;
         }
@@ -53,7 +52,7 @@ app.controller('ProfileSettingsCtrl', ['$rootScope', '$scope', '$routeParams', '
         Project.query(function (response) {
             $scope.projects = response.results;
             getProjectsAndTestplansData().then(function(data) {
-                data =  $filter('orderBy')(data, ['weight', 'name']);
+                data =  $filter('orderBy')(data, ['name']);
                 $scope.multiData = data;
             });
         });

@@ -40,8 +40,10 @@ app.controller('MainDashboardCtrl', ['$scope', '$rootScope', 'appConfig', 'Proje
                     dashboard.testplans = response.results;
                     _.each(dashboard.testplans, function (testplan) {
                         updateName(testplan);
-                        testplan.chartsType = parseInt($rootScope.getProjectSettings(testplan.project, 'chart_type'));
-                        $scope.addChartsToTestplan(testplan, $scope.defaultPeriod);
+                        $rootScope.getProjectSettings(testplan.project, 'chart_type').then(function(type) {
+                            testplan.chartsType = parseInt(type);
+                            $scope.addChartsToTestplan(testplan, $scope.defaultPeriod);
+                        });
                     });
                     dashboard.testplans = _.sortBy(dashboard.testplans, 'name');
                 });
