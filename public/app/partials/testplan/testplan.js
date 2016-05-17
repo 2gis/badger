@@ -255,6 +255,10 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$q', '$window', '$locat
                                 SeriesStructure.getMetrics(seriesData.metrics)
                             ));
 
+                        $scope.charts[1].options.plotOptions.series = {
+                            connectNulls: true
+                        };
+
                         if ($scope.chartsType === appConfig.CHART_TYPE_COLUMN) {
                             $scope.charts.push(
                                 GetChartStructure(

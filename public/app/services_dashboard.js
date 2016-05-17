@@ -201,7 +201,7 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
                         value = isNaN(Number(value)) ? 0 : Number(value);
                         metrics[name].push({ y: value, id: launch.id });
                     } else {
-                        metrics[name].push({ y: 0, id: launch.id });
+                        metrics[name].push({ y: null, id: launch.id });
                     }
                 });
             });
