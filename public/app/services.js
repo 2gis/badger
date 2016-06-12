@@ -522,6 +522,7 @@ services.factory('Project', ['$resource',
                             }
                         },
                         series: {
+                            cursor: 'pointer',
                             point: {
                                 events: {
                                     click: function () {
@@ -532,11 +533,11 @@ services.factory('Project', ['$resource',
                         }
                     },
                     legend: {
-                            layout: 'vertical',
-                            align: 'right',
-                            verticalAlign: 'middle',
-                            borderWidth: 0
-                        },
+                        layout: 'vertical',
+                        align: 'right',
+                        verticalAlign: 'middle',
+                        borderWidth: 0
+                    }
                 },
                 credits: {
                     enabled: false

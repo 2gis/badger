@@ -12,6 +12,7 @@ var app = angular.module('testReport', [
     'testReport.testPlan',
     'testReport.testPlan.execute',
     'testReport.testPlan.add',
+    'testReport.testPlan.metrics',
     'testReport.launch',
     'testReport.testResult',
     'testReport.testResult.history',
