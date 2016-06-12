@@ -84,9 +84,11 @@ app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$fi
             }
             $scope.launch = launch;
 
-            if ('last_commits' in $scope.launch.parameters.options) {
-                $scope.showDiffByCommits = true;
-                $scope.drawDiffChart();
+            if ($scope.launch.parameters.options) {
+                if ('last_commits' in $scope.launch.parameters.options) {
+                    $scope.showDiffByCommits = true;
+                    $scope.drawDiffChart();
+                }
             }
 
             if (!$scope.launch.duration) {

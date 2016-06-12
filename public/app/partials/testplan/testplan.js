@@ -255,8 +255,20 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$q', '$window', '$locat
                                 SeriesStructure.getMetrics(seriesData.metrics)
                             ));
 
-                        $scope.charts[1].options.plotOptions.series = {
-                            connectNulls: true
+                        $scope.charts[1].options.plotOptions.series.connectNulls = true;
+                        $scope.charts[1].credits = {
+                            enabled: true,
+                            text: 'click to expand',
+                            href: '#testplan/'+ $routeParams.testPlanId + '/metrics',
+                            position: {
+                                align: 'right',
+                                x: 0
+                            },
+                            style: {
+                                cursor: 'pointer',
+                                color: '#909090',
+                                fontSize: '14px'
+                            }
                         };
 
                         if ($scope.chartsType === appConfig.CHART_TYPE_COLUMN) {

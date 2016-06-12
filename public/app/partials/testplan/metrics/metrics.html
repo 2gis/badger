@@ -1,0 +1,17 @@
+<br>
+<a class="btn btn-primary btn-sm" ng-href="#/testplan/{{ testPlanId }}">
+    <small><span class="glyphicon glyphicon-chevron-left"></span></small>
+    back to launch
+</a>
+<div class="pull-right">
+    Launches on chart:
+    <div class="btn-group btn-group" role="group">
+        <button type="button" class="btn btn-default btn-sm" ng-repeat="count in [10, 25, 50]"
+                ng-class="{'active': count === 10}" ng-click="drawTable(count)">{{count}}</button>
+    </div>
+</div>
+<hr>
+<div ng-repeat="chart in charts">
+    <highchart config="chart"></highchart>
+</div>
+
