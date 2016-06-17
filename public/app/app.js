@@ -49,6 +49,11 @@ function parseEnvString(str) {
     return output;
 }
 
+function isUrl(string) {
+    var regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+    return regexp.test(string);
+}
+
 app.constant('appConfig', {
     CHART_TYPE_COLUMN: 0,
     CHART_TYPE_AREA: 1,
