@@ -270,6 +270,17 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$q', '$window', '$locat
                                 fontSize: '14px'
                             }
                         };
+                        $scope.charts[1].options.plotOptions.series.point = {
+                            events: {
+                                click: function () {
+                                    if (isUrl(this.started_by)) {
+                                        $window.open(this.started_by);
+                                    } else {
+                                        $rootScope.$apply($location.path('/launch/' + this.id));
+                                    }
+                                }
+                            }
+                        };
 
                         if ($scope.chartsType === appConfig.CHART_TYPE_COLUMN) {
                             $scope.charts.push(
