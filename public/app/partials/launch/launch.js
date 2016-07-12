@@ -237,7 +237,9 @@ app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$fi
             }
         });
 
-        $scope.openResults = function (item) {
+        $scope.openResults = function (item, event) {
+            event = event || false;
+
             $scope.index = item;
 
             $scope.disableMainPrev = (item.id === $scope.fullNavigationFirstId);
@@ -250,7 +252,6 @@ app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$fi
             if (selection.type === 'Range') {
                 return false;
             }
-
             var modal = $('#TestDetailsModal');
 
             modal.modal('hide');
@@ -261,7 +262,12 @@ app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$fi
             $scope.modalState = item.state;
             $scope.modalBody = item.failure_reason;
             $scope.modalId = item.id;
-            modal.modal('show');
+
+            if (event && event.button === 1) {
+                modal.modal('hide');
+            } else {
+                modal.modal('show');
+            }
         };
 
         $scope.$on(
