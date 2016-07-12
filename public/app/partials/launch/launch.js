@@ -48,10 +48,10 @@ app.filter('toArray', function() { return function(obj) {
 
 app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$filter', '$timeout', '$window', 'ngTableParams',
                 'hotkeys', 'appConfig', 'TestResult', 'Launch', 'Task', 'Comment', 'Bug', 'SortLaunchItems', 'TestPlan',
-                'LaunchHelpers', 'LaunchFilters', 'GetChartStructure', 'SeriesStructure', 'GetChartsData',
+                'LaunchHelpers', 'LaunchFilters', 'GetChartStructure', 'SeriesStructure', 'GetChartsData', '$location',
     function ($q, $scope, $rootScope, $routeParams, $filter, $timeout, $window, ngTableParams,
               hotkeys, appConfig, TestResult, Launch, Task, Comment, Bug, SortLaunchItems, TestPlan,
-              LaunchHelpers, LaunchFilters, GetChartStructure, SeriesStructure, GetChartsData) {
+              LaunchHelpers, LaunchFilters, GetChartStructure, SeriesStructure, GetChartsData, $location) {
         var initialized = false;
 
         $scope.activeTab = 'counters';
@@ -237,9 +237,7 @@ app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$fi
             }
         });
 
-        $scope.openResults = function (item, event) {
-            event = event || false;
-
+        $scope.openResults = function (item) {
             $scope.index = item;
 
             $scope.disableMainPrev = (item.id === $scope.fullNavigationFirstId);
@@ -262,12 +260,7 @@ app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$fi
             $scope.modalState = item.state;
             $scope.modalBody = item.failure_reason;
             $scope.modalId = item.id;
-
-            if (event && event.button === 1) {
-                modal.modal('hide');
-            } else {
-                modal.modal('show');
-            }
+            modal.modal('show');
         };
 
         $scope.$on(
@@ -675,5 +668,11 @@ app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$fi
                 pushColumnCharts($scope.launch.charts, labels, seriesData);
             });
         }
+
+        $scope.redirect = function(evt, url) {
+            console.log(evt.button);
+            (evt.button === 1 || evt.ctrlKey === true) ?
+                $window.open('#' + url, '_blank') : $location.path(url);
+        };
     }
 ]);
