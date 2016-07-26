@@ -39,13 +39,14 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
     };
 
     function cutDate(launches, options) {
+        if (options) {
+            options.timeZone = TZONE;
+        } else {
+            options = { timeZone: TZONE };
+        }
         _.each(launches, function (launch) {
             var d = new Date(launch.created);
-            if (options) {
-                launch.groupDate = d.toLocaleDateString(LANG, options);
-            } else {
-                launch.groupDate = d.toLocaleDateString(LANG);
-            }
+            launch.groupDate = d.toLocaleDateString(LANG, options);
         });
         return launches;
     }
