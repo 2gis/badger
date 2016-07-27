@@ -38,15 +38,29 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
         getLaunchesForTotalStatistic: getLaunchesForTotalStatistic
     };
 
-    function cutDate(launches, options) {
-        if (options) {
-            options.timeZone = TZONE;
-        } else {
-            options = { timeZone: TZONE };
+    function dateToString(date, time) {
+        var monthStrings = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
+
+        var day = date.getDate();
+        var monthIndex = date.getMonth();
+        var year = date.getFullYear();
+        var hour = date.getHours();
+        var min = date.getMinutes();
+
+        if (time) {
+            return day + '.' + monthStrings[monthIndex] + ', ' + hour + ':' + min;
         }
+        return day + '.' + monthStrings[monthIndex] + '.' + year;
+    }
+
+    function cutDate(launches, options) {
         _.each(launches, function (launch) {
             var d = new Date(launch.created);
-            launch.groupDate = d.toLocaleDateString(LANG, options);
+            if (options) {
+                launch.groupDate = dateToString(d, true);
+            } else {
+                launch.groupDate = dateToString(d);
+            }
         });
         return launches;
     }
