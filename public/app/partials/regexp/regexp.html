@@ -1,0 +1,70 @@
+<h3>Jira issues</h3>
+<div class="row" ng-show="issues.length === 0">
+    <div class="alert alert-warning text-center" role="alert">
+        There are no linked issues or variable 'jira_projects' is not set in
+        <a href="#/project/{{ activeProjectId }}/settings">project settings</a>.
+    </div>
+</div>
+
+<div class="row">
+    <form ng-repeat="issue in issues">
+        <table class="table table-condensed" ng-show="issues.length !== 0" style="margin-bottom: 0px;">
+            <tr>
+                <td style="width: 8em;" class="text-center">
+                    <a href="https://jira.2gis.ru/browse/{{ issue.externalId }}"
+                       class="label label-{{ issue.status | bugStatusClass }}" style="display: inline-block; width: 8em;">
+                        {{ issue.externalId }}
+                    </a>
+                    <small>{{ issue.updated.substring(0,10) }}</small>
+                </td>
+                <td class="form-group">
+                    <span ng-if="!issue.$edit">
+                        <pre style="margin-bottom: 0px;">&nbsp{{ issue.regexp }}</pre>
+                    </span>
+                    <div ng-if="issue.$edit">
+                        <input class="form-control" ng-model="issue.regexp" required>
+                    </div>
+                </td>
+                <td style="width: 12em;">
+                    <div ng-if="!issue.$edit" class="text-center">
+                        <button class="btn btn-info"
+                                ng-click="issue.$edit = true" ng-disabled="profile === null">
+                            <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                        </button>
+                        <button class="btn btn-danger"
+                                ng-click="deleteIssue(issue)" ng-disabled="profile === null">
+                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                        </button>
+                    </div>
+                    <div ng-if="issue.$edit" class="text-center">
+                        <button type="submit" class="btn btn-primary"
+                                ng-click="updateIssue(issue)" ng-disabled="issue.$invalid">
+                            Save
+                        </button>
+                        <button type="reset" class="btn btn-default"
+                                ng-click="issue.$edit = false;">
+                            Cancel
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+<div class="clearfix"></div>
+
+<div class="modal fade" id="ConfirmationModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" ng-bind="modalTitle"></h4>
+            </div>
+            <div class="modal-body" ng-bind="modalBody"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" ng-click="modalCallBack()" data-dismiss="modal">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>

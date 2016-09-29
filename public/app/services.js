@@ -6,8 +6,22 @@ var API_PATH = location.protocol + "//" + BACKEND_URL;
 
 services.factory('Project', ['$resource',
     function ($resource) {
-        return $resource(API_PATH + 'projects/:projectId', {}, {
-            query: { method: 'GET' }
+        return $resource(API_PATH + 'projects/:projectId/:actionName/', {}, {
+            query: {
+                method: 'GET'
+            },
+            save_settings: {
+                method: 'POST',
+                params: {
+                    actionName: 'settings'
+                }
+            },
+            delete_settings: {
+                method: 'POST',
+                params: {
+                    actionName: 'settings/delete'
+                }
+            }
         });
     }
 ]).factory('TestPlan', ['$resource',
@@ -100,9 +114,18 @@ services.factory('Project', ['$resource',
     }
 ]).factory('Bug', ['$resource',
     function ($resource) {
-        return $resource(API_PATH + 'bugs/:bugId/', {}, {
+        return $resource(API_PATH + 'bugs/:bugId/:actionName/?issue_names__in=:issueNameIds', {}, {
+            get: {method: 'GET'},
             save: {
                 method: 'POST'
+            },
+            update: {method:'PATCH'},
+            delete: {method:'DELETE'},
+            custom_list: {
+                method: 'GET',
+                params: {
+                    actionName: 'custom_list'
+                }
             }
         });
     }

@@ -47,15 +47,21 @@ div.navbar.navbar-default.navbar-fixed-top(role='navigation', ng-controller='Men
             img(ng-if='xmasTree' ng-cloak src='./static/images/xmastree.gif' width=43 title='Happy New Year!')
         ul.nav.navbar-nav.navbar-right
           li(ng-if='profile !== null')
-            a(id='{{ profile.username }}' ng-href='#/profile/settings') {{ profile.username }}
+            a(id='{{ profile.username }}' ng-href='#/profile/settings' title='Profile settings') {{ profile.username }}
+          li(ng-if='profile !== null && (isMainDashboard===false || !isMainDashboard)')
+            a(ng-href='#/project/{{ activeProject.id }}/regexp_editor'
+            title='RegExp editor' style='font-family: Menlo,Monaco,Consolas; font-weight: bold;') (.*)
           li(ng-show="isMainDashboard===false || !isMainDashboard", ng-if='profile !== null && jira')
-            a(ng-href='#/project/{{ activeProject.id }}/metrics')
+            a(ng-href='#/project/{{ activeProject.id }}/metrics' title='Project metrics')
+              span.glyphicon.glyphicon-stats
+          li(ng-show="isMainDashboard===false || !isMainDashboard", ng-if='profile !== null && jira')
+            a(ng-href='#/project/{{ activeProject.id }}/settings' title='Project settings')
               span.glyphicon.glyphicon-cog
           li(ng-show="isMainDashboard===false || !isMainDashboard")
-            a(ng-href='#/dashboard', ng-click='selectProject()')
+            a(ng-href='#/dashboard', ng-click='selectProject()' title='Main dashboard')
               span.glyphicon.glyphicon-home
           li(ng-if='profile !== null')
-            a(href='javascript:;', ng-click='logout()')
+            a(href='javascript:;', ng-click='logout()' title='Logout')
               span.glyphicon.glyphicon-log-out
           li(ng-if='profile !== null')
             img(ng-if='xmasTree' ng-cloak src='./static/images/xmastree.gif' width=43 title='Happy New Year!')

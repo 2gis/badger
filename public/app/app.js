@@ -9,6 +9,7 @@ var app = angular.module('testReport', [
     'testReport.dashboard',
     'testReport.mainDashboard',
     'testReport.project',
+    'testReport.project.settings',
     'testReport.testPlan',
     'testReport.testPlan.execute',
     'testReport.testPlan.add',
@@ -23,7 +24,8 @@ var app = angular.module('testReport', [
     'testReport.metric.charts',
     'testReport.metric.total',
     'testReport.metric.zoom',
-    'testReport.metric'
+    'testReport.metric',
+    'testReport.regexp'
 ]);
 
 function secondsToString(seconds, withoutMinutes) {

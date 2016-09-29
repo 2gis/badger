@@ -1,0 +1,66 @@
+<h3>Project settings
+    <a><span class="glyphicon glyphicon-question-sign small pull-right" ng-click="open('project/settings')"></span></a>
+</h3>
+<div ng-if="formErrors">
+    <br>
+    <div ng-class="{ 'disabled': !formErrors, 'alert alert-danger text-center': formErrors}"
+         role="alert">{{ formErrors }}</div>
+</div>
+<br>
+
+<div class="row col-md-11">
+    <form ng-repeat="item in settings track by $index">
+        <div class="row col-md-4">
+            <span ng-if="item.$save"><pre>&nbsp{{ item.key }}</pre></span>
+            <div ng-if="item.$edit && !item.$save">
+                <input type="text" class="form-control" ng-model="item.key" placeholder="key" required>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <span ng-if="!item.$edit"><pre>&nbsp{{ item.value }}</pre></span>
+            <div ng-if="item.$edit">
+                <input class="form-control" ng-model="item.value" placeholder="value">
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="text-center" ng-if="!item.$edit" >
+                <button class="btn btn-info" ng-click="item.$edit = true" ng-disabled="profile === null">
+                    <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                </button>
+                <button class="btn btn-danger" ng-click="deleteSettings(item)" ng-disabled="profile === null">
+                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="text-center form-group" ng-if="item.$edit">
+                <button type="submit" class="btn btn-primary" ng-click="updateSettings(item)">
+                    Save
+                </button>
+                <button type="reset" class="btn btn-default" ng-click="cancelSettingsItem(item, $index)">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="col-md-1 button-group pull-right">
+    <a ng-click="addSettingsItem()" class="btn btn-default" ng-disabled="profile === null">Add new</a>
+</div>
+
+<div class="clearfix"></div>
+
+<div class="modal fade" id="ConfirmationModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" ng-bind="modalTitle"></h4>
+            </div>
+            <div class="modal-body" ng-bind="modalBody"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" ng-click="modalCallBack()" data-dismiss="modal">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
