@@ -126,6 +126,9 @@ app.controller('Menu', ['$rootScope', '$routeParams','$scope', '$location', '$wi
 
         $rootScope.getProjectSettings = function(id, setting_name) {
             return $scope.getProjectById(id).then(function(project) {
+                if (setting_name === '') {
+                    return project.settings;
+                }
                 var res = _.filter(project.settings, function (item) {
                     return item.key && item.key === setting_name;
                 });
