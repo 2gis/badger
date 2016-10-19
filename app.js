@@ -14,7 +14,7 @@ var colors = process.env.COLORS || 'blue=#7cb5ec;red=#f7464a;yellow=#e4d354;grey
 
 app.set('port', process.env.PORT || 5000);
 app.set('views', __dirname + '/views');
-app.set('view engine', 'jade');
+app.set('view engine', 'pug');
 app.set('env', process.env.ENV || 'production')
 if ('development' === app.get('env')) {
     app.use(express.logger('dev'));

@@ -17,7 +17,7 @@ html
     link(rel='stylesheet', href='/static/css/theme.css')
 
   body(ng-app="testReport" angular-multi-select-mouse-trap angular-multi-select-key-trap)
-    include menu.jade
+    include menu.pug
     div.container
       div(ng-view)
       div#TipsModal.modal(ng-controller='TipsCtrl', tabindex="-1", role="dialog", aria-labelledby="TipsModalLabel", aria-hidden="true")
