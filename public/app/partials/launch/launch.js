@@ -92,9 +92,9 @@ app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$fi
             }
 
             if (!$scope.launch.duration) {
-                $scope.launch.duration = parseInt((Date.parse(launch.finished) - Date.parse(launch.created)) / (1000 * 60));
+                $scope.launch.duration = (Date.parse(launch.finished) - Date.parse(launch.created)) / 1000;
             } else {
-                $scope.launch.duration = parseInt($scope.launch.duration / 60);
+                $scope.launch.duration = $scope.launch.duration;
             }
             $scope.getTasksDetails($scope.launch.tasks);
         });
@@ -591,7 +591,7 @@ app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$fi
                 $scope.tasks = [];
                 Launch.get({ launchId: $routeParams.launchId }, function (launch) {
                     $scope.launch = launch;
-                    $scope.launch.duration = parseInt((Date.parse(launch.finished) - Date.parse(launch.created)) / (1000 * 60));
+                    $scope.launch.duration = (Date.parse(launch.finished) - Date.parse(launch.created)) / 1000;
                     $scope.getTasksDetails($scope.launch.tasks);
                 });
                 $scope.apiErrors = response.message;
