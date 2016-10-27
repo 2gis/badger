@@ -75,8 +75,8 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
 
     function addDuration(launches) {
         _.each(launches, function(launch) {
-            launch.duration = launch.duration ? parseInt(launch.duration / 60) :
-                                parseInt((Date.parse(launch.finished) - Date.parse(launch.created)) / (1000 * 60));
+            launch.duration = launch.duration ? launch.duration :
+                                (Date.parse(launch.finished) - Date.parse(launch.created)) / 1000;
         });
         return launches;
     }
@@ -369,7 +369,7 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
         return [failedStruct(array_of_failed), skippedStruct(array_of_skipped), total];
     }
 
-}]).factory('Tooltips', function() {
+}]).factory('Tooltips', ['$filter', function($filter) {
     return {
         total: total,
         duration: duration,
@@ -389,7 +389,7 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
     function duration() {
         return {
             formatter: function () {
-                return this.y + 'min';
+                return $filter('secondsToTime')(this.y);
             }
         }
     }
@@ -433,7 +433,7 @@ servicesDashboard.factory('Filters', ['$rootScope', function ($rootScope) {
         }
     }
 
-}).factory('GetChartStructure', ['ChartConfig', function(ChartConfig) {
+}]).factory('GetChartStructure', ['ChartConfig', function(ChartConfig) {
     return function(chart_type, labels, series, tooltip) {
         var chart = {};
         switch (chart_type) {
