@@ -48,10 +48,11 @@ app.filter('toArray', function() { return function(obj) {
 
 app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$filter', '$timeout', '$window', 'ngTableParams',
                 'hotkeys', 'appConfig', 'TestResult', 'Launch', 'Task', 'Comment', 'Bug', 'SortLaunchItems', 'TestPlan',
-                'LaunchHelpers', 'LaunchFilters', 'GetChartStructure', 'SeriesStructure', 'GetChartsData', '$location',
+                'LaunchHelpers', 'LaunchFilters', 'GetChartStructure', 'SeriesStructure', 'GetChartsData', '$location', 'LaunchItem',
     function ($q, $scope, $rootScope, $routeParams, $filter, $timeout, $window, ngTableParams,
               hotkeys, appConfig, TestResult, Launch, Task, Comment, Bug, SortLaunchItems, TestPlan,
-              LaunchHelpers, LaunchFilters, GetChartStructure, SeriesStructure, GetChartsData, $location) {
+              LaunchHelpers, LaunchFilters, GetChartStructure, SeriesStructure, GetChartsData, $location, LaunchItem)
+    {
         var initialized = false;
 
         $scope.activeTab = 'counters';
@@ -66,11 +67,26 @@ app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$fi
                     $rootScope.getProjectSettings($rootScope.getActiveProject(), 'result_preview').then(function(type) {
                         $scope.result_preview = type === 0 ? 'head' : 'tail';
                         $scope.result_preview = profile && profile.settings.result_preview ? profile.settings.result_preview : $scope.result_preview;
-
                         drawTable(profile, $scope.result_view);
                     });
                 });
             });
+        }
+
+        $scope.launch_items = [];
+        function addLaunchItemsToLaunch(items, state) {
+            if (items.length !== 0) {
+                items = _.sortBy(items, function(item) {
+                    return -item.count;
+                });
+                if (state === appConfig.TESTRESULT_FAILED) {
+                    $scope.launch_item_id = items[0].launch_item_id
+                }
+                $scope.launch_items[state] = items[0].launch_item_id;
+                return items;
+            } else {
+                return items;
+            }
         }
 
         Launch.get({ launchId: $routeParams.launchId }, function (launch) {
@@ -83,6 +99,13 @@ app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$fi
                 getProfileAndDrawTable();
             }
             $scope.launch = launch;
+
+            $scope.launch.items = [];
+            _.each($scope.states, function(state) {
+                getLaunchCounts(state).then(function(items) {
+                    $scope.launch.items[state] = addLaunchItemsToLaunch(items, state);
+                });
+            });
 
             if ($scope.launch.parameters.options) {
                 if ('last_commits' in $scope.launch.parameters.options) {
@@ -234,6 +257,20 @@ app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$fi
                 $scope.tableParams.reload();
             } else {
                 initialized = true;
+            }
+        });
+
+        $scope.setLaunchItemId = function(id, state) {
+            if (state !== null) {
+                $scope.launch_item_id = $scope.launch_items[state];
+            } else {
+                $scope.launch_item_id = id;
+            }
+        };
+
+        $scope.$watch('launch_item_id', function() {
+            if (typeof $scope.tableParams !== 'undefined') {
+                $scope.tableParams.reload();
             }
         });
 
@@ -423,6 +460,7 @@ app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$fi
                         pageSize: params.count(),
                         ordering: ordering,
                         state: $scope.state,
+                        launch_item_id: $scope.launch_item_id,
                         search: params.$params.filter.failure_reason
                     }, function (result) {
                         params.total(result.count);
@@ -635,6 +673,17 @@ app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$fi
             return deferred.promise;
         }
 
+        function getLaunchCounts (state) {
+            var deferred = $q.defer();
+            Launch.custom_list({
+                results_group_count: $routeParams.launchId,
+                state: state
+            }, function (response) {
+                deferred.resolve(response.results);
+            });
+            return deferred.promise;
+        }
+
         function pushColumnCharts(charts, labels, series) {
             charts.push(
                 GetChartStructure(
@@ -670,7 +719,6 @@ app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$fi
         }
 
         $scope.redirect = function(evt, url) {
-            console.log(evt.button);
             (evt.button === 1 || evt.ctrlKey === true) ?
                 $window.open('#' + url, '_blank') : $location.path(url);
         };
