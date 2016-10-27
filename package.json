@@ -6,15 +6,15 @@
   "repository": "https://github.com/2gis/badger",
   "license": "The MIT License",
   "dependencies": {
-    "bower": "1.4.1",
+    "bower": "1.7.9",
     "express": "3.1.x",
-    "jade": "1.9.2",
+    "pug": "2.0.0-beta6",
     "lightbox2": "2.8.2",
     "request": "^2.55.0"
   },
   "devDependencies": {
     "foreman": "^1.4.0",
-    "protractor": "2.0.0"
+    "protractor": "4.0.9"
   },
   "scripts": {
     "postinstall": "bower install",

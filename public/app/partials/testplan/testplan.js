@@ -246,7 +246,13 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$q', '$window', '$locat
                                 Tooltips.duration()
                             ));
                         $scope.charts[0].yAxis.tickInterval = 5;
-                        $scope.charts[0].yAxis.title.text = 'min';
+                        $scope.charts[0].yAxis.title.text = 'hh:mm:ss';
+                        $scope.charts[0].yAxis.labels = {
+                            enabled: false
+                            //formatter: function() {
+                            //    return $filter('secondsToTime')(this.value);
+                            //}
+                        };
 
                         $scope.charts.push(
                             GetChartStructure(
