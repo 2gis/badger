@@ -18,7 +18,7 @@ describe('Execute launch', function () {
         expect(failed.first().all(by.tagName('td')).first().getText()).toBe('FAILURE1 REASON');
         expect(failed.last().all(by.tagName('td')).first().getText()).toBe('FAILURE2 REASON');
 
-        element(by.css('[ng-click="state = 0"]')).click();
+        element(by.css('[ng-click="state = 0; setLaunchItemId(null, state)"]')).click();
         var passed = element.all(by.css('[ng-repeat="test in group"]'));
         expect(passed.count()).toBe(1);
         expect(passed.first().all(by.tagName('td')).first().getText()).toBe('SUITE PASSED:TEST PASSED');
@@ -52,7 +52,7 @@ describe('Execute launch', function () {
 
     it('pagination count should be present on page', function () {
         browser.get('/#/launch/2222');
-        element(by.css('[ng-click="state = 2"]')).click();
+        element(by.css('[ng-click="state = 2; setLaunchItemId(null, state)"]')).click();
         expect(element.all(by.repeater('test in group')).count()).toBe(12);
 
         var pages = element.all(by.css('[ng-click="params.page(page.number)"]'));

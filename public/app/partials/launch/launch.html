@@ -80,10 +80,14 @@
             <div class="well col-md-12">
                 <div ng-class="{ 'disabled': !apiErrors, 'alert alert-danger': apiErrors}" role="alert">{{ apiErrors }}</div>
                 <form class="form-inline" ng-submit="addBug()">
-                    <a ng-show="result_view === 0" ng-click="state = 0" class="btn btn-sm btn-success" ng-class="{ 'active': state == 0 }">Passed {{ launch.counts.passed }}</a>
-                    <a ng-show="result_view === 0" ng-click="state = 1" class="btn btn-sm btn-danger" ng-class="{ 'active': state == 1 }">Failed {{ launch.counts.failed }}</a>
-                    <a ng-show="result_view === 0" ng-click="state = 2" class="btn btn-sm btn-warning" ng-class="{ 'active': state == 2 }"> Skipped {{ launch.counts.skipped }}</a>
-                    <a ng-show="result_view === 0" ng-click="state = 3" class="btn btn-sm btn-danger" ng-class="{ 'active': state == 3 }"> Blocked {{ launch.counts.blocked }}</a>
+                    <a ng-show="result_view === 0" ng-click="state = 0; setLaunchItemId(null, state)"
+                       class="btn btn-sm btn-success" ng-class="{ 'active': state == 0 }">Passed {{ launch.counts.passed }}</a>
+                    <a ng-show="result_view === 0" ng-click="state = 1; setLaunchItemId(null, state)"
+                       class="btn btn-sm btn-danger" ng-class="{ 'active': state == 1 }">Failed {{ launch.counts.failed }}</a>
+                    <a ng-show="result_view === 0" ng-click="state = 2; setLaunchItemId(null, state)"
+                       class="btn btn-sm btn-warning" ng-class="{ 'active': state == 2 }"> Skipped {{ launch.counts.skipped }}</a>
+                    <a ng-show="result_view === 0" ng-click="state = 3; setLaunchItemId(null, state)"
+                       class="btn btn-sm btn-danger" ng-class="{ 'active': state == 3 }"> Blocked {{ launch.counts.blocked }}</a>
 
                     <div class="form-group" ng-show="jira">
                         <span ng-show="result_view === 0" class="glyphicon glyphicon-minus"></span>
@@ -106,16 +110,24 @@
             </div>
 
             <div ng-if="result_view === 0">
+                <div class="well col-md-12" style="padding: 10px 10px 10px 10px; margin-bottom: 0px;" ng-show="launch.grouping">
+                    <div>
+                        <button type="button" class="btn btn-default btn-sm"
+                                ng-class="{ 'active': item.launch_item_id == launch_item_id }"
+                                ng-repeat="item in launch.items[state]"
+                                ng-click="setLaunchItemId(item.launch_item_id, null)"
+                                style="margin-right: 2px; margin-bottom: 2px; color: #286090;
+                                font-family: Menlo,Monaco,Consolas;">
+                            <b>{{ getLaunchItemById(item.launch_item_id).name }}</b> ({{ item.count }})
+                        </button>
+                        <button ng-show="launch.items[state].length === 0" type="button"
+                                class="btn btn-default btn-sm"
+                                style="margin: 2px; color: #286090;
+                                font-family: Menlo,Monaco,Consolas;" disabled>There are no test results</button>
+                    </div>
+                </div>
                 <table ng-table="tableParams" show-filter="true" class="table table-condensed table-bordered table-hover table-striped">
-                    <tbody ng-repeat="(key, group) in $data">
-                    <tr class="ng-table-group">
-                        <td colspan="{{ $columns.length }}">
-                            <a href="" ng-click="group.$hideRows = !group.$hideRows">
-                                <span class="glyphicon" ng-class="{ 'glyphicon-chevron-right': group.$hideRows, 'glyphicon-chevron-down': !group.$hideRows }"></span>
-                                <strong>{{ getLaunchItemById(group[0].launch_item_id).name }} ({{ group.length }})</strong>
-                            </a>
-                        </td>
-                    </tr>
+                    <tbody ng-repeat="group in $data">
                     <tr ng-hide="group.$hideRows" ng-repeat="test in group" ng-click="openResults(test)"
                         style="cursor:pointer" ng-class="{'hidden': test.hidden, 'selected': test.id === selectedItemId }">
                         <td data-title="'Failure reason'" filter="{'failure_reason': 'text'}">
