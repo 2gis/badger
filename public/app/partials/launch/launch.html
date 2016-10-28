@@ -110,7 +110,7 @@
             </div>
 
             <div ng-if="result_view === 0">
-                <div class="well col-md-12" style="padding: 10px 10px 10px 10px; margin-bottom: 0px;">
+                <div class="well col-md-12" style="padding: 10px 10px 10px 10px; margin-bottom: 0px;" ng-show="launch.grouping">
                     <div>
                         <button type="button" class="btn btn-default btn-sm"
                                 ng-class="{ 'active': item.launch_item_id == launch_item_id }"
@@ -127,7 +127,7 @@
                     </div>
                 </div>
                 <table ng-table="tableParams" show-filter="true" class="table table-condensed table-bordered table-hover table-striped">
-                    <tbody ng-repeat="(key, group) in $data">
+                    <tbody ng-repeat="group in $data">
                     <tr ng-hide="group.$hideRows" ng-repeat="test in group" ng-click="openResults(test)"
                         style="cursor:pointer" ng-class="{'hidden': test.hidden, 'selected': test.id === selectedItemId }">
                         <td data-title="'Failure reason'" filter="{'failure_reason': 'text'}">

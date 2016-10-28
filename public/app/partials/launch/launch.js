@@ -73,16 +73,25 @@ app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$fi
             });
         }
 
-        $scope.launch_items = [];
+        function setLaunchItemGrouping(items) {
+            if (items.length === 1) {
+                if (items[0].launch_item_id === null) {
+                    $scope.launch.grouping = false;
+                }
+            } else {
+                $scope.launch.grouping = true;
+            }
+        }
+
         function addLaunchItemsToLaunch(items, state) {
             if (items.length !== 0) {
+                setLaunchItemGrouping(items);
                 items = _.sortBy(items, function(item) {
                     return -item.count;
                 });
                 if (state === appConfig.TESTRESULT_FAILED) {
                     $scope.launch_item_id = items[0].launch_item_id
                 }
-                $scope.launch_items[state] = items[0].launch_item_id;
                 return items;
             } else {
                 return items;
@@ -262,7 +271,7 @@ app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$fi
 
         $scope.setLaunchItemId = function(id, state) {
             if (state !== null) {
-                $scope.launch_item_id = $scope.launch_items[state];
+                $scope.launch_item_id = $scope.launch.items[state][0].launch_item_id;
             } else {
                 $scope.launch_item_id = id;
             }
@@ -279,9 +288,6 @@ app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$fi
 
             $scope.disableMainPrev = (item.id === $scope.fullNavigationFirstId);
             $scope.disableMainNext = (item.id === $scope.fullNavigationLastId);
-
-            $scope.disableFailedPrev = (item.id === $scope.failedNavigationFirstId);
-            $scope.disableFailedNext = (item.id === $scope.failedNavigationLastId);
 
             var selection = $window.getSelection();
             if (selection.type === 'Range') {
@@ -538,23 +544,6 @@ app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$fi
 
                         $defer.resolve($scope.data);
                         $scope.tableParams.settings({counts: []});
-
-                        // Fill navigation variables
-                        var failedAndBlockedResults = _.map($scope.data, function(group) {
-                            return _.filter(group, isBlockedOrFailed);
-                        });
-
-                        failedAndBlockedResults = _.filter(failedAndBlockedResults, isNotEmptyArray);
-
-                        if ($scope.data.length !== 0) {
-                            $scope.fullNavigationFirstId = _.first(_.first($scope.data)).id;
-                            $scope.fullNavigationLastId = _.last(_.last($scope.data)).id;
-
-                            if (failedAndBlockedResults.length !== 0) {
-                                $scope.failedNavigationFirstId = _.first(_.first(failedAndBlockedResults)).id;
-                                $scope.failedNavigationLastId = _.last(_.last(failedAndBlockedResults)).id;
-                            }
-                        }
                     });
                 }
             });
@@ -643,14 +632,6 @@ app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$fi
           var height = $(window).height() - 250;
           $(this).find(".modal-body").css("max-height", height);
         });
-
-        function isBlockedOrFailed(result) {
-            return result.state === 1 || result.state === 3;
-        }
-
-        function isNotEmptyArray(array) {
-            return array.length > 0;
-        }
 
         $scope.selectedItemId = null;
         function setSelected(selectedItemId) {
