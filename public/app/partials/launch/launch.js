@@ -187,8 +187,8 @@ app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$fi
         $scope.updateBugBinding = function () {
             $rootScope.getProjectSettings($rootScope.getActiveProject(), 'jira_projects').then(function(result) {
                 $scope.issue_names = result;
-                if (result === '') {
-                    $scope.issue_names = 0;
+                if (result === 0) {
+                    $scope.issue_names = '';
                 }
             });
             Bug.custom_list({ issue_names__in: $scope.issue_names }, function(result) {
