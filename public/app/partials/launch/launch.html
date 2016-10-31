@@ -47,7 +47,8 @@
                         </tr>
                         <tr>
                             <td>Duration</td>
-                            <td>{{ launch.duration | secondsToTime }} </td>
+                            <td ng-if="(launch.duration | secondsToTime) !== 'NaN:NaN:NaN'">{{ launch.duration | secondsToTime }} </td>
+                            <td ng-if="(launch.duration | secondsToTime) === 'NaN:NaN:NaN'">-</td>
                         </tr>
                         <tr>
                             <td>ENV</td>
@@ -116,18 +117,24 @@
                                 ng-class="{ 'active': item.launch_item_id == launch_item_id }"
                                 ng-repeat="item in launch.items[state]"
                                 ng-click="setLaunchItemId(item.launch_item_id, null)"
-                                style="margin-right: 2px; margin-bottom: 2px; color: #286090;
-                                font-family: Menlo,Monaco,Consolas;">
+                                style="margin-right: 2px; margin-bottom: 2px; color: #286090;">
                             <b>{{ getLaunchItemById(item.launch_item_id).name }}</b> ({{ item.count }})
                         </button>
                         <button ng-show="launch.items[state].length === 0" type="button"
                                 class="btn btn-default btn-sm"
-                                style="margin: 2px; color: #286090;
-                                font-family: Menlo,Monaco,Consolas;" disabled>There are no test results</button>
+                                style="margin: 2px; color: #286090;" disabled>There are no test results
+                        </button>
                     </div>
                 </div>
                 <table ng-table="tableParams" show-filter="true" class="table table-condensed table-bordered table-hover table-striped">
                     <tbody ng-repeat="group in $data">
+                    <div class="well col-md-12" style="padding: 10px 10px 10px 10px; margin-bottom: 0px;"
+                            ng-if="tableParams.$params.filter.failure_reason">
+                        <button type="button" class="btn btn-default btn-sm"
+                                style="margin-right: 2px; margin-bottom: 2px; color: #286090;">
+                            Filtered ({{ tableParams.$params.filtered_count }})
+                        </button>
+                    </div>
                     <tr ng-hide="group.$hideRows" ng-repeat="test in group" ng-click="openResults(test)"
                         style="cursor:pointer" ng-class="{'hidden': test.hidden, 'selected': test.id === selectedItemId }">
                         <td data-title="'Failure reason'" filter="{'failure_reason': 'text'}">

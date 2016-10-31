@@ -155,4 +155,4 @@ filters.filter('states', function () {
 
         return padTime(hours) + ":" + padTime(minutes) + ":" + padTime(seconds);
     };
-});;
+});

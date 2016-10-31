@@ -470,6 +470,7 @@ app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$fi
                         search: params.$params.filter.failure_reason
                     }, function (result) {
                         params.total(result.count);
+                        params.$params.filtered_count = result.count;
                         $scope.data = _.groupBy(result.results, function (item) {
                             return item.launch_item_id;
                         });
