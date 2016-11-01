@@ -48,10 +48,10 @@ app.filter('toArray', function() { return function(obj) {
 
 app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$filter', '$timeout', '$window', 'ngTableParams',
                 'hotkeys', 'appConfig', 'TestResult', 'Launch', 'Task', 'Comment', 'Bug', 'SortLaunchItems', 'TestPlan',
-                'LaunchHelpers', 'LaunchFilters', 'GetChartStructure', 'SeriesStructure', 'GetChartsData', '$location', 'LaunchItem',
+                'LaunchHelpers', 'LaunchFilters', 'GetChartStructure', 'SeriesStructure', 'GetChartsData', '$location',
     function ($q, $scope, $rootScope, $routeParams, $filter, $timeout, $window, ngTableParams,
               hotkeys, appConfig, TestResult, Launch, Task, Comment, Bug, SortLaunchItems, TestPlan,
-              LaunchHelpers, LaunchFilters, GetChartStructure, SeriesStructure, GetChartsData, $location, LaunchItem)
+              LaunchHelpers, LaunchFilters, GetChartStructure, SeriesStructure, GetChartsData, $location)
     {
         var initialized = false;
 
@@ -155,7 +155,7 @@ app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$fi
         $scope.terminateMessage = null;
 
         $scope.$watch('regExp', function (text) {
-            var pattern = '/(?:)/';
+            var pattern = '';
             if (text) {
                 //escape special symbols to avoid problem with regexp
                 pattern = text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
@@ -163,8 +163,13 @@ app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$fi
             var regexp = new RegExp(pattern, 'm');
             _.each(_.reduceRight($scope.data, function(a, b) { return a.concat(b); }), function (item) {
                 item.hidden = false;
-                if (!regexp.test(item.failure_reason)) {
-                    item.hidden = true;
+                if (!(regexp.test(item.failure_reason) || regexp.test(item.name))) {
+                    if (text === "" && item.failure_reason === "" && $scope.state === appConfig.TESTRESULT_PASSED) {
+                        item.hidden = false;
+                    } else {
+                        item.hidden = true;
+                    }
+
                 }
             });
         });
@@ -276,6 +281,7 @@ app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$fi
         });
 
         $scope.setLaunchItemId = function(id, state) {
+            $scope.regExp = null;
             if (state !== null) {
                 $scope.launch_item_id = $scope.launch.items[state][0].launch_item_id;
             } else {
