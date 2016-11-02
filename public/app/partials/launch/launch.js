@@ -74,12 +74,11 @@ app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$fi
         }
 
         function setLaunchItemGrouping(items) {
+            $scope.launch.grouping = true;
             if (items.length === 1) {
                 if (items[0].launch_item_id === null) {
                     $scope.launch.grouping = false;
                 }
-            } else {
-                $scope.launch.grouping = true;
             }
         }
 
@@ -101,10 +100,12 @@ app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$fi
         Launch.get({ launchId: $routeParams.launchId }, function (launch) {
             if($rootScope.getActiveProject() === null) {
                 TestPlan.get({'testPlanId': launch.test_plan}, function(testplan) {
+                    $scope.projectId = testplan.project;
                     $rootScope.selectProject(testplan.project);
                     getProfileAndDrawTable();
                 });
             } else {
+                $scope.projectId = $rootScope.getActiveProject();
                 getProfileAndDrawTable();
             }
             $scope.launch = launch;

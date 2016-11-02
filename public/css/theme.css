@@ -107,6 +107,10 @@ body {
     background-color: #e8e8e8;
 }
 
+.table-striped-regexp tbody tr.selected {
+    background-color: #d0d0d0;
+}
+
 .tab-content > .tab-pane,
 .pill-content > .pill-pane {
     display: block;

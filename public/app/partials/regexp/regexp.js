@@ -9,14 +9,26 @@ app.config(['$routeProvider', function ($routeProvider) {
         templateUrl: '/static/app/partials/regexp/regexp.html',
         controller: 'RegexpCtrl'
     });
+
+    $routeProvider.when('/project/:projectId/regexp_editor/:bugId', {
+        templateUrl: '/static/app/partials/regexp/regexp.html',
+        controller: 'RegexpCtrl'
+    });
 }]);
 
-app.controller('RegexpCtrl', ['$rootScope', '$scope', '$routeParams', '$filter', 'Bug',
-    function ($rootScope, $scope, $routeParams, $filter, Bug) {
+app.controller('RegexpCtrl', ['$rootScope', '$scope', '$routeParams', '$filter', '$location', '$anchorScroll', 'Bug',
+    function ($rootScope, $scope, $routeParams, $filter, $location, $anchorScroll, Bug) {
         if(!$rootScope.getActiveProject()) {
             $rootScope.selectProject($routeParams.projectId);
         }
         $scope.activeProjectId = $rootScope.getActiveProject();
+
+        //if ($routeParams.bugId) {
+        //    $timeout(function() {
+        //        $anchorScroll($routeParams.bugId);
+        //    }, 500);
+        //}
+        $scope.bugId = parseInt($routeParams.bugId);
 
         $rootScope.getProjectSettings($routeParams.projectId, 'jira_projects').then(function(result) {
             $scope.issue_names = result;
@@ -28,7 +40,12 @@ app.controller('RegexpCtrl', ['$rootScope', '$scope', '$routeParams', '$filter',
 
         $scope.reloadIssues = function() {
             Bug.custom_list({ issue_names__in: $scope.issue_names }, function (response) {
-                $scope.issues = _.sortBy(response.results, function(result) { return -result.id });
+                $scope.issues = _.sortBy(response.results, function(result) {
+                    if ($scope.bugId && result.id === $scope.bugId) {
+                        result.$edit = true;
+                    }
+                    return -result.id
+                });
             });
         };
 
