@@ -73,24 +73,23 @@ app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$fi
             });
         }
 
-        function setLaunchItemGrouping(items) {
+        function setLaunchGrouping(items) {
+            $scope.launch.grouping = true;
             if (items.length === 1) {
                 if (items[0].launch_item_id === null) {
                     $scope.launch.grouping = false;
                 }
-            } else {
-                $scope.launch.grouping = true;
             }
         }
 
         function addLaunchItemsToLaunch(items, state) {
             if (items.length !== 0) {
-                setLaunchItemGrouping(items);
+                setLaunchGrouping(items);
                 items = _.sortBy(items, function(item) {
                     return -item.count;
                 });
                 if (state === appConfig.TESTRESULT_FAILED) {
-                    $scope.launch_item_id = items[0].launch_item_id
+                    $scope.launch_item_id = '';
                 }
                 return items;
             } else {
@@ -283,7 +282,7 @@ app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$fi
         $scope.setLaunchItemId = function(id, state) {
             $scope.regExp = null;
             if (state !== null) {
-                $scope.launch_item_id = $scope.launch.items[state][0].launch_item_id;
+                $scope.launch_item_id = '';
             } else {
                 $scope.launch_item_id = id;
             }
