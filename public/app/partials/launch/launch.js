@@ -48,10 +48,10 @@ app.filter('toArray', function() { return function(obj) {
 
 app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$filter', '$timeout', '$window', 'ngTableParams',
                 'hotkeys', 'appConfig', 'TestResult', 'Launch', 'Task', 'Comment', 'Bug', 'SortLaunchItems', 'TestPlan',
-                'LaunchHelpers', 'LaunchFilters', 'GetChartStructure', 'SeriesStructure', 'GetChartsData', '$location',
+                'LaunchHelpers', 'LaunchFilters', 'GetChartStructure', 'SeriesStructure', 'GetChartsData', '$location', 'TestResultNegative',
     function ($q, $scope, $rootScope, $routeParams, $filter, $timeout, $window, ngTableParams,
               hotkeys, appConfig, TestResult, Launch, Task, Comment, Bug, SortLaunchItems, TestPlan,
-              LaunchHelpers, LaunchFilters, GetChartStructure, SeriesStructure, GetChartsData, $location)
+              LaunchHelpers, LaunchFilters, GetChartStructure, SeriesStructure, GetChartsData, $location, TestResultNegative)
     {
         var initialized = false;
 
@@ -472,38 +472,62 @@ app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$fi
                         }
                         break;
                     }
-                    TestResult.get({
-                        launchId: $routeParams.launchId,
-                        page: params.page(),
-                        pageSize: params.count(),
-                        ordering: ordering,
-                        state: $scope.state,
-                        launch_item_id: $scope.launch_item_id,
-                        search: params.$params.filter.failure_reason
-                    }, function (result) {
-                        params.total(result.count);
-                        params.$params.filtered_count = result.count;
-                        $scope.data = _.groupBy(result.results, function (item) {
-                            return item.launch_item_id;
-                        });
 
-
-                        $scope.data = $filter('toArray')($scope.data);
-                        var dataLength = 0;
-                        _.each($scope.data, function(group) {
-                            dataLength += group.length;
-                        });
-
-                        $defer.resolve($scope.data);
-                        $scope.tableParams.settings({counts: dataLength >= 10 ? [10, 25, 50, 100] : []});
-
-                        if ($scope.data.length > 0) {
-                            $scope.fullNavigationFirstId = _.first(_.first($scope.data)).id;
-                            $scope.fullNavigationLastId = _.last(_.last($scope.data)).id;
-                        }
-                    });
+                    var search_str = params.$params.filter.failure_reason;
+                    if (search_str && search_str.substr(0,1) === '!') {
+                        getNegativeTestResults(params, ordering,
+                            '^((?!'+search_str.substr(1, search_str.length)+').)*$', $defer);
+                    } else {
+                        getPositiveTestResults(params, ordering, search_str, $defer);
+                    }
                 }
             });
+        }
+
+        function getTestResultsSearchParams(params, ordering, search_str) {
+            return {
+                launchId: $routeParams.launchId,
+                page: params.page(),
+                pageSize: params.count(),
+                ordering: ordering,
+                state: $scope.state,
+                launch_item_id: $scope.launch_item_id,
+                search: search_str
+            };
+        }
+
+        function getPositiveTestResults(params, ordering, search_str, defer) {
+            TestResult.get(getTestResultsSearchParams(params, ordering, search_str), function (result) {
+                prepareTestResults(result, params, defer);
+            });
+        }
+
+        function getNegativeTestResults(params, ordering, search_str, defer) {
+            TestResultNegative.get(getTestResultsSearchParams(params, ordering, search_str), function (result) {
+                prepareTestResults(result, params, defer);
+            });
+        }
+
+        function prepareTestResults(result, params,defer) {
+            params.total(result.count);
+            params.$params.filtered_count = result.count;
+            $scope.data = _.groupBy(result.results, function (item) {
+                return item.launch_item_id;
+            });
+
+            $scope.data = $filter('toArray')($scope.data);
+            var dataLength = 0;
+            _.each($scope.data, function(group) {
+                dataLength += group.length;
+            });
+
+            defer.resolve($scope.data);
+            $scope.tableParams.settings({counts: dataLength >= 10 ? [10, 25, 50, 100] : []});
+
+            if ($scope.data.length > 0) {
+                $scope.fullNavigationFirstId = _.first(_.first($scope.data)).id;
+                $scope.fullNavigationLastId = _.last(_.last($scope.data)).id;
+            }
         }
 
         function treeTable() {
