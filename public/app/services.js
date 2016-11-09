@@ -59,6 +59,12 @@ services.factory('Project', ['$resource',
             }
         });
     }
+]).factory('TestResultNegative', ['$resource',
+    function ($resource) {
+        return $resource(API_PATH + 'testresults_negative/:testResultId/:actionName/?launch=:launchId&ordering=:ordering&page=:page&page_size=:pageSize&state=:state&search=:search', {}, {
+            get: {method: 'GET'}
+        });
+    }
 ]).factory('Launch', ['$resource',
     function ($resource) {
         return $resource(API_PATH + 'launches/:launchId/:actionName/?test_plan=:testPlanId&ordering=:ordering&page=:page&page_size=:pageSize&state=:state&search=:search', {

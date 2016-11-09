@@ -114,6 +114,17 @@
                 <div class="well col-md-12" style="padding: 10px 10px 10px 10px; margin-bottom: 0px;" ng-show="launch.grouping">
                     <div>
                         <button type="button" class="btn btn-default btn-sm"
+                                ng-class="{ 'active': launch_item_id === ''}"
+                                ng-click="setLaunchItemId(item.launch_item_id, null)"
+                                style="margin-right: 2px; margin-bottom: 2px; color: #286090;"
+                                ng-show="launch.items[state].length !== 0">
+                            <b>All</b>
+                                <span ng-if="state === 0">({{ launch.counts.passed }})</span>
+                                <span ng-if="state === 1">({{ launch.counts.failed }})</span>
+                                <span ng-if="state === 2">({{ launch.counts.skipped }})</span>
+                                <span ng-if="state === 3">({{ launch.counts.blocked }})</span>
+                        </button>
+                        <button type="button" class="btn btn-default btn-sm"
                                 ng-class="{ 'active': item.launch_item_id == launch_item_id }"
                                 ng-repeat="item in launch.items[state]"
                                 ng-click="setLaunchItemId(item.launch_item_id, null)"
