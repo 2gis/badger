@@ -39,7 +39,7 @@ app.controller('RegexpCtrl', ['$rootScope', '$scope', '$routeParams', '$filter',
                 if ($location.hash()) {
                     $timeout(function() {
                         $anchorScroll.yOffset = 200;
-                        $anchorScroll($routeParams.bugId);
+                        $anchorScroll($location.hash());
                     });
                 }
             });
