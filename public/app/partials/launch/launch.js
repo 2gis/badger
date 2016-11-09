@@ -48,10 +48,12 @@ app.filter('toArray', function() { return function(obj) {
 
 app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$filter', '$timeout', '$window', 'ngTableParams',
                 'hotkeys', 'appConfig', 'TestResult', 'Launch', 'Task', 'Comment', 'Bug', 'SortLaunchItems', 'TestPlan',
-                'LaunchHelpers', 'LaunchFilters', 'GetChartStructure', 'SeriesStructure', 'GetChartsData', '$location', 'TestResultNegative',
+                'LaunchHelpers', 'LaunchFilters', 'GetChartStructure', 'SeriesStructure', 'GetChartsData', '$location',
+                'TestResultNegative', '$anchorScroll',
     function ($q, $scope, $rootScope, $routeParams, $filter, $timeout, $window, ngTableParams,
               hotkeys, appConfig, TestResult, Launch, Task, Comment, Bug, SortLaunchItems, TestPlan,
-              LaunchHelpers, LaunchFilters, GetChartStructure, SeriesStructure, GetChartsData, $location, TestResultNegative)
+              LaunchHelpers, LaunchFilters, GetChartStructure, SeriesStructure, GetChartsData, $location,
+              TestResultNegative, $anchorScroll)
     {
         var initialized = false;
 
@@ -328,6 +330,15 @@ app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$fi
             }
         );
 
+        $scope.$on(
+            "$routeChangeSuccess",
+            function (event, current, previous) {
+                if (previous && previous.params.testResultId) {
+                    $scope.testResultId = previous.params.testResultId;
+                }
+            }
+        );
+
         $scope.openTask = function (task) {
             if (task.result.status === 'PENDING') {
                 return;
@@ -563,6 +574,16 @@ app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$fi
                         });
 
                         _.each($scope.data, function(group, group_name) {
+                            if ($scope.testResultId) {
+                                setSelected(parseInt($scope.testResultId));
+                                group.$hideRows = true;
+                                $timeout(function() {
+                                    $anchorScroll.yOffset = 200;
+                                    $location.$$hash = parseInt($scope.testResultId);
+                                    $anchorScroll($location.hash());
+                                });
+                            }
+
                             $scope.data[group_name].passed = _.filter(group, function(result) {
                                 return result.state === 0;
                             }).length;
@@ -673,7 +694,7 @@ app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$fi
 
         $scope.selectedItemId = null;
         function setSelected(selectedItemId) {
-           $scope.selectedItemId = selectedItemId;
+            $scope.selectedItemId = selectedItemId;
         }
 
         function getLaunches (testplan_id, last_commits) {

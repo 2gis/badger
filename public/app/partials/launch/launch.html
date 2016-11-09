@@ -189,8 +189,9 @@
                             </a>
                         </td>
                     </tr>
-                    <tr ng-hide="!group.$hideRows" ng-repeat="test in group"
-                        ng-click="redirect($event, '/testresult/' + test.id)" style="cursor:pointer" ng-class="{'hidden': test.hidden, 'selected': test.id === selectedItemId }">
+                    <tr ng-hide="!group.$hideRows" ng-repeat="test in group" id="{{ test.id }}"
+                        ng-click="redirect($event, '/testresult/' + test.id);" style="cursor:pointer"
+                        ng-class="{'hidden': test.hidden, 'selected': test.id === selectedItemId }">
                         <td data-title="'Failure reason'" filter="{'failure_reason': 'text'}" style="padding-bottom: 1px;">
                             <div class="panel panel-default panel-tree-view" style="margin-bottom: 5px;">
                                 <div class="panel-body" style="background-color: whitesmoke; padding: 10px; padding-bottom: 2px;">
