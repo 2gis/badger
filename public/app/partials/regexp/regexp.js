@@ -11,12 +11,14 @@ app.config(['$routeProvider', function ($routeProvider) {
     });
 }]);
 
-app.controller('RegexpCtrl', ['$rootScope', '$scope', '$routeParams', '$filter', 'Bug',
-    function ($rootScope, $scope, $routeParams, $filter, Bug) {
+app.controller('RegexpCtrl', ['$rootScope', '$scope', '$routeParams', '$filter', '$location', '$anchorScroll', '$timeout', 'Bug',
+    function ($rootScope, $scope, $routeParams, $filter, $location, $anchorScroll, $timeout, Bug) {
         if(!$rootScope.getActiveProject()) {
             $rootScope.selectProject($routeParams.projectId);
         }
         $scope.activeProjectId = $rootScope.getActiveProject();
+
+        $scope.bugId = parseInt($location.hash());
 
         $rootScope.getProjectSettings($routeParams.projectId, 'jira_projects').then(function(result) {
             $scope.issue_names = result;
@@ -28,7 +30,18 @@ app.controller('RegexpCtrl', ['$rootScope', '$scope', '$routeParams', '$filter',
 
         $scope.reloadIssues = function() {
             Bug.custom_list({ issue_names__in: $scope.issue_names }, function (response) {
-                $scope.issues = _.sortBy(response.results, function(result) { return -result.id });
+                $scope.issues = _.sortBy(response.results, function(result) {
+                    if ($scope.bugId && result.id === $scope.bugId) {
+                        result.$edit = true;
+                    }
+                    return -result.id
+                });
+                if ($location.hash()) {
+                    $timeout(function() {
+                        $anchorScroll.yOffset = 200;
+                        $anchorScroll($routeParams.bugId);
+                    });
+                }
             });
         };
 
@@ -65,7 +78,6 @@ app.controller('RegexpCtrl', ['$rootScope', '$scope', '$routeParams', '$filter',
                     if (result.data.message) {
                         issue.formErrors = result.data.message;
                     }
-
                 }
             );
         };

@@ -146,20 +146,24 @@
                             Filtered ({{ tableParams.$params.filtered_count }})
                         </button>
                     </div>
-                    <tr ng-repeat="test in group" ng-click="openResults(test)"
-                        style="cursor:pointer" ng-class="{'hidden': test.hidden, 'selected': test.id === selectedItemId }">
-                        <td data-title="'Failure reason'" filter="{'failure_reason': 'text'}">
+                    <tr ng-repeat="test in group" ng-class="{'hidden': test.hidden, 'selected': test.id === selectedItemId }">
+                        <td data-title="'Failure reason'" filter="{'failure_reason': 'text'}"
+                            ng-click="openResults(test)" style="cursor:pointer" >
                             <pre ng-if="test.failure_reason==='' && test.suite">{{ test.suite }}:{{ test.name }}</pre>
                             <pre ng-if="test.failure_reason==='' && !test.suite">{{ test.name }}</pre>
                             <pre ng-if="test.failure_reason!=='' && result_preview==='head'">{{ test.failure_reason | cut:true:256:' ...' }}</pre>
                             <pre ng-if="test.failure_reason!=='' && result_preview==='tail'">{{ test.failure_reason | cut:true:256:'... ':true }}</pre>
                         </td>
                         <td data-title="'sec.'" sortable="duration">{{ test.duration | toFixed }}</td>
-                        <td data-title="'Bugs'">
+                        <td data-title="'Bugs'" style="width: 8em;" class="text-center">
                             <div ng-repeat="bug in test.bugs">
                                 <a class="label label-{{ bug.status | bugStatusClass }}"
                                    href="https://jira.2gis.ru/browse/{{ bug.externalId }}"
                                    title="{{ bug.name }}">{{ bug.externalId }}</a>
+                                <a ng-href="#/project/{{ projectId }}/regexp_editor#{{ bug.id }}">
+                                    <span class="glyphicon glyphicon-pencil" style="font-size: 0.9em; cursor:pointer;"
+                                            title="edit regexp rule"></span>
+                                </a>
                             </div>
                         </td>
                     </tr>

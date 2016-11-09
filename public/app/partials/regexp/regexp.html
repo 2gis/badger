@@ -8,8 +8,8 @@
 
 <div class="row">
     <form ng-repeat="issue in issues">
-        <table class="table table-condensed" ng-show="issues.length !== 0" style="margin-bottom: 0px;">
-            <tr>
+        <table class="table table-condensed table-striped-regexp" ng-show="issues.length !== 0" style="margin-bottom: 0px;">
+            <tr id="{{ issue.id }}" ng-class="{'selected': issue.id === bugId }">
                 <td style="width: 8em;" class="text-center">
                     <a href="https://jira.2gis.ru/browse/{{ issue.externalId }}"
                        class="label label-{{ issue.status | bugStatusClass }}" style="display: inline-block; width: 8em;">

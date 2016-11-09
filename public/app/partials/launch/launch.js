@@ -100,10 +100,12 @@ app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$fi
         Launch.get({ launchId: $routeParams.launchId }, function (launch) {
             if($rootScope.getActiveProject() === null) {
                 TestPlan.get({'testPlanId': launch.test_plan}, function(testplan) {
+                    $scope.projectId = testplan.project;
                     $rootScope.selectProject(testplan.project);
                     getProfileAndDrawTable();
                 });
             } else {
+                $scope.projectId = $rootScope.getActiveProject();
                 getProfileAndDrawTable();
             }
             $scope.launch = launch;
@@ -733,7 +735,7 @@ app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$fi
 
                 pushColumnCharts($scope.launch.charts, labels, seriesData);
             });
-        }
+        };
 
         $scope.redirect = function(evt, url) {
             (evt.button === 1 || evt.ctrlKey === true) ?
