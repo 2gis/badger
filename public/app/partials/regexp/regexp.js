@@ -9,26 +9,16 @@ app.config(['$routeProvider', function ($routeProvider) {
         templateUrl: '/static/app/partials/regexp/regexp.html',
         controller: 'RegexpCtrl'
     });
-
-    $routeProvider.when('/project/:projectId/regexp_editor/:bugId', {
-        templateUrl: '/static/app/partials/regexp/regexp.html',
-        controller: 'RegexpCtrl'
-    });
 }]);
 
-app.controller('RegexpCtrl', ['$rootScope', '$scope', '$routeParams', '$filter', '$location', '$anchorScroll', 'Bug',
-    function ($rootScope, $scope, $routeParams, $filter, $location, $anchorScroll, Bug) {
+app.controller('RegexpCtrl', ['$rootScope', '$scope', '$routeParams', '$filter', '$location', '$anchorScroll', '$timeout', 'Bug',
+    function ($rootScope, $scope, $routeParams, $filter, $location, $anchorScroll, $timeout, Bug) {
         if(!$rootScope.getActiveProject()) {
             $rootScope.selectProject($routeParams.projectId);
         }
         $scope.activeProjectId = $rootScope.getActiveProject();
 
-        //if ($routeParams.bugId) {
-        //    $timeout(function() {
-        //        $anchorScroll($routeParams.bugId);
-        //    }, 500);
-        //}
-        $scope.bugId = parseInt($routeParams.bugId);
+        $scope.bugId = parseInt($location.hash());
 
         $rootScope.getProjectSettings($routeParams.projectId, 'jira_projects').then(function(result) {
             $scope.issue_names = result;
@@ -46,6 +36,12 @@ app.controller('RegexpCtrl', ['$rootScope', '$scope', '$routeParams', '$filter',
                     }
                     return -result.id
                 });
+                if ($location.hash()) {
+                    $timeout(function() {
+                        $anchorScroll.yOffset = 200;
+                        $anchorScroll($routeParams.bugId);
+                    });
+                }
             });
         };
 
@@ -82,7 +78,6 @@ app.controller('RegexpCtrl', ['$rootScope', '$scope', '$routeParams', '$filter',
                     if (result.data.message) {
                         issue.formErrors = result.data.message;
                     }
-
                 }
             );
         };

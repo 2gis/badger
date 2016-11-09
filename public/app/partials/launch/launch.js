@@ -711,7 +711,7 @@ app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$fi
 
                 pushColumnCharts($scope.launch.charts, labels, seriesData);
             });
-        }
+        };
 
         $scope.redirect = function(evt, url) {
             (evt.button === 1 || evt.ctrlKey === true) ?
