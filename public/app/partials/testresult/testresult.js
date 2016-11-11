@@ -44,10 +44,10 @@ app.controller('TestResultCtrl', ['$scope', '$routeParams', 'TestResult', 'GetCh
         TestResult.get({ testResultId: $routeParams.testResultId}, function (result) {
             $scope.testResult = result;
             try {
-                $scope.testResult.failure_reason = JSON.parse(result.failure_reason);
+                $scope.testResult.failure_reason_obj = JSON.parse(result.failure_reason);
                 $scope.testResult.json = true;
                 $scope.testResult.charts = [];
-                _.each($scope.testResult.failure_reason.series, function(serie) {
+                _.each($scope.testResult.failure_reason_obj.series, function(serie) {
                     serie.y = _.map(serie.y, function(label) {
                         var d = new Date(label);
                         return d.toLocaleDateString(LANG, options);
