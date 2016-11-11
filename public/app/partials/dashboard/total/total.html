@@ -113,11 +113,11 @@
                    role="tab" data-toggle="tab" style="cursor: pointer;">Message</a>
             </li>
             <li role="presentation" ng-class="{ 'active': activeTab === 'trace' }"
-                ng-show="currentResult.json && currentResult.failure_reason.stack_trace"><a
+                ng-show="currentResult.json && currentResult.failure_reason_obj.stack_trace"><a
                     ng-click="setActiveTab('trace')" aria-controls="trace"
                     role="tab" data-toggle="tab" style="cursor: pointer;">Stack trace</a></li>
             <li role="presentation" ng-class="{ 'active': activeTab === 'steps' }"
-                ng-show="currentResult.json && currentResult.failure_reason.steps.length !== 0">
+                ng-show="currentResult.json && currentResult.failure_reason_obj.steps.length !== 0">
                 <a ng-click="setActiveTab('steps')" aria-controls="steps"
                    role="tab" data-toggle="tab" style="cursor: pointer;">Steps</a>
             </li>
@@ -126,17 +126,17 @@
                     ng-click="setActiveTab('series')" aria-controls="series"
                     role="tab" data-toggle="tab" style="cursor: pointer;">Series</a></li>
             <li role="presentation" ng-class="{ 'active': activeTab === 'attach' }"
-                ng-show="currentResult.json && currentResult.failure_reason.attachments.length !== 0">
+                ng-show="currentResult.json && currentResult.failure_reason_obj.attachments.length !== 0">
                 <a ng-click="setActiveTab('attach')" aria-controls="attach"
                    role="tab" data-toggle="tab" style="cursor: pointer;">Attachments</a>
             </li>
             <li role="presentation" ng-class="{ 'active': activeTab === 'stdout' }"
-                ng-show="currentResult.json && currentResult.failure_reason.system_out">
+                ng-show="currentResult.json && currentResult.failure_reason_obj.system_out">
                 <a ng-click="setActiveTab('stdout')" aria-controls="stdout"
                     role="tab" data-toggle="tab" style="cursor: pointer;">System out</a>
             </li>
             <li role="presentation" ng-class="{ 'active': activeTab === 'stderr' }"
-                ng-show="currentResult.json && currentResult.failure_reason.system_err">
+                ng-show="currentResult.json && currentResult.failure_reason_obj.system_err">
                 <a ng-click="setActiveTab('stderr')" aria-controls="stderr"
                     role="tab" data-toggle="tab" style="cursor: pointer;">System err</a>
             </li>
@@ -146,20 +146,21 @@
             <div role="tabpanel" class="tab-pane" id="message" ng-class="{ 'active': activeTab === 'message' }">
                 <br/>
                 <div class="col-md-12">
-                    <pre ng-show="currentResult.json">{{ currentResult.failure_reason.message }}</pre>
-                    <pre ng-show="!currentResult.json" ng-bind-html="currentResult.failure_reason | linky:'_blank'"></pre>
+                    <pre ng-show="currentResult.json">{{ currentResult.failure_reason_obj.message }}</pre>
+                    <pre ng-show="!currentResult.json && currentResult.failure_reason !== ''" ng-bind-html="currentResult.failure_reason | linky:'_blank'"></pre>
+                <pre ng-show="!currentResult.json && currentResult.failure_reason === ''"><span style="color:#8E8E8E">Empty message</span></pre>
                 </div>
             </div>
             <div role="tabpanel" class="tab-pane" id="trace" ng-class="{ 'active': activeTab === 'trace' }">
                 <br/>
                 <div class="col-md-12">
-                    <pre>{{ currentResult.failure_reason.stack_trace }}</pre>
+                    <pre>{{ currentResult.failure_reason_obj.stack_trace }}</pre>
                 </div>
             </div>
             <div role="tabpanel" class="tab-pane" id="steps" ng-class="{ 'active': activeTab === 'steps' }">
                 <br/>
                 <div class="col-md-12">
-                    <div ng-repeat="step in currentResult.failure_reason.steps">
+                    <div ng-repeat="step in currentResult.failure_reason_obj.steps">
                         <div class="panel panel-default" style="margin-bottom: 5px;">
                             <div class="panel-heading" style="border-bottom: 0px;">{{ step.name }}</div>
                             <div class="panel-body" ng-if="step.attachments">
@@ -212,10 +213,10 @@
             <div role="tabpanel" class="tab-pane" id="attach" ng-class="{ 'active': activeTab === 'attach' }">
                 <br/>
                 <div class="col-md-12">
-                    <div ng-if="currentResult.failure_reason.attachments && currentResult.failure_reason.attachments.length !== 0">
+                    <div ng-if="currentResult.failure_reason_obj.attachments && currentResult.failure_reason_obj.attachments.length !== 0">
                         <div class="container-fluid">
                             <div class="row">
-                                <div ng-repeat="attach in currentResult.failure_reason.attachments">
+                                <div ng-repeat="attach in currentResult.failure_reason_obj.attachments">
                                     <div class="col-md-2" ng-if="attach['mime-type'] === 'image/png'">
                                         <div class="thumbnail_container">
                                             <a class="example-image-link" ng-href="{{ attach.url }}" data-lightbox="attachments">
@@ -227,7 +228,7 @@
                                 </div>
                             </div>
                             <br>
-                            <div ng-repeat="attach in currentResult.failure_reason.attachments">
+                            <div ng-repeat="attach in currentResult.failure_reason_obj.attachments">
                                 <div ng-show="attach['mime-type'] === 'text/plain'">
                                     <p><span class="glyphicon glyphicon-file"></span>
                                         {{ attach.name }}: </p>
@@ -248,13 +249,13 @@
             <div role="tabpanel" class="tab-pane" id="stdout" ng-class="{ 'active': activeTab === 'stdout' }">
                 <br/>
                 <div class="col-md-12">
-                    <pre ng-show="currentResult.json">{{ currentResult.failure_reason.system_out }}</pre>
+                    <pre ng-show="currentResult.json">{{ currentResult.failure_reason_obj.system_out }}</pre>
                 </div>
             </div>
             <div role="tabpanel" class="tab-pane" id="stderr" ng-class="{ 'active': activeTab === 'stderr' }">
                 <br/>
                 <div class="col-md-12">
-                    <pre ng-show="currentResult.json">{{ currentResult.failure_reason.system_err }}</pre>
+                    <pre ng-show="currentResult.json">{{ currentResult.failure_reason_obj.system_err }}</pre>
                 </div>
             </div>
         </div>

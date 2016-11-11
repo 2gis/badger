@@ -137,8 +137,10 @@ app.controller('DashboardTotalCtrl', ['$scope', '$rootScope', '$filter', '$route
         }
 
         $scope.$watch('initGroupBy', function(value){
-            $scope.tableParams.settings().groupBy = value;
-            $scope.tableParams.reload();
+            if ($scope.tableParams) {
+                $scope.tableParams.settings().groupBy = value;
+                $scope.tableParams.reload();
+            }
         });
 
         $(".modal-wide").on("show.bs.modal", function() {
@@ -161,10 +163,10 @@ app.controller('DashboardTotalCtrl', ['$scope', '$rootScope', '$filter', '$route
 
             $scope.currentResult = result;
             try {
-                $scope.currentResult.failure_reason = JSON.parse(result.failure_reason);
+                $scope.currentResult.failure_reason_obj = JSON.parse(result.failure_reason);
                 $scope.currentResult.json = true;
                 $scope.currentResult.charts = [];
-                _.each($scope.currentResult.failure_reason.series, function(serie) {
+                _.each($scope.currentResult.failure_reason_obj.series, function(serie) {
                     serie.y = _.map(serie.y, function(label) {
                         var d = new Date(label);
                         return d.toLocaleDateString(LANG, options);
