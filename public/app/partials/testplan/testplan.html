@@ -98,15 +98,26 @@
                                 {{ launch.build.branch | cut:true:11:'..'}}
                             </div>
                         </td>
-                        <td data-title="'Branch'" ng-show="chartsType === 0">
-                            <div ng-if="launch.parameters.env.BRANCH.length <= maxSymbolsForBranch
-                                            || launch.parameters.env.branch.length <= maxSymbolsForBranch
-                                            || launch.parameters.env.CORE_APP.length <=maxSymbolsForBranch" class="text-center">
-                                {{ launch.parameters.env.BRANCH || launch.parameters.env.branch || launch.parameters.env.CORE_APP }}
+                        <td data-title="'Branch'" ng-show="chartsType === 0" filter="{'branch': 'text'}"
+                                style="width: 8em;" ng-attr-title="{{ launch.build.branch }}">
+                            <div ng-if="launch.build.branch">
+                                <div ng-if="launch.build.branch.length <= maxSymbolsForBranch" class="text-center">
+                                    {{ launch.build.branch }}
+                                </div>
+                                <div ng-if="launch.build.branch.length > maxSymbolsForBranch" class="text-center">
+                                    <span class="glyphicon glyphicon-info-sign" title="{{ launch.build.branch }}"></span>
+                                </div>
                             </div>
-                            <div ng-if="launch.parameters.env.BRANCH.length > maxSymbolsForBranch ||
-                                            launch.parameters.env.branch.length > maxSymbolsForBranch" class="text-center">
-                                <span class="glyphicon glyphicon-info-sign" title="{{ launch.parameters.env.BRANCH || launch.parameters.env.branch }}"></span>
+                            <div ng-if="!launch.build.branch">
+                                <div ng-if="launch.parameters.env.BRANCH.length <= maxSymbolsForBranch
+                                                || launch.parameters.env.branch.length <= maxSymbolsForBranch
+                                                || launch.parameters.env.CORE_APP.length <=maxSymbolsForBranch" class="text-center">
+                                    {{ launch.parameters.env.BRANCH || launch.parameters.env.branch || launch.parameters.env.CORE_APP }}
+                                </div>
+                                <div ng-if="launch.parameters.env.BRANCH.length > maxSymbolsForBranch ||
+                                                launch.parameters.env.branch.length > maxSymbolsForBranch" class="text-center">
+                                    <span class="glyphicon glyphicon-info-sign" title="{{ launch.parameters.env.BRANCH || launch.parameters.env.branch }}"></span>
+                                </div>
                             </div>
                         </td>
                         <td data-title="'Date'" class="text-center" style="width: 7em;">
