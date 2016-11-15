@@ -30,7 +30,7 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$q', '$window', '$locat
               ngTableParams, appConfig, TestPlan, Launch, LaunchItem, SortLaunchItems, Comment, ChartConfig,
               GetChartsData, SeriesStructure, Tooltips, LaunchHelpers, GetChartStructure, LaunchFilters, Periods) {
         $scope.chartPercentType = 'failed';
-        $scope.maxSymbolsForBranch = 8;
+        $scope.maxSymbolsForBranch = 11;
         $rootScope.isMainDashboard = false;
 
         var options = {
