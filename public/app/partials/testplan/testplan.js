@@ -393,6 +393,10 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$q', '$window', '$locat
         });
 
         $scope.redirect = function(evt, url) {
+            var selection = $window.getSelection();
+            if (selection.type === 'Range') {
+                return false;
+            }
             (evt.button === 1 || evt.ctrlKey === true) ?
                 $window.open('#' + url, '_blank') : $location.path(url);
         }
