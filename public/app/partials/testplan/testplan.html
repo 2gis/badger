@@ -137,7 +137,9 @@
                                 {{ launch.counts.failed }}</span>
                             <span ng-if="launch.counts.failed === 0" class="label label-default label-history label-zero" title="failed">
                                 {{ launch.counts.failed }}</span>
-                            <span ng-if="launch.counts.blocked !== 0" class="label label-danger label-history" title="blocked">
+                            <span ng-if="chartsType !== 1 && launch.counts.blocked !== 0" class="label label-danger label-history" title="blocked">
+                                {{ launch.counts.blocked }}</span>
+                            <span ng-if="chartsType === 1 && launch.counts.blocked !== 0" class="label label-info label-history" title="blocked">
                                 {{ launch.counts.blocked }}</span>
                             <span ng-if="launch.counts.blocked === 0" class="label label-default label-history label-zero" title="blocked">
                                 {{ launch.counts.blocked }}</span>

@@ -91,7 +91,7 @@
                                 {{ day.failed }}</span>
                             <span ng-if="day.failed === 0" class="label label-default label-history label-zero" title="failed">
                                 {{ day.failed }}</span>
-                            <span ng-if="day.blocked !== 0" class="label label-danger label-history label-hover" title="blocked"
+                            <span ng-if="day.blocked !== 0" class="label label-info label-history label-hover" title="blocked"
                                     ng-click="redirect($event, '/launch/' + day.launch_id + '/3')" style="cursor:pointer">
                                 {{ day.blocked }}</span>
                             <span ng-if="day.blocked === 0" class="label label-default label-history label-zero" title="blocked">

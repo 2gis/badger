@@ -181,8 +181,9 @@
                                 <b ng-if="group.$key">{{ group.$key }} </b>
                                 <b ng-if="!group.$key">unknown suite</b>
                                 <div class="pull-right">
+                                    <span class="label label-info label-balanced" ng-if="group.blocked !== 0">{{ group.blocked }}</span>
+                                    <span class="label label-danger label-balanced" ng-if="group.failed !== 0">{{ group.failed }}</span>
                                     <span class="label label-warning label-balanced" ng-if="group.skipped !== 0">{{ group.skipped }}</span>
-                                    <span class="label label-danger label-balanced" ng-if="group.failed !== 0 || group.blocked !== 0">{{ group.failed + group.blocked }}</span>
                                     <span class="label label-success label-balanced" ng-if="group.passed !== 0">{{ group.passed }}</span>
                                     / <span class="label label-primary label-balanced">{{ group.passed + group.failed + group.blocked + group.skipped}}</span>
                                 </div>
@@ -204,7 +205,8 @@
                             </div>
                         </td>
                         <td data-title="'state'" style="width: 4em;">
-                            <span class="{{ test.state | testStatesClass }}">{{ test.state | testStates }}</span>
+                            <span ng-if="test.state !== 3" class="{{ test.state | testStatesClass }}">{{ test.state | testStates }}</span>
+                            <span ng-if="test.state === 3" class="{{ 4 | testStatesClass }}">{{ test.state | testStates }}</span>
                         </td>
                         <td data-title="'sec.'" style="width: 2em;" sortable="duration">{{ test.duration | toFixed }}</td>
                         <td data-title="'Bugs'" style="width: 4em;">
