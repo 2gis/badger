@@ -34,6 +34,8 @@ filters.filter('states', function () {
                 return 'label label-warning';
             case 3:
                 return 'label label-danger';
+            case 4:
+                return 'label label-info';
             default:
                 return 'reverse';
         }
