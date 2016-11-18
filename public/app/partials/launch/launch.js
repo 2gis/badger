@@ -255,7 +255,7 @@ app.controller('LaunchCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$fi
                     _.each($scope.tasks, function(value) {
                         if (value.key == data.id) {
                             value['result'] = data;
-                            if (data.status === 'STARTED' || data.status === 'PENDING') {
+                            if ($scope.launch.state !== 2 && (data.status === 'STARTED' || data.status === 'PENDING')) {
                                 updateTask(key);
                             }
                         }
