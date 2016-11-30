@@ -137,9 +137,17 @@ app.controller('TestPlanExecuteCtrl', ['$rootScope', '$scope', '$routeParams', '
             };
 
             testPlan.env = {};
+            $scope.branch = null;
             _.each($scope.environmentItems, function (item) {
                 testPlan.env[item.key] = item.value;
+                if (item.key === 'BRANCH' || item.key === 'branch') {
+                    $scope.branch = item.value;
+                }
             });
+
+            if ($scope.branch !== null) {
+                testPlan.options['branch'] = $scope.branch;
+            }
 
             testPlan.launch_items = [];
             _.each($scope.launchItemsTable.data, function (launchItem) {
