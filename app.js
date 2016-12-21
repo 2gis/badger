@@ -8,7 +8,7 @@ var app = express();
 var backendUrl = process.env.BACKEND_URL || 'localhost:8000/api';
 var frontendUrl = process.env.FRONTEND_URL || 'localhost';
 var jiraIntegration = false;
-if (process.env.JIRA_INTEGRATION.toLowerCase() === 'true') {
+if (process.env.JIRA_INTEGRATION && process.env.JIRA_INTEGRATION.toLowerCase() === 'true') {
     jiraIntegration = true;
 }
 var jiraIssueStatus = process.env.JIRA_ISSUE_STATUS;
