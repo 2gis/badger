@@ -7,7 +7,10 @@ var express = require('express'),
 var app = express();
 var backendUrl = process.env.BACKEND_URL || 'localhost:8000/api';
 var frontendUrl = process.env.FRONTEND_URL || 'localhost';
-var jiraIntegration = process.env.JIRA_INTEGRATION || false;
+var jiraIntegration = false;
+if (process.env.JIRA_INTEGRATION.toLowerCase() === 'true') {
+    jiraIntegration = true;
+}
 var jiraIssueStatus = process.env.JIRA_ISSUE_STATUS;
 var lang = process.env.LANG || 'en';
 var colors = process.env.COLORS || 'blue=#7cb5ec;red=#f7464a;yellow=#e4d354;grey=#f0f0f0;green=#90ed7d';
