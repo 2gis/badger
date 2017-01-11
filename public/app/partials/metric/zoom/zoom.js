@@ -61,7 +61,8 @@ app.controller('MetricZoomCtrl', ['$scope', '$rootScope', '$routeParams', 'appCo
                 color: color,
                 dashStyle: 'ShortDot',
                 type: chart_type,
-                zIndex: zindex
+                zIndex: zindex,
+                turboThreshold: 0
             });
         }
 
