@@ -23,15 +23,16 @@ app.config(['$routeProvider',
     }
 ]);
 
-app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$q', '$window', '$location', '$routeParams', '$filter',
+app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$q', '$window', '$location', '$routeParams', '$filter', '$interval',
     'ngTableParams', 'appConfig', 'TestPlan', 'Launch', 'LaunchItem', 'SortLaunchItems', 'Comment', 'ChartConfig',
     'GetChartsData', 'SeriesStructure', 'Tooltips', 'LaunchHelpers', 'GetChartStructure', 'LaunchFilters', 'Periods',
-    function ($rootScope, $scope, $q, $window, $location, $routeParams, $filter,
+    function ($rootScope, $scope, $q, $window, $location, $routeParams, $filter, $interval,
               ngTableParams, appConfig, TestPlan, Launch, LaunchItem, SortLaunchItems, Comment, ChartConfig,
               GetChartsData, SeriesStructure, Tooltips, LaunchHelpers, GetChartStructure, LaunchFilters, Periods) {
         $scope.chartPercentType = 'failed';
         $scope.maxSymbolsForBranch = 11;
         $rootScope.isMainDashboard = false;
+        $scope.refreshTurnOn = false;
 
         var options = {
             month: 'numeric',
@@ -80,21 +81,33 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$q', '$window', '$locat
             return item;
         }
 
-        TestPlan.get({'testPlanId': $routeParams.testPlanId}, function (result) {
-            $scope.projectId = result.project;
-            $rootScope.selectProject(result.project);
-            $scope.testplan = result;
-            $scope.name = result.name;
-            $rootScope.getProjectSettings(result.project, 'chart_type').then(function(type) {
-                $scope.chartsType = parseInt(type);
-                if ($scope.chartsType === appConfig.CHART_TYPE_AREA) {
-                    $scope.chartPercentType = 'number';
-                    $scope.addChartsToTestplan();
-                }
-                $rootScope.getProfile().then(function(profile){
-                    drawTable(profile);
+        $scope.createPage = function() {
+            TestPlan.get({'testPlanId': $routeParams.testPlanId}, function (result) {
+                $scope.projectId = result.project;
+                $rootScope.selectProject(result.project);
+                $scope.testplan = result;
+                $scope.name = result.name;
+                $rootScope.getProjectSettings(result.project, 'chart_type').then(function(type) {
+                    $scope.chartsType = parseInt(type);
+                    if ($scope.chartsType === appConfig.CHART_TYPE_AREA) {
+                        $scope.chartPercentType = 'number';
+                        $scope.addChartsToTestplan();
+                    }
+                    $rootScope.getProfile().then(function(profile){
+                        drawTable(profile);
+                    });
                 });
             });
+        };
+
+        $scope.createPage();
+
+        $scope.$watch('refreshTurnOn', function() {
+            if ($scope.refreshTurnOn) {
+                $interval(function() {
+                    $scope.createPage();
+                }, $scope.refreshInterval * 60 * 1000);
+            }
         });
 
         $scope.testPlanId = $routeParams.testPlanId;
@@ -462,5 +475,18 @@ app.controller('TestPlanCtrl', ['$rootScope', '$scope', '$q', '$window', '$locat
                     Tooltips.areaAbsolute()
                 ));
         }
+
+        $scope.startTimer = function() {
+            if (typeof $scope.refreshInterval ==='number' && $scope.refreshInterval >= 1) {
+                $scope.refreshTurnOn = true;
+            } else {
+                $scope.refreshTurnOn = false;
+            }
+        };
+
+        $scope.stopTimer = function() {
+            $scope.refreshTurnOn = false;
+            delete $scope.refreshInterval;
+        };
     }
 ]);

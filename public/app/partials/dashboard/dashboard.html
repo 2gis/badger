@@ -1,3 +1,28 @@
+<!-- refresh button -->
+<div class="container-fluid" style="width: 100%; position: absolute; left: 0;">
+    <div class="dropdown pull-right">
+      <button class="btn btn-default btn-xs dropdown-toggle"
+              type="button" id="refreshMenu" data-toggle="dropdown">
+        <span class="glyphicon glyphicon-refresh" ng-style="refreshTurnOn ? { color: '#5cb85c' } : { }"></span>
+      </button>
+      <ul class="dropdown-menu" aria-labelledby="refreshMenu">
+          <li style="margin-left: 10px"><small>Refresh time in minutes</small></li>
+          <li style="margin-left: 10px"><small>(min=1)</small></li>
+          <li>
+            <form>
+                <div class="input-group input-sm">
+                    <input type="number" class="form-control" ng-model="refreshInterval" ng-disabled="refreshTurnOn">
+                    <span class="input-group-btn">
+                        <button ng-if="!refreshTurnOn" class="btn btn-default" type="submit" ng-click="startTimer()">Start</button>
+                        <button ng-if="refreshTurnOn" class="btn btn-default" type="submit" ng-click="stopTimer()">Stop</button>
+                    </span>
+                </div>
+            </form>
+          </li>
+      </ul>
+    </div>
+</div>
+
 <div class="row" ng-show="!testplans">
     <div class="alert alert-warning text-center" role="alert" style="margin-top: 40px">
         List of projects is not available.<br/>
