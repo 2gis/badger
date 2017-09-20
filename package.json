@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "foreman": "^1.4.0",
-    "protractor": "4.0.9"
+    "protractor": "5.1.2"
   },
   "scripts": {
     "postinstall": "bower install",

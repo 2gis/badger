@@ -3,7 +3,7 @@ exports.config = {
     specs: ['e2e/*/*_spec.js'],
     baseUrl: 'http://localhost:5000',
     capabilities: {
-        'browserName': 'firefox',
+        'browserName': 'chrome',
         'count': 1,
     },
 

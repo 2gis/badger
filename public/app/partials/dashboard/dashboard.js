@@ -14,45 +14,57 @@ app.config(['$routeProvider', function ($routeProvider) {
     });
 }]);
 
-app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$window', '$location', 'appConfig', 'ngTableParams', 'TestPlan', 'Launch', 'Stage', 'Filters', 'LaunchHelpers', 'LaunchFilters', 'GetChartsData', 'SeriesStructure', 'Tooltips', 'GetChartStructure',
-    function ($q, $scope, $rootScope, $routeParams, $window, $location, appConfig, ngTableParams, TestPlan, Launch, Stage, Filters, LaunchHelpers, LaunchFilters, GetChartsData, SeriesStructure, Tooltips, GetChartStructure) {
+app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '$window', '$location', '$interval', 'appConfig', 'ngTableParams', 'TestPlan', 'Launch', 'Stage', 'Filters', 'LaunchHelpers', 'LaunchFilters', 'GetChartsData', 'SeriesStructure', 'Tooltips', 'GetChartStructure',
+    function ($q, $scope, $rootScope, $routeParams, $window, $location, $interval, appConfig, ngTableParams, TestPlan, Launch, Stage, Filters, LaunchHelpers, LaunchFilters, GetChartsData, SeriesStructure, Tooltips, GetChartStructure) {
         $rootScope.selectProject($routeParams.projectId);
         $scope.projectId = $routeParams.projectId;
         $rootScope.isMainDashboard = false;
+        $scope.refreshTurnOn = false;
 
-        TestPlan.get({ projectId: $routeParams.projectId }, function (response) {
-            $scope.twodaysTestplans = _.filter(response.results, Filters.isTwodays);
-            $scope.twodaysTestplans = _.filter($scope.twodaysTestplans, Filters.removeHidden);
-            $scope.twodaysTestplans = _.sortBy($scope.twodaysTestplans, 'name');
+        $scope.createPage = function() {
+            TestPlan.get({ projectId: $routeParams.projectId }, function (response) {
+                $scope.twodaysTestplans = _.filter(response.results, Filters.isTwodays);
+                $scope.twodaysTestplans = _.filter($scope.twodaysTestplans, Filters.removeHidden);
+                $scope.twodaysTestplans = _.sortBy($scope.twodaysTestplans, 'name');
 
-            $scope.summaryTestplans = _.filter(response.results, Filters.isSummary);
-            $scope.summaryTestplans = _.filter($scope.summaryTestplans, Filters.removeHidden);
+                $scope.summaryTestplans = _.filter(response.results, Filters.isSummary);
+                $scope.summaryTestplans = _.filter($scope.summaryTestplans, Filters.removeHidden);
 
-            $scope.testplans = _.filter(response.results, Filters.isMain);
-            $scope.testplans = _.filter($scope.testplans, Filters.removeHidden);
-            $scope.testplans = _.sortBy($scope.testplans, 'name');
+                $scope.testplans = _.filter(response.results, Filters.isMain);
+                $scope.testplans = _.filter($scope.testplans, Filters.removeHidden);
+                $scope.testplans = _.sortBy($scope.testplans, 'name');
 
-
-
-            _.each($scope.twodaysTestplans, function (testplan) {
-                $scope.twodaysStatistic = true;
-                addTwodaysStatistic(testplan, 2);
-            });
-
-            drawTable($scope.twodaysTestplans);
-
-            $rootScope.getProjectSettings($routeParams.projectId, 'chart_type').then(function(type) {
-                _.each($scope.testplans, function (testplan) {
-                    $scope.addChartsToTestplan(testplan, appConfig.DEFAULT_DAYS);
+                _.each($scope.twodaysTestplans, function (testplan) {
+                    $scope.twodaysStatistic = true;
+                    addTwodaysStatistic(testplan, 2);
                 });
 
-                $scope.chartsType = parseInt(type);
-                $scope.createTotalChart(appConfig.DEFAULT_DAYS);
-            });
-        });
+                drawTable($scope.twodaysTestplans);
 
-        Stage.get({ projectId: $routeParams.projectId }, function (response) {
-           $scope.stages = _.sortBy(response.results, 'weight');
+                $rootScope.getProjectSettings($routeParams.projectId, 'chart_type').then(function(type) {
+                    _.each($scope.testplans, function (testplan) {
+                        $scope.addChartsToTestplan(testplan, appConfig.DEFAULT_DAYS);
+                    });
+
+                    $scope.chartsType = parseInt(type);
+                    $scope.createTotalChart(appConfig.DEFAULT_DAYS);
+                });
+            });
+
+            Stage.get({ projectId: $routeParams.projectId }, function (response) {
+               $scope.stages = _.sortBy(response.results, 'weight');
+            });
+        };
+
+
+        $scope.createPage();
+
+        $scope.$watch('refreshTurnOn', function(){
+            if ($scope.refreshTurnOn) {
+                $interval(function() {
+                    $scope.createPage();
+                }, $scope.refreshInterval * 60 * 1000);
+            }
         });
 
         $scope.createTotalChart = function(days) {
@@ -252,6 +264,19 @@ app.controller('DashboardCtrl', ['$q', '$scope', '$rootScope', '$routeParams', '
             d.setDate(d.getDate() + 1);
             $scope.redirect(evt, '/dashboard/' + $scope.projectId +
                 '/launches/from=' + day + '&to=' + d.toISOString().substring(0, 10));
-        }
+        };
+
+        $scope.startTimer = function() {
+            if (typeof $scope.refreshInterval ==='number' && $scope.refreshInterval >= 1) {
+                $scope.refreshTurnOn = true;
+            } else {
+                $scope.refreshTurnOn = false;
+            }
+        };
+
+        $scope.stopTimer = function() {
+            $scope.refreshTurnOn = false;
+            delete $scope.refreshInterval;
+        };
     }
 ]);
