@@ -18,7 +18,7 @@
   },
   "scripts": {
     "postinstall": "bower install",
-    "pretest": "webdriver-manager update --versions.chrome 2.43",
+    "pretest": "webdriver-manager update --versions.chrome 2.32",
     "dev": "nf start",
     "test": "protractor public/tests/conf.js",
     "test-single-run": "karma start karma.conf.js  --single-run"
